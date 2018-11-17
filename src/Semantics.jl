@@ -69,4 +69,6 @@ function BasicSIR()
     return sir
 end
 
+include("diffeq.jl")
+
 end
