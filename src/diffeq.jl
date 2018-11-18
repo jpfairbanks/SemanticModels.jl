@@ -18,10 +18,10 @@ function hookeslaw(du, u, p, t)
     du[2] = -p[1] * u[1]
 end
 
-mutable struct SpringModel{T,D}
-    frequency::T
+mutable struct SpringModel{F,D,U}
+    frequency::F
     domain::D
-    initial_position::T
+    initial_position::U
 end
 
 parameters(spm::SpringModel) = spm.frequency
@@ -34,9 +34,9 @@ accelerate!(spm::SpringModel, factor::Number) = begin
     spm.frequency = factor*spm.frequency
 end
 
-struct SIRParams{F}
-    β::F
-    γ::F
+struct SIRParams{T,U}
+    β::T
+    γ::U
 end
 
 struct SIRSimulation{V, T, P}
@@ -51,13 +51,22 @@ initial_conditions(sir::SIRSimulation) = sir.initial_populations
 
 function flux(sir::SIRSimulation)
     function sirflux(du, u, p, t)
+        # println("sirflux call")
+        # @show t
         β, γ = p.β, p.γ
+        # println(β, γ)
         N = sum(u)
+        # println(N)
         infections = β * (u[1]*u[2]/N)
+        # println(infections)
         recoveries = γ * (u[2]/N)
+        # println(recoveries)
         du[1] = -infections
         du[2] =  infections - recoveries
         du[3] =  recoveries
+        # println(du)
+        # println(u)
+        return du
     end
     return sirflux
 end

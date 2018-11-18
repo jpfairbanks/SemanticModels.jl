@@ -3,7 +3,7 @@ using Test
 using Semantics
 using Semantics.Unitful
 import Semantics.Unitful: DimensionError
-
+using DifferentialEquations
 
 @testset "spring models" begin
 
@@ -66,4 +66,30 @@ end
     solsir = solve(sir)
     @test solsir[end][1] < 1
     @test solsir[end][end] > 99
+end
+
+@testset "spring_units" begin
+    springmodel = SpringModel([u"1.0s^-2"], (u"0s",4π*u"s"), [u"1.0m", u"0m/s"])
+    @show prob = odeproblem(springmodel)
+    sol = solve(springmodel)
+    t = u"π/2*1s"
+    v = (1e-6)*u"m"
+    @test sol(u"4π*1s")[1] - u"1m" < u"1e-4*1m" 
+end
+
+@testset "sir_meters" begin
+    initialpop = [99, 1, 0.0].*u"m"
+    prob = SIRSimulation(initialpop, (u"0.0s", u"200s"), SIRParams(u"40.0/s", u"20.0m/s"))   
+    sol = solve(odeproblem(prob), alg=Vern9(),  dt = u"0.1s")
+    @test sol(sol.t[end])[1] < u"1e-4*1m"
+    @test sol(sol.t[end])[end] > u"99m"
+end
+
+@testset "sir_units" begin
+    initialpop = [99, 1, 0.0].*u"person"
+    prob = SIRSimulation(initialpop, (u"0.0minute", u"75minute"), SIRParams(u"40.0/minute", u"20.0person/minute"))   
+    sol = solve(odeproblem(prob), alg=Vern9(),  dt = u"0.1minute")
+    @show sol
+    @test sol(sol.t[end])[1] < u"1e-4*1person"
+    @test sol(sol.t[end])[end] > u"99*1person"
 end
