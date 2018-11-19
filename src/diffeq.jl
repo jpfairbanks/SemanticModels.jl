@@ -2,7 +2,7 @@ using DifferentialEquations
 import DifferentialEquations: solve
 
 export parameters, domain, initial_conditions, flux, odeproblem, accelerate!,
-    SpringModel, SIRParams, SIRSimulation, solve
+    SpringModel, SIRParams, SIRSimulation, solve, CombinedModel
 # using DiffEqBase
 # using Unitful
 
@@ -75,6 +75,8 @@ function odeproblem(sir::SIRSimulation)
     problem = ODEProblem(flux(sir), initial_conditions(sir), domain(sir), parameters(sir))
     return problem
 end
+
+solve(sir::SIRSimulation) = solve(odeproblem(sir), alg=Vern9())
 function RealSIR()
     # β = NumParameter(:β, u"person/s", TransitionRate)
     # γ = NumParameter(:γ, u"person/s", TransitionRate)

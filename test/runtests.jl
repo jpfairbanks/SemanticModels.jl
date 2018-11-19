@@ -24,10 +24,8 @@ end
 @testset "SIR" begin
     function test1()
         sir = Semantics.BasicSIR()
-        # @show sir
 
         β = sir.equations[1].parameters[1]
-        @show β
         @test (4*β.unit + 6β.unit) * 3u"s" == u"30person"
         @test u"24person" + u"1kperson" == u"1024person"
         @test u"24person" + u"1kperson/s"*u"3s" == u"3024person"
@@ -39,7 +37,6 @@ end
 function RealSIR()
     # β = NumParameter(:β, u"person/s", TransitionRate)
     # γ = NumParameter(:γ, u"person/s", TransitionRate)
-    # @show β, γ
 
     # S = NumVariable(:S, u"person", Amount)
     # I = NumVariable(:I, u"person", Amount)
@@ -70,7 +67,7 @@ end
 
 @testset "spring_units" begin
     springmodel = SpringModel([u"1.0s^-2"], (u"0s",4π*u"s"), [u"1.0m", u"0m/s"])
-    @show prob = odeproblem(springmodel)
+    prob = odeproblem(springmodel)
     sol = solve(springmodel)
     t = u"π/2*1s"
     v = (1e-6)*u"m"
@@ -89,7 +86,43 @@ end
     initialpop = [99, 1, 0.0].*u"person"
     prob = SIRSimulation(initialpop, (u"0.0minute", u"75minute"), SIRParams(u"40.0/minute", u"20.0person/minute"))   
     sol = solve(odeproblem(prob), alg=Vern9(),  dt = u"0.1minute")
-    @show sol
     @test sol(sol.t[end])[1] < u"1e-4*1person"
     @test sol(sol.t[end])[end] > u"99*1person"
+end
+
+@testset "combined_meters" begin
+    springmodel = SpringModel([u"1.0s^-2"], (u"0s",4π*u"s"), [u"1.0m", u"0m/s"])
+    prob = odeproblem(springmodel)
+    sol = solve(springmodel)
+    @test sol(u"4π*1s")[1] - u"1m" < u"1e-4*1m" 
+
+    initialS = sol.u[end][1] * 100
+    initialI = abs(sol.u[end][2] *u"200s" + u"1m")
+    initialpop = [initialS, initialI, u"0.0m"]
+    sirprob = SIRSimulation(initialpop, (u"0.0s", u"20s"), SIRParams(u"40.0/s", u"20.0m/s"))   
+    sirsol = solve(odeproblem(sirprob), alg=Vern9(),  dt = u"0.1s")
+
+    # test that everything is converted from S to R
+    @test sirsol(sirsol.t[end])[1] < u"1e-4*1m"
+    @test sirsol(sirsol.t[end])[end] > 0.99 * sirsol(sirsol.t[1])[1]
+
+end
+
+@testset "CombinedModel" begin
+    springmodel = SpringModel([u"1.0s^-2"], (u"0s",4π*u"s"), [u"1.0m", u"0m/s"])
+    function create_sir(m, solns)
+        sol = solns[1]
+        initialS = sol.u[end][1] * 100
+        initialI = abs(sol.u[end][2] *u"200s" + u"1m")
+        initialpop = [initialS, initialI, u"0.0m"]
+        sirprob = SIRSimulation(initialpop, (u"0.0s", u"20s"), SIRParams(u"40.0/s", u"20.0m/s"))
+        return sirprob
+    end
+    cm = CombinedModel([springmodel], create_sir)
+
+    sirsol = solve(cm)
+
+    # test that everything is converted from S to R
+    @test sirsol(sirsol.t[end])[1] < u"1e-4*1m"
+    @test sirsol(sirsol.t[end])[end] > 0.99 * sirsol(sirsol.t[1])[1]
 end

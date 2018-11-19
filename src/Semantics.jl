@@ -71,4 +71,12 @@ end
 
 include("diffeq.jl")
 
+mutable struct CombinedModel{F,S} <: Model
+    deps::F
+    target::S
+end
+
+function solve(m::CombinedModel)
+    return solve(m.target(m, solve.(m.deps)))
+end
 end
