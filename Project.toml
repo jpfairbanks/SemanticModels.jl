@@ -1,0 +1,6 @@
+authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>"]
+name = "Semantics"
+uuid = "88974b6f-63f0-5f7a-882c-b779d2960b8e"
+version = "0.1.0"
+
+[deps]
