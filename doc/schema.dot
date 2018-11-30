@@ -1,0 +1,65 @@
+\neatograph[scale=0.45]{schema}{
+    rankdir = "LR"
+    node [shape=box]
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		a0; a2; a3;
+		label = "Artifacts";
+		a0[label="Paper 1"];
+		a2[label="Space.docs.io"];
+		a3[label="github.com SpaceModels/Space.jl"];
+	}
+
+	subgraph cluster_1 {
+		node [style=filled];
+		b0; b1; b2; b3;
+		label = "Components";
+		color=blue;
+		
+		b1[label="height"];
+		b2[label="area=height*width"];
+		b3[label="width"];
+		b4[label="area"];
+		b1 -> b2 [label="term of"];
+		b3 -> b2;
+		subgraph cluster_10{b0[label="space"]; label="Models";
+		}
+		subgraph cluster_11{b1; b3; b4; label="Variables"};
+		subgraph cluster_12{b2; label="Equations"};
+	}
+	subgraph cluster_2 {
+		node [style=filled];
+		c0; c1; c2; c3;
+		c0[label="measurement"];
+		c1[label="meters"];
+		c2[label="unit"];
+		c3[label="grams"];
+		label = "Concepts";
+		c1 -> c2 [label="subconcept"];
+		color=green;
+	}
+	subgraph cluster_3 {
+		node [style=filled];
+		d1 d2 d3;
+		d1[label="5m"];
+		d2[label="3m"];
+		d3[label="15m"];
+		
+		label = "Values";
+		color=red;
+	}
+	a2 -> b0 [label="describes"];
+	a0 -> b0 [label="consumes"];
+	b0 -> b1 [label="composed of"];
+	b0 -> b4 [label="returns"];
+	b0 -> b3;
+	b3 -> c0 [label="implements"];
+	b3 -> d1 [label="assigned"];
+	b1 -> d2 [label=""];
+	b4 -> d3 [label=""];
+	b3 -> c1;
+	c1 -> d1 [label="instantiates"];
+	a3 -> b0 [label="implements"];
+}

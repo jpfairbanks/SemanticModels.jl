@@ -14,6 +14,10 @@ Then you can load it with `using Semantics`
 
 See the tests for example usage.
 
+## Documentation
+
+There is a docs folder which contains the documentation, including reports sent to our sponsor, DARPA.
+
 ## Concepts
 
 This package enables representation of complex and diverse model structure in the type system of julia. This will allow generic programing and API development for these complex models.
