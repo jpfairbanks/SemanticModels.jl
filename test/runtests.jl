@@ -2,8 +2,14 @@
 using Test
 using Semantics
 using Semantics.Unitful
-import Semantics.Unitful: DimensionError
+import Semantics.Unitful: DimensionError, uconvert, NoUnits, s
 using DifferentialEquations
+using Distributions: Uniform
+using GLM
+using DataFrames
+using Plots
+
+stripunits(x) = uconvert(NoUnits, x)
 
 @testset "spring models" begin
 
@@ -125,4 +131,93 @@ end
     # test that everything is converted from S to R
     @test sirsol(sirsol.t[end])[1] < u"1e-4*1m"
     @test sirsol(sirsol.t[end])[end] > 0.99 * sirsol(sirsol.t[1])[1]
+end
+
+@testset "Regression Example" begin
+    START_YR = 2000
+    STOP_YR = 2005
+
+    df = generate_synthetic_data(100, START_YR, STOP_YR)
+    yhat = ols(df, rand(Uniform(50,100)), STOP_YR+1)
+end
+
+@testset "FluModel" begin
+
+    tfinal = 4π*u"d"
+    springmodel = SpringModel([u"1.0d^-2"], (u"0d",tfinal), [u"25.0C", u"0C/d"])
+    function create_sir(m, solns)
+        sol = solns[1]
+        initialS = u"10000person" #sol.u[end][1] * 100
+        initialI = abs(sol.u[end][1] *u"2person/C" + u"1person")
+        initialpop = [initialS, initialI, u"0.0person"]
+        γ = u"3.0person/d" / u"C" * sol(sol.t[end])[1]
+        @show γ
+        sirprob = SIRSimulation(initialpop, (u"0.0d", u"20d"), SIRParams(u"40.0/d", γ))
+        return sirprob
+    end
+
+    function create_flu(cm, solns)
+        sol = solns[1]
+        finalI = stripunits(sol(sol.t[end])[2])
+        population = stripunits(sol(sol.t[end])[2])
+        # population = stripunits(sum(sol.u[end]))
+        df = generate_synthetic_data(population, 0,100)
+        f = @formula(vaccines_produced ~ flu_patients)
+        model =  lm(f, df[2:length(df.year), [:year, :flu_patients, :vaccines_produced]])
+        println("GLM Model:")
+        println(model)
+
+        year_to_predict = 50
+        num_flu_patients_from_sim = finalI
+        vaccines_produced = missing
+        targetDF = DataFrame(year=year_to_predict, flu_patients=num_flu_patients_from_sim, vaccines_produced=missing)
+        @show targetDF
+
+        # predicted_num_vaccines = predict(model, targetDF)
+        # println("Predicted number of vaccines based on simulated number of flu patients for year ", year_to_predict, " = ", ceil(predicted_num_vaccines[1]))
+        # β = solve(RegressionProblem(f, model, targetDF, missing))
+        return RegressionProblem(f, model, targetDF, missing)
+    end
+    cm = CombinedModel([springmodel], create_sir)
+    flumodel = CombinedModel([cm], create_flu)
+    sol = solve(flumodel)
+    @test ceil(Int, sol[1]) >= 4393
+    
+    spsol = solve(springmodel)
+    # plot(map(x->spsol(x)[1]/Unitful.C, collect(spsol.t[1]:0.1s:spsol.t[end])))
+    print(spsol)
+    print(solve(cm).u)
+    # plot(solve(cm))
+    print(solve(flumodel))
+end
+
+@testset "knowledge" begin
+isa = "isa"
+unit = "Unit"
+knowledge = [
+    :(u"m", isa, unit),
+    (u"s", isa, unit),
+    (u"m", "instantiates", "Distance"),
+    (u"s", isa, "Time"),
+    (u"person", isa, unit),
+    (u"person", "instantiates", "Quantity"),
+    ("sir","solvedby","ODEs"),
+    :(springmodel,solvedby,ODEs),
+    :(
+        (x, represented, m),
+        (springmodel, isa, ODEModel),
+        (springmodel, var(1), x),
+        (springmodel, var(2), dx/dt),
+        (sirmodel, var(1), S),
+        (sirmodel, var(2), I),
+        (sirmodel, var(2), R)
+    )
+]
+path(x, R) = :(
+    (springmodel, var(1), x),
+    (x, measured_in, m),
+    (S, measured_in, m),
+    (sirmodel, var(1), S),
+    (sirmodel, var(3), R)
+)
 end

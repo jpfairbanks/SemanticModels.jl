@@ -1,5 +1,6 @@
 using Distributions, Random, DataFrames, GLM
 
+export generate_synthetic_data, RegressionProblem, ols
 function generate_synthetic_data(population_size, start_yr, end_yr)
 
     Random.seed!(1234)
@@ -38,7 +39,8 @@ end
 function ols(df, num_flu_patients_from_sim, year_to_predict)
 
     model =  lm(@formula(vaccines_produced ~ flu_patients), df[2:length(df.year), [:year, :flu_patients, :vaccines_produced]])
-    predicted_num_vaccines = predict(model, DataFrame(year=year_to_predict, flu_patients=num_flu_patients_from_sim, vaccines_produced=missing))
+    targetDF = DataFrame(year=year_to_predict, flu_patients=num_flu_patients_from_sim, vaccines_produced=missing)
+    predicted_num_vaccines = predict(model, targetDF)
     println("GLM Model:")
     println(model)
     println("Predicted number of vaccines based on simulated number of flu patients for year ", year_to_predict, " = ", ceil(predicted_num_vaccines[1]))
@@ -46,8 +48,17 @@ function ols(df, num_flu_patients_from_sim, year_to_predict)
 
 end
 
-START_YR = 2000
-STOP_YR = 2005
+struct RegressionProblem{F,T,U,Y} <: AbstractModel
+    formula::F
+    β::T
+    X::U
+    y::Y
+end
 
-df = generate_synthetic_data(100, START_YR, STOP_YR)
-yhat = ols(df, rand(Uniform(50,100)), STOP_YR+1)
+function solve(m::RegressionProblem{F,T,U,Missing}) where {F,T, U}
+    return predict(m.β, m.X)
+end
+
+function solve(m::RegressionProblem{F, Missing, U,V}) where {F,U,V}
+    return lm(m.formula, m.X)
+end

@@ -70,6 +70,7 @@ function BasicSIR()
 end
 
 include("diffeq.jl")
+include("regression.jl")
 
 mutable struct CombinedModel{F,S} <: Model
     deps::F
