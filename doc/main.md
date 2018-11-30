@@ -25,6 +25,7 @@ title: |
 ---
 
 \maketitle{}
+
 Introduction
 ============
 
@@ -69,6 +70,7 @@ large scale.
 \setcounter{tocdepth}{2}
 \newpage
 \tableofcontents
+
 Scientific Domain and Relevant Papers
 =====================================
 
@@ -584,8 +586,7 @@ such as in Figure [\[fig:flu\]](#fig:flu){reference-type="ref"
 reference="fig:flu"}.
 
 \centering
-![An example pipeline and knowledge graph elements for a flu response
-model.[]{label="fig:flu"}](flu_pipeline.pdf){width="\textwidth"}
+![An example pipeline and knowledge graph elements for a flu response model.[]{label="fig:flu"}](flu_pipeline.pdf){width="\textwidth"}
 
 Scientific Workflows (Pipelines)
 --------------------------------
