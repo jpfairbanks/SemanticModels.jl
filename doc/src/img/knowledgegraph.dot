@@ -1,0 +1,32 @@
+digraph G {
+  splines=false
+  #fontsize=10
+  #edge[weight=.2]
+  #ratio=0.25
+  #scale="10:1"
+  #size=5,2
+  pack="true"
+  #rankdir="LR"
+  edge [dir="none"]
+  node [shape="record", style="filled"]
+  ind -> epi [style="dashed"]
+  inf-> ind [dir="right"]
+  thirty -> inf
+  twenty -> mort
+  mort -> ind  [dir="right"]
+  mort -> rate [style="dashed"]
+  inf -> rate [style="dashed"]
+  birth -> rate [style="dashed"]
+  birth -> ind [dir="right"]
+
+  
+  epi [label="Epimodel", pos="1,1"]
+  rate [label="{Transition\nRate|Persons/s}"]
+  inf [label="Infection\nRate", color="#5a87d7"]
+  mort [label="Mortality\nRate", color="#5a87d7"]
+  node [color="lightblue"]
+  ind [label="Individual\nContact\nModel",color="lightblue", pos="0,1"]
+  birth [label="Birth\nRate",color="#5a87d7"]
+  twenty [label="0.2 Persons/s", color="lightblue"]
+  thirty [label="0.3 Persons/s", color="lightblue"]
+}
