@@ -1,4 +1,4 @@
-# Semantics.jl
+# SemanticModels.jl
 A julia package for representing and manipulating model semantics
 
 ## Getting Started
@@ -6,11 +6,11 @@ A julia package for representing and manipulating model semantics
 Install this package with 
 
 ```julia
-Pkg.develop("git@github.com:jpfairbanks/Semantics.jl.git")
-Pkg.test("Semantics")
+Pkg.develop("git@github.com:jpfairbanks/SemanticModels.jl.git")
+Pkg.test("SemanticModels")
 ```
 
-Then you can load it with `using Semantics`
+Then you can load it with `using SemanticModels`
 
 See the tests for example usage.
 
@@ -24,7 +24,7 @@ This package enables representation of complex and diverse model structure in th
 
 ### ModelStructures
 
-The following concepts are defined in Semantics.jl
+The following concepts are defined in SemanticModels.jl
 
 - Model
 - EpiModel <: Model 

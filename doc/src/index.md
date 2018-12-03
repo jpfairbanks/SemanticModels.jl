@@ -1,7 +1,7 @@
 # SemanticModels.jl Documentation
 
 ```@meta
-CurrentModule = Semantics
+CurrentModule = SemanticModels
 ```
 
 

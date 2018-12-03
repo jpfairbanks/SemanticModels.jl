@@ -15,15 +15,15 @@ end
 makefigs()
 
 @info "Loading module"
-using Semantics
+using SemanticModels
 @info "Making docs"
 makedocs(
-modules     = [Semantics],
+modules     = [SemanticModels],
 format      = :html,
-sitename    = "Semantics",
+sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
-    "Semantics.jl"               => "index.md",
+    "SemanticModels.jl"               => "index.md",
     # "Library Reference" => "library.md",
     "Approaches" => "approach.md",
     "Slides"               => "slides.md",

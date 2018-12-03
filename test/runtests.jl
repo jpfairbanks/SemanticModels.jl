@@ -1,8 +1,8 @@
 # using Base.Tests
 using Test
-using Semantics
-using Semantics.Unitful
-import Semantics.Unitful: DimensionError, uconvert, NoUnits, s
+using SemanticModels
+using SemanticModels.Unitful
+import SemanticModels.Unitful: DimensionError, uconvert, NoUnits, s
 using DifferentialEquations
 using Distributions: Uniform
 using GLM
@@ -29,7 +29,7 @@ end
 
 @testset "SIR" begin
     function test1()
-        sir = Semantics.BasicSIR()
+        sir = SemanticModels.BasicSIR()
 
         β = sir.equations[1].parameters[1]
         @test (4*β.unit + 6β.unit) * 3u"s" == u"30person"

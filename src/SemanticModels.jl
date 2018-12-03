@@ -3,7 +3,7 @@
 provides the AbstractModel type and constructors for building hierarchical model representations.
 
 """
-module Semantics
+module SemanticModels
 
 using Unitful
 using Unitful: Units
@@ -48,11 +48,11 @@ struct SIR{E, Vp, Vt} <: EpiModel
 end
 
 @unit person "person" Person 1 true
-Unitful.register(Semantics)
+Unitful.register(SemanticModels)
 const localunits = Unitful.basefactors
 function __init__()
     merge!(Unitful.basefactors, localunits)
-    Unitful.register(Semantics)
+    Unitful.register(SemanticModels)
 end
 
 """    BasicSIR

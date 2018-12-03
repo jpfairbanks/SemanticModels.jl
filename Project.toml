@@ -1,4 +1,4 @@
-name = "Semantics"
+name = "SemanticModels"
 uuid = "88974b6f-63f0-5f7a-882c-b779d2960b8e"
 authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>"]
 version = "0.1.0"
