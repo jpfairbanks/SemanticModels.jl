@@ -1,4 +1,4 @@
-\neatograph[scale=0.45]{schema}{
+digraph G{
     rankdir = "LR"
     node [shape=box]
 	subgraph cluster_0 {

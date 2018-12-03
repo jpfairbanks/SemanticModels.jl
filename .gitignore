@@ -266,3 +266,5 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+doc/src/img/*.dot.png
+/doc/src/img/*.dot.svg

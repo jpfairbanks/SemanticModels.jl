@@ -1,0 +1,56 @@
+digraph G {
+    rankdir="LR"
+ subgraph cluster_meta{
+ label="Healthcare metamodel";
+  subgraph cluster_0 {
+    # style=filled;
+    color=lightgrey;
+    node [style=filled,shape=record];
+    a0 -> a2;
+    a1 -> a2;
+    a3 -> a2;
+    a0 [label="Information\nCampaigns", color="lightblue"];
+    a1 [label="Initial\nBeliefs"];
+    a3 [label="Social\nNetwork"];
+    a2 [label="Beliefs" ];
+    label = "Hand Hygiene\nBelief Model";
+    color=black
+    #{rank=same}
+    labelloc=t
+  }
+
+  subgraph cluster_1 {
+    node [style=filled, shape=box];
+    a2-> Disease [style="dashed"]
+    Disease -> Infection
+    Antibiotics-> Infection
+    #{rank=same Disease a0}
+    Disease [label="Disease\n Prevalence"]
+    Antibiotics [color="lightblue"]
+    label = "Disease\nModel";
+    color="#8b0000";
+    labelloc=t
+  }
+  subgraph cluster_2 {
+    node [style=filled, shape=box];
+    Infection -> end [style="dashed"]
+    MedRecord-> end
+    MedRecord [label="Medical\nRecords"]
+    Complications -> end
+    {rank=same}
+    label = "Health Outcome\nModel";
+    color=darkgreen
+    labelloc=b
+  }
+  subgraph cluster_3 {
+      node [style=filled,color=lightblue,shape=box];
+
+      label = "Cost Model";
+      #style=filled;
+      color=black;
+    labelloc=t
+  }
+  end [shape=Msquare, color="#5a87d7", label="Expected\nHealthcare\nCosts"];
+}
+  label="A metamodel for predicting healthcare costs";
+}

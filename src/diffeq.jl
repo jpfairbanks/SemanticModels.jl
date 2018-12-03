@@ -11,6 +11,10 @@ export parameters, domain, initial_conditions, flux, odeproblem, accelerate!,
 #   dy = -c*y + d*x*y
 # end a b c d
 
+"""   hookeslaw
+
+the ODE representation of a spring. The solutions are periodic functions.
+"""
 function hookeslaw(du, u, p, t)
     # u[1] = p
     # u[2] = v
@@ -18,6 +22,11 @@ function hookeslaw(du, u, p, t)
     du[2] = -p[1] * u[1]
 end
 
+"""    SpringModel
+
+represents the second order linear ODE goverened by [hookeslaw](@ref).
+
+"""
 mutable struct SpringModel{F,D,U}
     frequency::F
     domain::D

@@ -1,3 +1,8 @@
+""" SemanticModels
+
+provides the AbstractModel type and constructors for building hierarchical model representations.
+
+"""
 module Semantics
 
 using Unitful
@@ -50,7 +55,12 @@ function __init__()
     Unitful.register(Semantics)
 end
 
+"""    BasicSIR
 
+defines a representation of Susceptible Infected Recovered models using Unitful
+numbers and expressions.
+
+"""
 function BasicSIR()
     β = NumParameter(:β, u"person/s", TransitionRate)
     γ = NumParameter(:γ, u"person/s", TransitionRate)
@@ -72,11 +82,24 @@ end
 include("diffeq.jl")
 include("regression.jl")
 
+"""    CombinedModel
+
+represents a model that has a fixed set of dependencies.
+It is the basic building block of a model DAG.
+
+"""
 mutable struct CombinedModel{F,S} <: Model
     deps::F
     target::S
 end
 
+"""    solve(m::AbstractModel)
+
+executes the solving of a model for models with dependencies, those deps are
+executed first and then the node is solved. This is the function that evaluates
+the model DAG.
+
+"""
 function solve(m::CombinedModel)
     return solve(m.target(m, solve.(m.deps)))
 end

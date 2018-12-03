@@ -1,30 +1,18 @@
----
-abstract: |
-    This deliverable provides a high-level overview of the open-source
-    epidemiological modeling software packages that we have reviewed, and
-    outlines our intended approach for extracting information from
-    scientific papers that cite one or more of these packages. Our
-    extraction efforts are directed toward the construction of a knowledge
-    graph that we can traverse to reason about how to best map a set of
-    known, unitful inputs to a set of unknown, unitful outputs via parameter
-    modification, hyperparamter modification, and/or sequential chaining of
-    models present in the knowledge graph. Our overarching purpose in this
-    work is to reduce the cost of conducting incremental scientific
-    research, and facilitate communication and knowledge integration across
-    different research domains.
-author:
-- |
-    Christine Herlihy and Scott Appling and Erica Briscoe and James
-    Fairbanks
-bibliography:
-- 'refs.bib'
-date: 'Dec 1, 2018'
-title: |
-    Automatic Scientific Knowledge Extraction: Architecture, Approaches, and
-    Techniques
----
+# Automatic Scientific Knowledge Extraction
+Architecture, Approaches, and Techniques
 
-\maketitle{}
+We provide a high-level overview of the open-source
+epidemiological modeling software packages that we have reviewed, and
+outlines our intended approach for extracting information from
+scientific papers that cite one or more of these packages. Our
+extraction efforts are directed toward the construction of a knowledge
+graph that we can traverse to reason about how to best map a set of
+known, unitful inputs to a set of unknown, unitful outputs via parameter
+modification, hyperparamter modification, and/or sequential chaining of
+models present in the knowledge graph. Our overarching purpose in this
+work is to reduce the cost of conducting incremental scientific
+research, and facilitate communication and knowledge integration across
+different research domains.
 
 Introduction
 ============
@@ -70,7 +58,6 @@ large scale.
 \setcounter{tocdepth}{2}
 \newpage
 \tableofcontents
-
 Scientific Domain and Relevant Papers
 =====================================
 
@@ -368,14 +355,13 @@ and provide scripts for running the experiments they describe. We
 believe this is an example of the kind of material we will be able to
 perform useful information extractions on to inform the development of
 metamodels. Figure
-[\[fig:covar\_paper1\]](#fig:covar_paper1){reference-type="ref"
+[\[fig:img/covar\_paper1\]](#fig:covar_paper1){reference-type="ref"
 reference="fig:covar_paper1"} is an example of script code from
 [@doi:10.1111/oik.04527]:
 
-\centering
 ![Example script excerpt associated with [@doi:10.1111/oik.04527]
 setting parameters for use in an ERGM model implemented by EpiModels
-library.](covar_fig1.jpg){width="70%"}
+library.](img/covar_fig1.jpg){width="70%"}
 
 [\[fig:covar\_paper1\]]{#fig:covar_paper1 label="fig:covar_paper1"}
 
@@ -385,7 +371,6 @@ reference="table:info_extract"} is a non-exhaustive list of the kinds of
 information extractions we are currently planning and the purposes they
 serve in supporting later steps:
 
-\centering
   Extraction Type    Description                                                                         Sources
   ------------------ ----------------------------------------------------------------------------------- -----------------
   Code References    Creation and selection of metamodels to extend or utilize depending on user goals   Papers, Scripts
@@ -465,9 +450,8 @@ which will connect to concepts. When papers are connected to other
 papers, they are connected indirectly (e.g., via other vertices), except
 for edges that represent citations directly between papers.
 
-\centering
 ![An example of the knowledge graph illustrating the nature of the
-schema.[]{label="fig:schema."}](schema.pdf){width="\textwidth"}
+schema.[]{label="fig:schema."}](img/schema.dot.svg)
 
 It is an open question for this research whether the knowledge graph
 should contain models with the parameters bound to values, or the
@@ -585,8 +569,8 @@ possible description is to represent the DAG in a human-friendly way,
 such as in Figure [\[fig:flu\]](#fig:flu){reference-type="ref"
 reference="fig:flu"}.
 
-\centering
-![An example pipeline and knowledge graph elements for a flu response model.[]{label="fig:flu"}](flu_pipeline.pdf){width="\textwidth"}
+![An example pipeline and knowledge graph elements for a flu response
+model.[]{label="fig:flu"}](img/flu_pipeline.dot.svg)
 
 Scientific Workflows (Pipelines)
 --------------------------------
@@ -651,7 +635,7 @@ When assembling a metamodel, it is important to eliminate possible
 combinations of models that are scientifically or logically invalid. One
 type of constraint is provided by units and dimensional analysis. Our
 flu example pipeline uses
-[https://github.com/ajkeller34/Unitful.jl](Unitful.jl) to represent the
+[Unitful.jl](https://github.com/ajkeller34/Unitful.jl) to represent the
 quantities in the models including $C,s,d,person$ for Celsius, second,
 day, and person. While $C,s,d$ are SI defined units that come with
 Unitful.jl, person is a user defined type that was created for this
@@ -875,8 +859,6 @@ term, we anticipate that holes in the knowledge graph (e.g., missing
 vertices and/or edges; missing conversion steps to go from one unit of
 analysis to another, etc.) may help us to highlight areas where either
 additional research, and/or expert human input is needed.
-
-\printbibliography
 
 [^1]: <http://alun.math.ncsu.edu/wp-content/uploads/sites/2/2017/01/epidemic_notes.pdf>
 
