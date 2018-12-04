@@ -14,8 +14,7 @@ work is to reduce the cost of conducting incremental scientific
 research, and facilitate communication and knowledge integration across
 different research domains.
 
-Introduction
-============
+## Introduction
 
 The ASKE program aims to extract knowledge from the body of scientific
 work. Our view is that the best way to prove that you have extracted
@@ -58,8 +57,8 @@ large scale.
 \setcounter{tocdepth}{2}
 \newpage
 \tableofcontents
-Scientific Domain and Relevant Papers
-=====================================
+
+## Scientific Domain and Relevant Papers
 
 We have focused our initial knowledge artifact gathering efforts on the
 scientific domain of epidemiology broadly defined, so as to render the
@@ -75,8 +74,7 @@ questions that could benefit from, and/or be addressed by the
 modification and/or chaining of individual models, as these questions
 can serve as foundational test cases for the meta-models we develop.
 
-Papers and Libraries
---------------------
+### Papers and Libraries
 
 We began the literature review and corpus construction process by
 identifying a representative set of open-source software (OSS)
@@ -92,7 +90,7 @@ provide a brief overview of the main components of each package below,
 as well as commentary on the frequency with which each package has been
 used in relevant published works.
 
-### NDLib
+#### NDLib
 
 NDLib is an open-source package developed by a research team from the
 Knowledge Discovery and Data Mining Laboratory (KDD-lab) at the
@@ -120,7 +118,7 @@ the package, particularly for users already familiar with NetworkX,
 etc.), the majority of published works citing NDLib are papers written
 by the package authors themselves, and focus on information diffusion.
 
-### Epimodels
+#### Epimodels
 
 EpiModel is an R package, written by researchers at Emory University and
 The University of Washington, that provides tools for simulating and
@@ -140,7 +138,7 @@ development. There are several publications utilizing the library at
 highly elite research journals, including PLoS ONE and Infectious
 Diseases, as well as the Journal of Statistical Software.
 
-### NetLogo
+#### NetLogo
 
 NetLogo, according to the User Manual, is a programmable modeling
 environment for simulating natural and social phenomena. It was authored
@@ -176,7 +174,7 @@ modeling library due to the amount of time that has passed and that
 researcher may no longer monitor the email addresses listed on their
 publications for various reasons.
 
-### EMOD
+#### EMOD
 
 Epidemiological MODeling (EMOD) is an open-source agent-based modeling
 software package developed by the Institute for Disease Modeling (IDM),
@@ -204,7 +202,7 @@ to more generic agent-based modeling packages is that domain-wise,
 coverage is heavily slanted toward epidemiological models; built-in
 support for information diffusion models is not included.
 
-### Pathogen
+#### Pathogen
 
 Pathogen is an open-source epidemiological modeling package written in
 Julia [@pathogenRepo]. Pathogen is intended to allow researchers to
@@ -224,7 +222,7 @@ packages. However, one of the potential disadvantages of the Pathogen
 package is that there is no associated software or system architecture
 paper; as such, it is difficult to locate papers that use this package.
 
-### FRED
+#### FRED
 
 FRED, which stands for a Framework for Reconstructing Epidemic Dynamics,
 is an open-source, agent-based modeling software package written in C++,
@@ -249,8 +247,7 @@ cite it in their works [@pittir24611; @fredRepo]. A related potential
 disadvantage is that FRED does not appear to be under active development
 [@pittir24611; @fredRepo].
 
-Evaluation
-----------
+### Evaluation
 
 The packages outlined in the preceding section are all open-source, and
 written in Turing-complete programming languages; thus, we believe any
@@ -289,8 +286,7 @@ contrived models that are presented in a homogeneous framework.
 Pedagogical textbooks [@voit_first_2012] and lecture notes[^1] will be a
 resource for these simple models that are well characterized.
 
-Information Extraction
-======================
+## Information Extraction
 
 In order to construct the knowledge graph that we will traverse to
 generate metamodel directed acyclic graphs (DAGs), we will begin by
@@ -347,8 +343,7 @@ present an example paper that a metamodel can be built from and from
 whence information can be extracted to help in the creation of that
 metamodel.
 
-EpiModels Example
------------------
+### EpiModels Example
 
 In [@doi:10.1111/oik.04527] the authors utilize the EpiModels library
 and provide scripts for running the experiments they describe. We
@@ -387,8 +382,7 @@ label="table:info_extract"}
 The information extractions we produce here will be included as
 annotations in the knowledge representations we describe next.
 
-Knowledge Representation
-========================
+## Knowledge Representation
 
 On the topic of dimensionality / complexity reduction (in an entropic
 sense) and knowledge representation: (1) we will begin by passing the
@@ -426,8 +420,7 @@ where "death" might be used as a metaphor when a cultural behavior or
 meme "dies out" because people stop spreading the behavior to their
 social contacts.
 
-Schema Design
--------------
+### Schema Design
 
 We will represent the information extracted from the artifacts using a
 knowledge graph. And while knowledge graphs are very flexible in how
@@ -460,8 +453,7 @@ Our initial approach will be to model both the general concept of a
 model such as `HookesLawModel` along with the specific instantiation
 `HookesLawModel{k=5.3}` from specific artifacts.
 
-Data Sets in the Knowledge Graph
---------------------------------
+### Data Sets in the Knowledge Graph
 
 A big component of how papers refer to the same physical phenomenon is
 that they use the same data sets. These common datasets which become
@@ -484,8 +476,7 @@ conceptual overlap. The fact that two models are connected to the same
 dataset or concept is an important indicator that the two models are
 compatible or interchangeable.
 
-Schema.org
-----------
+### Schema.org
 
 Schema.org is one of the largest and most diverse knowledge graph
 systems.
@@ -540,8 +531,7 @@ define the schema of our knowledge graph, we will link up with the
 schema.org concepts as much as possible and could add an extension to
 the schema.org in order to represent scientific concepts.
 
-Model Representation and Execution
-==================================
+## Model Representation and Execution
 
 Representation of models occurs at four levels:
 
@@ -572,8 +562,7 @@ reference="fig:flu"}.
 ![An example pipeline and knowledge graph elements for a flu response
 model.[]{label="fig:flu"}](img/flu_pipeline.dot.svg)
 
-Scientific Workflows (Pipelines)
---------------------------------
+### Scientific Workflows (Pipelines)
 
 Our approach will need to be differentiated from scientific workflow
 managers that are based on conditional evaluation tools like Make. Some
@@ -594,8 +583,7 @@ semantics in order to enable computational reasoning over the viability
 of combined models. Ideas from static analysis of computer programs will
 enable better verification of metamodels before we run them.
 
-Metamodels as Computation Graphs
---------------------------------
+### Metamodels as Computation Graphs
 
 Our position is that if you have a task currently solved with a general
 purpose programming language, you cannot replace that solution with
@@ -628,8 +616,7 @@ Figure [\[fig:flu\]](#fig:flu){reference-type="ref"
 reference="fig:flu"}. Code snippets and rendered plots appear in the
 notebook.
 
-Metamodel Constraints
----------------------
+### Metamodel Constraints
 
 When assembling a metamodel, it is important to eliminate possible
 combinations of models that are scientifically or logically invalid. One
@@ -649,8 +636,7 @@ sufficient for a metamodel to be dimensionally consistent. We will
 investigate the additional constraints necessary to check metamodels for
 correctness.
 
-Metamodel Transformations
--------------------------
+### Metamodel Transformations
 
 Metamodel transformations describe high-level operations the system will
 perform based on the user's request and the information available to it
@@ -667,8 +653,7 @@ examples of these are as follows:
 
 4.  introducing new nodes to the model[^3]
 
-Types
------
+### Types
 
 This project leverages the Julia type system and code generation
 toolchain extensively.
@@ -720,8 +705,8 @@ number of papers will be too large for manual tasks per paper.
 When a new paper or code snippet is ingested by the system, we may need
 to generate new leaf types for that paper automatically.
 
-User Interface
---------------
+### User Interface
+
 
 Our system is used by expert scientists who want to reduce their time
 spent writing code and plumbing models together. As an input it would
@@ -731,8 +716,7 @@ program is a program that calculates the unknowns as a function of the
 known input(s) provided by the user, potentially with holes that require
 expert knowledge to fill in.
 
-Generating new models
----------------------
+### Generating new models
 
 We will use metaprogramming to build a library that takes data
 structures, derived partially using information previously extracted
@@ -758,8 +742,8 @@ than bare bitstypes provided by the processor. As we push more
 information into the type system, this tradeoff of additional compiler
 overhead will need to be managed.
 
-Validation
-==========
+## Validation
+
 
 There are many steps to this process and at each step there is a
 different process for validating the system.
@@ -814,8 +798,7 @@ physical phenomena that are easy for scientists to generate, probe, and
 understand, while being the best possible model of the phenomena under
 investigation.
 
-Next Steps
-==========
+## Next Steps
 
 Our intended path forward following the review of this report is as
 follows:

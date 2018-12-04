@@ -32,16 +32,52 @@ We focus on Susceptible Infected Recovered model of epidemiology.
 2. Diverse class of models, ODE vs Agent based, determinstic vs stochastic
 3. FOSS implementations are available in all three Scientific programming languages
 
+## Knowledge Extraction Architecture
+
+![Knowledge Extraction Architecture](img/extraction.dot.svg)
+
+## Example Input Packages
+
+1. EMOD, Epimodels, NetLogo, and FRED are established packages, given their maturity and availability of published
+papers citing these packages. 
+2. Pathogen and NDLib are newer packages, we expect easier to work with and more future adoption.
+3. Textbooks [@voit_first_2012] and lecture notes[^1] will be a
+resource for these simple models that are well characterized.
+
 ## Knowledge Graph
 
 Picture of KG sample
 
-## Knowledge Graph Schema
-
-Picture of KG schema
+![Hypothetical Knowledge Graph Sample](img/knowledgegraph.dot.svg)
 
 ## Knowledge Graph Schema
 
-Picture of Flu example
+A preliminary design for types of knowledge in our knowledge graph.
+![Knowledge Graph Schema](img/schema.dot.svg)
+
+## Flu Metamodel Pipeline
+
+Here is the DAG for our running example.
+![A pipeline for modeling flu vaccination requirements](img/flu_pipeline.dot.svg)
+
+See [FluModel](@ref) for worked out example.
+
+## Infectious Disease Metamodel
+
+- A more ambitious example of a metamodel
+- Requires Agent based simulations of information diffuision and disease spread
+
+![A DAG of model dependencies](img/metamodel.dot.svg)
+
+## Static vs Dynamic Graph
+
+- Inherent tradeoff between flexibility and static analysis
+- We will build the computation graph through the execution of code
+- Metaprogramming will be used to generate the executable codes
+
+## Validation
+
 
 ## Conclusions
+
+[^1]: <http://alun.math.ncsu.edu/wp-content/uploads/sites/2/2017/01/epidemic_notes.pdf>

@@ -19,9 +19,18 @@ digraph G {
   birth -> rate [style="dashed"]
   birth -> ind [dir="right"]
 
-  
+  rate -> person
+  unit -> person
+
+  fed     [label="Fed\nForecast"]
+  demo    [label="Census\nDemographics"]
+  weather [label="NOAA\nWeather"]
+
+
   epi [label="Epimodel", pos="1,1"]
-  rate [label="{Transition\nRate|Persons/s}"]
+  rate [label="{Transition\nRate}", color="#5a87d7"]
+  unit [label="Unit", color="#5a87d7"]
+  person [label="Person/s", color=""]
   inf [label="Infection\nRate", color="#5a87d7"]
   mort [label="Mortality\nRate", color="#5a87d7"]
   node [color="lightblue"]
@@ -29,4 +38,16 @@ digraph G {
   birth [label="Birth\nRate",color="#5a87d7"]
   twenty [label="0.2 Persons/s", color="lightblue"]
   thirty [label="0.3 Persons/s", color="lightblue"]
+
+  temp [label="Temperature", color="#5DADE2"]
+  age  [label="Age", color="#5DADE2"]
+  dGDP [label="Economic Growth", color="#5DADE2"]
+
+  temp -> inf
+  age -> mort
+  dGDP -> birth
+
+  weather -> temp
+  demo-> age
+  fed -> dGDP
 }

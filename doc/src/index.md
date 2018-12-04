@@ -8,13 +8,3 @@ CurrentModule = SemanticModels
 ```@contents
 ```
 
-## Functions
-
-```@docs
-solve(x::CombinedModel)
-```
-
-## Index
-
-```@index
-```

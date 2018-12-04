@@ -18,17 +18,14 @@ digraph H {
 		p		 [color="#5DADE2",
 			height=0.5,
 			label=parameters,
-			pos="285.5,174",
 			width=1.3582];
 		f		 [color="#5DADE2",
 			    height=0.5,
 			    label="function\n u''(t) = -ku(t)",
-			    pos="285.5,120",
 			    width=1.195];
 		fi		 [
 			height=0.5,
 			label="function\ndu[1] = u[2]\ndu[2] = -p[1] * u[1]",
-			pos="285.5,120",
 			width=1.195];
     ii [label="27.0C\n0C/s"]
     pi [label="1/s²"]
@@ -46,10 +43,8 @@ digraph H {
 			lwidth=0.81
 		];
 		node [color="#5DADE2"];
-    a -> p
-		a -> f		 [label=formulas,
-			lp="174.73,143",
-			pos="e,244.33,125.21 110.5,142.16 146.59,137.59 196.77,131.24 234.15,126.5"];
+    a -> p;
+		a -> f		 [label=formulas];
 		f -> fi		 [label=implemented,
 			          lp="174.73,143"];
     p -> pi [label=implemented]
@@ -64,10 +59,12 @@ digraph H {
 			constraint=false,
 			label="Disease Spread",
 			lheight=0.19,
-			lp="499.71,229",
 			lwidth=1.23
 		];
 		sir			 [label="SIRProblem",];
+    sirpopi [label="10 Kperson"]
+		sirti		 [label="(0,200 days)"];
+		sirp		 [label="(40/day,𝛾)"];
 		node [color="#5DADE2"];
 		{
 			graph [rank=same];
@@ -75,9 +72,6 @@ digraph H {
 		  sirt		 [label="time\ndomain"];
 		  pop		 [label=population];
 		}
-    sirpopi [label="10 Kperson"]
-		sirti		 [label="(0,200 days)"];
-		sirp		 [label="(40/day,𝛾)"];
     sir -> pop
     pop -> sirpopi
     sir -> sirt

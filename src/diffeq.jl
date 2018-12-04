@@ -24,7 +24,7 @@ end
 
 """    SpringModel
 
-represents the second order linear ODE goverened by [hookeslaw](@ref).
+represents the second order linear ODE goverened by [`hookeslaw`](@ref).
 
 """
 mutable struct SpringModel{F,D,U}
