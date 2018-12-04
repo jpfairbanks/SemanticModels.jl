@@ -1,6 +1,6 @@
-# SemanticModels.jl
-
-computational representations of model semantics with knowledge graphs for
+## Extracting Model Structure for Improved Semantic Modeling
+- James Fairbanks, GTRI
+- computational representations of model semantics with knowledge graphs for
 metamodel reasoning.
 
 ## Goals
@@ -14,7 +14,7 @@ metamodel reasoning.
 Modeling the cost of treating a flu season taking into account weather effects.
 
 1. Seasonal temperature is a dynamical system
-2. Flu infectiousness γ is a function of temperature
+2. Flu infectiousness is a function of temperature
 
 ## Running Example: Modeling types
 
@@ -32,6 +32,7 @@ We focus on Susceptible Infected Recovered model of epidemiology.
 2. Diverse class of models, ODE vs Agent based, determinstic vs stochastic
 3. FOSS implementations are available in all three Scientific programming languages
 
+## Graph of SIR Model
 ![Graph of SIR model](img/sir_graph.dot.svg)
 
 ## Knowledge Extraction Architecture
@@ -61,9 +62,9 @@ Representation of models occurs at four levels:
 
 ## Knowledge Graph
 
-Picture of KG sample
-
 ![Hypothetical Knowledge Graph Sample](img/knowledgegraph.dot.svg)
+
+Hypothetical Knowledge Graph Sample
 
 ## Knowledge Graph Schema
 
@@ -93,24 +94,15 @@ See [FluModel](@ref) for worked out example.
 1. **Reason over KG to build metamodel**
 1. CodeGen/Execution of Metamodel
 
-How do we get from Weather to Cost?
-![How do we get from Weather to Cost?](img/knowledge_reasoning.dot.svg)
+## How do we get from Weather to Cost?
+![How do we get from Weather to Cost?](img/knowledge_reasoning.dot.svg){ width=80% }
 
-## Knowledge Graph Reasoning
-
-**Reason over KG to build metamodel**
-
-How do we get from Weather to Cost?
-![How do we get from Weather to Cost?](img/knowledge_reasoning_path.dot.svg)
+![How do we get from Weather to Cost?](img/knowledge_reasoning_path.dot.svg){ width=80% }
 
 Shortest path!
 
-## Knowledge Graph Reasoning
-
-**Reason over KG to build metamodel**
-
-How do we get from Weather+Demographics to Cost?
-![How do we get from Weather to Cost?](img/knowledge_reasoning_flow.dot.svg)
+## How do we get from Weather+Demographics to Cost?
+![How do we get from Weather to Cost?](img/knowledge_reasoning_flow.dot.svg){ width=80% }
 
 Minimum ST flow!
 
@@ -153,7 +145,7 @@ Given $f(x)=0$ solve for $x$
 
 ## Next Steps
 
-- Incorporation of feedback received from DARPA PM
+- Incorporation of feedback today
    - the types of artifacts in scope
    - domain coverage and desired extensibility
    - inclusion/exclusion of particular package(s) and/or knowledge artifact(s)
