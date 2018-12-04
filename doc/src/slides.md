@@ -32,17 +32,32 @@ We focus on Susceptible Infected Recovered model of epidemiology.
 2. Diverse class of models, ODE vs Agent based, determinstic vs stochastic
 3. FOSS implementations are available in all three Scientific programming languages
 
+![Graph of SIR model](img/sir_graph.dot.svg)
+
 ## Knowledge Extraction Architecture
 
 ![Knowledge Extraction Architecture](img/extraction.dot.svg)
 
 ## Example Input Packages
 
-1. EMOD, Epimodels, NetLogo, and FRED are established packages, given their maturity and availability of published
-papers citing these packages. 
+1. EMOD, Epimodels, NetLogo, and FRED are established packages, given their maturity and availability of published papers citing these packages. 
 2. Pathogen and NDLib are newer packages, we expect easier to work with and more future adoption.
-3. Textbooks [@voit_first_2012] and lecture notes[^1] will be a
-resource for these simple models that are well characterized.
+3. Textbooks [@voit_first_2012] and lecture notes[^1] will be a resource for these simple models that are well characterized.
+
+## Model Representation and Execution
+
+Representation of models occurs at four levels:
+
+-   **Executable**: the level of machine or byte-code instructions
+
+-   **Lexical**: the tradition code representation assignment,
+    functions, and loops
+
+-   **Semantic**: a declarative language or computation graph
+    representation with nodes linked to the knowledge graph
+
+-   **Human**: a description in natural language as in a research paper
+    or textbook
 
 ## Knowledge Graph
 
@@ -55,12 +70,57 @@ Picture of KG sample
 A preliminary design for types of knowledge in our knowledge graph.
 ![Knowledge Graph Schema](img/schema.dot.svg)
 
+- Artifacts
+- Components
+  - Models
+  - Variables
+  - Equations
+- Concepts
+- Values
+
+
 ## Flu Metamodel Pipeline
 
 Here is the DAG for our running example.
 ![A pipeline for modeling flu vaccination requirements](img/flu_pipeline.dot.svg)
 
 See [FluModel](@ref) for worked out example.
+
+## Knowledge Graph Reasoning
+
+1. Define Model representations / KG schema
+1. Extract KG from artifacts
+1. **Reason over KG to build metamodel**
+1. CodeGen/Execution of Metamodel
+
+How do we get from Weather to Cost?
+![How do we get from Weather to Cost?](img/knowledge_reasoning.dot.svg)
+
+## Knowledge Graph Reasoning
+
+**Reason over KG to build metamodel**
+
+How do we get from Weather to Cost?
+![How do we get from Weather to Cost?](img/knowledge_reasoning_path.dot.svg)
+
+Shortest path!
+
+## Knowledge Graph Reasoning
+
+**Reason over KG to build metamodel**
+
+How do we get from Weather+Demographics to Cost?
+![How do we get from Weather to Cost?](img/knowledge_reasoning_flow.dot.svg)
+
+Minimum ST flow!
+
+## Knowledge Graph Reasoning Open Questions
+
+- What rules for path/flow computations are necessary and sufficient for a metamodel?
+- Can we implement those rules by choosing weights?
+- How do we handle uncertainty and near matches?
+- How do we determine "necessary dependencies" better than "connected component"
+- What about supplying expert information?
 
 ## Infectious Disease Metamodel
 
@@ -77,7 +137,28 @@ See [FluModel](@ref) for worked out example.
 
 ## Validation
 
+- Extraction of KG elements from artifacts
+- Metamodel construction
+- Metamodel quality
 
-## Conclusions
+### Error and Residual
+- Analogize the metamodel construction error and the model quality to the error and residual in numerical solvers. 
+Given $f(x)=0$ solve for $x$
+
+- Measure both the error and the residual.
+- Error $\mid x-x^\star\mid$, the difference from the correct solution 
+- Residual $\mid f(x) - f(x^\star)\mid$ or the difference from quality of optimal solution
+
+
+
+## Next Steps
+
+- Incorporation of feedback received from DARPA PM
+   - the types of artifacts in scope
+   - domain coverage and desired extensibility
+   - inclusion/exclusion of particular package(s) and/or knowledge artifact(s)
+- Construction of a proof-of-concept version of our knowledge graph and end-to-end pipeline
+- Tailor running example to DARPA objectives
+- A automatic transformation of models at the Semantic Level
 
 [^1]: <http://alun.math.ncsu.edu/wp-content/uploads/sites/2/2017/01/epidemic_notes.pdf>

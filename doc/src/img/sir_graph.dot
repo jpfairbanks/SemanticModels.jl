@@ -1,0 +1,27 @@
+# http://www.graphviz.org/content/cluster
+#7DCD85
+#5a87d7
+#E1DD8F
+graph G {
+  layout="neato"
+  rankdir="LR"
+  splines=curved
+  arrowhead=None
+  { s1,s2,s3,s4 [shape=circle,style=filled, color="#5a87d7", label=""]}
+  { i1,i2,i3,i4 [shape=circle,style=filled, color="#7dcd85", label=""]}
+  { r1,r2,r3,r4 [shape=circle,style=filled, color="#e1dd8f", label=""]}
+  {
+    s1 -- s2 -- i1 -- i2 -- r1 [arrowhead = None]
+    r1 -- r2[arrowhead = None]
+    s2 -- s3 -- s4 [arrowhead = None]
+    r2 -- i2 [arrowhead = None]
+    i2 -- s3 [arrowhead = None]
+    i4 -- s1[arrowhead = None]
+    i4 -- i1[arrowhead = None]
+    r3 -- i2[arrowhead = None]
+    r4 -- s4[arrowhead = None]
+    i3 -- s1[arrowhead = None]
+    r3 -- i3[arrowhead = None]
+
+}
+}

@@ -1,0 +1,73 @@
+digraph G {
+  splines=false
+  #fontsize=10
+  #edge[weight=.2]
+  #ratio=0.25
+  #scale="10:1"
+  #size=5,2
+  pack="true"
+  #rankdir="LR"
+  edge [dir="none"]
+  node [shape="record", style="filled"]
+  ind -> epi [color=orange,penwidth=4.0]
+  inf-> ind [color=orange,penwidth=4.0]
+  thirty -> inf
+  twenty -> mort
+  mort -> ind
+  mort -> rate [style="dashed"]
+  inf -> rate [style="dashed"]
+  birth -> rate [style="dashed"]
+  birth -> ind
+
+  rate -> personper
+  person   -> unit
+  personper-> unit
+  second   -> unit
+  dollars -> unit
+
+  fed     [label="Fed\nForecast"]
+  demo    [label="Census\nDemographics"]
+  weather [label="NOAA\nWeather", color=orange,penwidth=4.0]
+  cost    [label="Vaccination\nCost", color=orange,penwidth=4.0]
+
+
+  epi [label="SIR", pos="1,1"]
+  ode [label="ODESolver"]
+
+  rate [label="{Transition\nRate}", color="#5a87d7"]
+  unit [label="Unit", color="#5a87d7"]
+  personper [label="Person/s", color=""]
+  person [label="Person", color=""]
+  second [label="second (s)", color=""]
+  inf [label="Infection\nRate", color="#5a87d7"]
+  mort [label="Mortality\nRate", color="#5a87d7"]
+  node [color="lightblue"]
+  ind [label="Individual\nContact\nModel",color="lightblue", pos="0,1"]
+  birth [label="Birth\nRate",color="#5a87d7"]
+  twenty [label="0.2 Persons/s", color="lightblue"]
+  thirty [label="0.3 Persons/s", color="lightblue"]
+
+  temp [label="Temperature", color="#5DADE2"]
+  age  [label="Age", color="#5DADE2"]
+  dGDP [label="Economic Growth", color="#5DADE2"]
+  cases [label="Flu\nCases", color="#5DADE2"]
+  prices [label="Vacc\nPrice", color="#5DADE2"]
+  dollars [label="$"]
+
+  temp -> inf [color=orange,penwidth=4.0]
+  age -> mort
+  demo -> birth
+  dGDP -> prices
+  epi -> cases  [color=orange,penwidth=4.0]
+  prices -> regres
+  cases  -> regres [color=orange,penwidth=4.0]
+
+  weather -> temp [color=orange,penwidth=4.0]
+  demo-> age
+  fed -> dGDP
+
+  ode -> epi
+  regres -> cost [color=orange,penwidth=4.0]
+  dollars -> cost
+  regres [label="Regression",color=""]
+}
