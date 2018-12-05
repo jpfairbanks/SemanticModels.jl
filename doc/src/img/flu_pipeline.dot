@@ -63,7 +63,7 @@ digraph H {
 			lheight=0.19,
 			lwidth=1.23
 		];
-		sir			 [label="SIRProblem",];
+		sir			 [label="SIRProblem",color="#5DADE2"];
     sirpopi [label="10 Kperson", color="#dd1133"]
 		sirti		 [label="(0,200 days)", color="#dd1133"];
 		sirp		 [label="(40/day,𝛾)", color="#dd1133"];
@@ -92,7 +92,7 @@ digraph H {
     person
     z [label="doses", color="#dd1133"]
     gu [label="dimensionless", color="#dd1133"]
-    regp [label="RegressionProblem"]
+    regp [label="RegressionProblem",color="#5DADE2"]
 		node [color="#5DADE2"];
     v [label="vaccines"]
     g [label="coverage"]
