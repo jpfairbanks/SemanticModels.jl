@@ -1,4 +1,5 @@
 digraph H {
+  node[fillcolor="#dddddd", penwidth="2.0"]
 	graph [bb="0,0,925.64,284",
 		label="Pipeline of extraction",
 		lheight=0.19,
@@ -15,7 +16,7 @@ digraph H {
 			label="initial u",
 			pos="285.5,228",
 			width=0.75825];
-		p		 [color="#5DADE2",
+		p		 [color="#66aa55",
 			height=0.5,
 			label=parameters,
 			width=1.3582];
@@ -26,14 +27,15 @@ digraph H {
 		fi		 [
 			height=0.5,
 			label="function\ndu[1] = u[2]\ndu[2] = -p[1] * u[1]",
-			width=1.195];
-    ii [label="27.0C\n0C/s"]
-    pi [label="1/s²"]
-    a [label="SpringModel"]
+			width=1.195,
+      color="#dd1133"];
+    ii [label="27.0C\n0C/s", color="#dd1133"]
+    pi [label="1/s²", color="#dd1133"]
+    a [label="SpringModel", color="#5DADE2"]
     t [label="time\ndomain", color="#5DADE2"]
-    ti [label="(0, 12𝜋)"]
-    u [label=units, color="#5DADE2"]
-    ui [label="C\nC/s"]
+    ti [label="(0, 12𝜋)", color="#dd1133"]
+    u [label=units, color="#66aa55"]
+    ui [label="C\nC/s", color="#66aa55"]
 	}
 	subgraph cluster_1 {
 		graph [bb="8,94,342.4,276",
@@ -62,15 +64,15 @@ digraph H {
 			lwidth=1.23
 		];
 		sir			 [label="SIRProblem",];
-    sirpopi [label="10 Kperson"]
-		sirti		 [label="(0,200 days)"];
-		sirp		 [label="(40/day,𝛾)"];
+    sirpopi [label="10 Kperson", color="#dd1133"]
+		sirti		 [label="(0,200 days)", color="#dd1133"];
+		sirp		 [label="(40/day,𝛾)", color="#dd1133"];
 		node [color="#5DADE2"];
 		{
 			graph [rank=same];
-      gamma [label="𝛾 = 20 person/(day𝘅C)"]
-		  sirt		 [label="time\ndomain"];
-		  pop		 [label=population];
+      gamma [label="𝛾 = 20 person/(day𝘅C)", color="#dd1133"]
+		  sirt		 [label="time\ndomain",color="#66aa55"];
+		  pop		 [label=population, color="#66aa55"];
 		}
     sir -> pop
     pop -> sirpopi
@@ -88,8 +90,8 @@ digraph H {
 			lwidth=0.61
 		];
     person
-    z [label="doses"]
-    gu [label="dimensionless"]
+    z [label="doses", color="#dd1133"]
+    gu [label="dimensionless", color="#dd1133"]
     regp [label="RegressionProblem"]
 		node [color="#5DADE2"];
     v [label="vaccines"]
