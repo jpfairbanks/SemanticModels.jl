@@ -1,9 +1,9 @@
 using Documenter
 
-function makefigs()
+function makefigs(ext="svg")
     try
         dotfiles = filter(x->endswith(x, ".dot"), readdir("src/img"))
-        run(`dot -Tsvg -O src/img/$dotfiles`)
+        run(`dot -T$ext -O src/img/$dotfiles`)
     catch ex
         @warn "Could not update figures, perhaps dot is not installed."
         @warn ex
@@ -13,6 +13,7 @@ end
 
 @info "Making Figures"
 makefigs()
+makefigs("png")
 
 @info "Loading module"
 using SemanticModels
