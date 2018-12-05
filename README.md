@@ -18,6 +18,8 @@ See the tests for example usage.
 
 There is a docs folder which contains the documentation, including reports sent to our sponsor, DARPA.
 
+Documentation is currently published at jpfairbanks.com/doc/aske and jpfairbanks.com/doc/aske/slides.pdf
+
 ## Concepts
 
 This package enables representation of complex and diverse model structure in the type system of julia. This will allow generic programing and API development for these complex models.
