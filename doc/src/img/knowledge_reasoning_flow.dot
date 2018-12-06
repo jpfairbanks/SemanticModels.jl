@@ -30,7 +30,7 @@ digraph G {
 
   node [color="#5DADE2"]
   fed  [label="Fed\nForecast"]
-  demo [label="Census\nDemographics"]
+  demo [label="Census\nDemographics", color="orange"]
   epi  [label="SIR", color="#5DADE2"]
   ode  [label="ODESolver"]
 

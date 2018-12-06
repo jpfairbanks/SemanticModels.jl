@@ -93,7 +93,7 @@
 
 \title{Extracting Model Structure for Improved Semantic Modeling}
 \date{12/5/2018}
-\author{James Fairbanks, Georgia Tech Research Institute}
+\author{James Fairbanks, Georgia Tech Research Institute\\ \url{jpfairbanks.com/doc/aske}}
 
 \begin{document}
 
@@ -210,7 +210,6 @@ We focus on Susceptible Infected Recovered model of epidemiology.
 \end{enumerate}
 
 \end{frame}
-
 \begin{frame}{Model Representation and Execution}
 \protect\hypertarget{model-representation-and-execution}{}
 
@@ -228,6 +227,24 @@ Representation of models occurs at four levels:
 \item
   \textbf{Human}: a description in natural language as in a research
   paper or textbook
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Model Representation and Execution}
+\protect\hypertarget{model-representation-and-execution}{}
+
+Julia provides tools at every level:
+
+\begin{itemize}
+\item
+  \textbf{Executable}: LLVM bytecode and compiler
+\item
+  \textbf{Lexical}: metaprogramming, Lisp style macros, code as data 
+\item
+  \textbf{Semantic}: type inference + computation DAG
+\item
+  \textbf{Human}: Text, Jupyter Notebooks, and Graphviz diagrams
 \end{itemize}
 
 \end{frame}
