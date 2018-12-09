@@ -9,6 +9,7 @@ using GLM
 using DataFrames
 using Plots
 
+include("cassette.jl")
 stripunits(x) = uconvert(NoUnits, x)
 
 @testset "spring models" begin

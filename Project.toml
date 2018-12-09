@@ -4,6 +4,7 @@ authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>"]
 version = "0.1.0"
 
 [deps]
+Cassette = "7057c7e9-c182-5462-911a-8362d720325c"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
