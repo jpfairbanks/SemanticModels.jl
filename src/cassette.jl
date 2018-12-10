@@ -1,7 +1,7 @@
 module Dubstep
 
 using Cassette
-export construct, TracedRun, trace, TraceCtx
+export construct, TracedRun, trace, TraceCtx, LPCtx, replacenorm
 
 function construct(T::Type, args...)
     @info "constructing a model $T"
@@ -42,12 +42,21 @@ function Cassette.execute(ctx::TraceCtx, f::typeof(construct), args...)
     return y
 end
 
+"""    TracedRun{T,V}
+
+captures the dataflow of a code execution. We store the trace and the value.
+
+see also `trace`.
+"""
 struct TracedRun{T,V}
     trace::T
     value::V
 end
 
+"""    trace(f)
 
+run the function f and return a TracedRun containing the trace and the output.
+"""
 function trace(f::Function)
     trace = Any[]
     val = Cassette.overdub(TraceCtx(metadata=trace), f)
@@ -77,8 +86,18 @@ end
 
 using LinearAlgebra
 function Cassette.execute(ctx::LPCtx, f::typeof(norm), arg, power)
-    return f(arg, ctx.metadata[power])
+    p = get(ctx.metadata, power, power)
+    return f(arg, p)
 end
 
+"""    replacenorm(f::Function, d::AbstractDict)
+
+run f, but replace every call to norm using the mapping in d.
+"""
+function replacenorm(f::Function, d::AbstractDict)
+    ctx = LPCtx(metadata=d)
+    return Cassette.overdub(ctx, f)
 end
+
+end #module
 
