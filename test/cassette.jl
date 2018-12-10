@@ -3,6 +3,7 @@ module TraceTest
 using Cassette
 using Test
 using SemanticModels.Dubstep
+using LinearAlgebra
 
 struct ODEProblem{T,U,V,W}
     ode::T
@@ -99,5 +100,27 @@ end
     @test last(trace2.trace[4])[1][1] == Core.apply_type
 
 end #SIR
+
 end #Dubstep
+
+
+subg(x,y) = norm([x x x]/6 - [y y y]/2, 2)
+function g()
+    a = 5+7
+    b = 3+4
+    c = subg(a,b)
+    return c
+end
+function h()
+    a = 5+7
+    c = subg(a,(3+4))
+    return c
+end
+
+@testset "LP" begin 
+@test 2.5980 < g() < 2.599
+ctx = Dubstep.LPCtx(metadata=Dict(1=>2, 2=>1, Inf=>1))
+@test Cassette.overdub(ctx, g) == 4.5
+end #LP
+
 end #module

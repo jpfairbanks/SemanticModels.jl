@@ -54,4 +54,31 @@ function trace(f::Function)
     return TracedRun(trace, val)
 end
 
+
+
+Cassette.@context LPCtx
+
+"""    LPCtx
+
+replaces all calls to `LinearAlgebra.norm` with a different `p`.
+
+This context is useful for modifying statistical codes or machine learning regularizers.
+"""
+LPCtx
+
+function Cassette.execute(ctx::LPCtx, args...)
+    if Cassette.canoverdub(ctx, args...)
+        newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
+        return Cassette.overdub(newctx, args...)
+    else
+        return Cassette.fallback(ctx, args...)
+    end
 end
+
+using LinearAlgebra
+function Cassette.execute(ctx::LPCtx, f::typeof(norm), arg, power)
+    return f(arg, ctx.metadata[power])
+end
+
+end
+
