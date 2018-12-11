@@ -36,10 +36,11 @@ end
 
 end #module
 
-using SemanticModels.Dubstep
-using DifferentialEquations
-using Cassette
+using LinearAlgebra
 using Test
+using Cassette
+using DifferentialEquations
+using SemanticModels.Dubstep
 
 """   sir_ode(du,u,p,t)
 
@@ -107,10 +108,11 @@ for (i, s) in enumerate(solns)
     @show sum(traces[i].extras)/length(traces[i].extras)
 end
 
-using LinearAlgebra
-using Test
+@testset "ODE perturbation" begin
 
 @test norm(sol1(100) .- solns[1](100),2) < 1e-6
 @test norm(sol1(100) .- solns[2](100),2) > 1e-6
 @test norm(solns[1](100) .- solns[2](100),2) < norm(solns[1](100) .- solns[3](100),2)
 @test norm(solns[1](100) .- solns[2](100),2) < norm(solns[1](100) .- solns[4](100),2)
+
+end

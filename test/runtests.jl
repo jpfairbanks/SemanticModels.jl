@@ -10,6 +10,8 @@ using DataFrames
 using Plots
 
 include("cassette.jl")
+include("transform/ode.jl")
+
 stripunits(x) = uconvert(NoUnits, x)
 
 @testset "spring models" begin
