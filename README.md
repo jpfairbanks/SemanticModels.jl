@@ -7,6 +7,7 @@ Install this package with
 
 ```julia
 Pkg.develop("git@github.com:jpfairbanks/SemanticModels.jl.git")
+Pkg.develop("Cassette")
 Pkg.test("SemanticModels")
 ```
 
