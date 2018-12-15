@@ -1,6 +1,6 @@
 # Dubstep 
 
-This module uses Cassette.jl to modify programs by overdubbing their executions in a context. 
+This module uses [Cassette.jl](github.com/jrevels/Cassette.jl) ([Zenodo](https://zenodo.org/record/1806173)) to modify programs by overdubbing their executions in a context. 
 
 ## TraceCtx
 

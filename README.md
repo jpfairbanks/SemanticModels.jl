@@ -20,6 +20,12 @@ There is a docs folder which contains the documentation, including reports sent 
 
 Documentation is currently published at jpfairbanks.com/doc/aske and jpfairbanks.com/doc/aske/slides.pdf
 
+### Examples
+
+In addition to the examples in the documentation, there are fully worked out examples in the folder
+https://github.com/jpfairbanks/SemanticModels.jl/tree/master/examples/. Each subdirectory represents one self contained
+example, starting with `epicookbook`.
+
 ## Concepts
 
 This package enables representation of complex and diverse model structure in the type system of julia. This will allow generic programing and API development for these complex models.
@@ -54,4 +60,3 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 - Code
 - Model
 - Paper
-
