@@ -269,3 +269,5 @@ TSWLatexianTemp*
 doc/src/img/*.dot.png
 /doc/src/img/*.dot.svg
 /.ipynb_checkpoints/*
+**/.ipynb_checkpoints
+/doc/build

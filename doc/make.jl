@@ -28,6 +28,7 @@ pages       = Any[
     "Approaches" => "approach.md",
     "Library Reference" => "library.md",
     "Slides"               => "slides.md",
+    "Dubstep" => "dubstep.md",
     "Flu Model" => "FluModel.md"
     # "Model Types"                   => "types.md",
     # # "Reading / Writing Models"    => "persistence.md",
