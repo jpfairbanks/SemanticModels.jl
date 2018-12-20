@@ -1,6 +1,8 @@
 # SemanticModels.jl
 A julia package for representing and manipulating model semantics
 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://jpfairbanks.com/doc/aske)
+
 ## Getting Started
 
 Install this package with 
