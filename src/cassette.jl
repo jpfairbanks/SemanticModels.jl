@@ -28,7 +28,7 @@ function Cassette.execute(ctx::TraceCtx, f::typeof(Base.vect), args...)
 end
 
 function Cassette.execute(ctx::TraceCtx, f::typeof(Core.apply_type), args...)
-    @info "applying a type $f"
+    # @info "applying a type $(args)"
     push!(ctx.metadata, (f, args))
     return Cassette.fallback(ctx, f, args...)
 end
