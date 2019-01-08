@@ -6,7 +6,7 @@ os:
 
 julia:
   - 1.0
-  - nightly
+  # - nightly
 
 # # Uncomment the following lines to allow failures on nightly julia
 # # (tests will run but not make your overall status red)
