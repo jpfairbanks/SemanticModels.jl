@@ -34,12 +34,12 @@ end
 
 # Cassette.@context TraceCtx
 
-# function Cassette.execute(ctx::TraceCtx, args...)
+# function Cassette.overdub(ctx::TraceCtx, args...)
 #     subtrace = Any[]
 #     push!(ctx.metadata, args => subtrace)
-#     if Cassette.canoverdub(ctx, args...)
+#     if Cassette.canrecurse(ctx, args...)
 #         newctx = Cassette.similarcontext(ctx, metadata = subtrace)
-#         return Cassette.overdub(newctx, args...)
+#         return Cassette.recurse(newctx, args...)
 #     else
 #         return Cassette.fallback(ctx, args...)
 #     end
@@ -48,7 +48,7 @@ end
 trace = Any[]
 x, y, z = rand(3)
 f(x, y, z) = x*y + y*z
-Cassette.overdub(Dubstep.TraceCtx(metadata = trace), () -> f(x, y, z))
+Cassette.recurse(Dubstep.TraceCtx(metadata = trace), () -> f(x, y, z))
 @testset "Cassette" begin
         @test trace == Any[
             (f,x,y,z) => Any[
@@ -120,7 +120,7 @@ end
 @testset "LP" begin 
 @test 2.5980 < g() < 2.599
 ctx = Dubstep.LPCtx(metadata=Dict(1=>2, 2=>1, Inf=>1))
-@test Cassette.overdub(ctx, g) == 4.5
+@test Cassette.recurse(ctx, g) == 4.5
 end #LP
 
 end #module

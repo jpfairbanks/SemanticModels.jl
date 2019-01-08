@@ -10,31 +10,31 @@ end
 
 Cassette.@context TraceCtx
 
-function Cassette.execute(ctx::TraceCtx, args...)
+function Cassette.overdub(ctx::TraceCtx, args...)
     subtrace = Any[]
     push!(ctx.metadata, args => subtrace)
-    if Cassette.canoverdub(ctx, args...)
+    if Cassette.canrecurse(ctx, args...)
         newctx = Cassette.similarcontext(ctx, metadata = subtrace)
-        return Cassette.overdub(newctx, args...)
+        return Cassette.recurse(newctx, args...)
     else
         return Cassette.fallback(ctx, args...)
     end
 end
 
-function Cassette.execute(ctx::TraceCtx, f::typeof(Base.vect), args...)
+function Cassette.overdub(ctx::TraceCtx, f::typeof(Base.vect), args...)
     @info "constructing a vector"
     push!(ctx.metadata, (f, args))
     return Cassette.fallback(ctx, f, args...)
 end
 
-function Cassette.execute(ctx::TraceCtx, f::typeof(Core.apply_type), args...)
+function Cassette.overdub(ctx::TraceCtx, f::typeof(Core.apply_type), args...)
     # @info "applying a type $(args)"
     push!(ctx.metadata, (f, args))
     return Cassette.fallback(ctx, f, args...)
 end
 
 # TODO: support calls like construct(T, a, f(b))
-function Cassette.execute(ctx::TraceCtx, f::typeof(construct), args...)
+function Cassette.overdub(ctx::TraceCtx, f::typeof(construct), args...)
     @info "constructing with type $f"
     push!(ctx.metadata, (f, args))
     y = Cassette.fallback(ctx, f, args...)
@@ -59,7 +59,7 @@ run the function f and return a TracedRun containing the trace and the output.
 """
 function trace(f::Function)
     trace = Any[]
-    val = Cassette.overdub(TraceCtx(metadata=trace), f)
+    val = Cassette.recurse(TraceCtx(metadata=trace), f)
     return TracedRun(trace, val)
 end
 
@@ -75,17 +75,17 @@ This context is useful for modifying statistical codes or machine learning regul
 """
 LPCtx
 
-function Cassette.execute(ctx::LPCtx, args...)
-    if Cassette.canoverdub(ctx, args...)
+function Cassette.overdub(ctx::LPCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
         newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
-        return Cassette.overdub(newctx, args...)
+        return Cassette.recurse(newctx, args...)
     else
         return Cassette.fallback(ctx, args...)
     end
 end
 
 using LinearAlgebra
-function Cassette.execute(ctx::LPCtx, f::typeof(norm), arg, power)
+function Cassette.overdub(ctx::LPCtx, f::typeof(norm), arg, power)
     p = get(ctx.metadata, power, power)
     return f(arg, p)
 end
@@ -96,7 +96,7 @@ run f, but replace every call to norm using the mapping in d.
 """
 function replacenorm(f::Function, d::AbstractDict)
     ctx = LPCtx(metadata=d)
-    return Cassette.overdub(ctx, f)
+    return Cassette.recurse(ctx, f)
 end
 
 end #module
