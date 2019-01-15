@@ -6,7 +6,7 @@ os:
 
 julia:
   - 1.0
-  - nightly
+  # - nightly
 
 # # Uncomment the following lines to allow failures on nightly julia
 # # (tests will run but not make your overall status red)
@@ -31,7 +31,6 @@ jobs:
       julia: 1.0
       os: linux
       script:
-        - julia --project=doc/ -e 'using Pkg; Pkg.instantiate();
-                                    Pkg.develop(PackageSpec(path=pwd()))'
-        - julia --project=doc/ doc/make.jl
+        - julia --project -e 'using Pkg; Pkg.instantiate();'
+        - julia --project doc/make.jl
       after_success: skip
