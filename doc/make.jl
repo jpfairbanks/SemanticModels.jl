@@ -2,8 +2,12 @@ using Documenter
 
 function makefigs(ext="svg")
     try
-        dotfiles = filter(x->endswith(x, ".dot"), readdir("src/img"))
-        run(`dot -T$ext -O src/img/$dotfiles`)
+        imgdir = "doc/src/img"
+        dotfiles = filter(x->endswith(x, ".dot"), readdir(imgdir))
+        for dotfile in dotfiles
+            run(`dot -T$ext -O doc/src/img/$dotfile`)
+        end
+
     catch ex
         @warn "Could not update figures, perhaps dot is not installed."
         @warn ex
@@ -20,6 +24,7 @@ using SemanticModels
 @info "Making docs"
 makedocs(
 modules     = [SemanticModels],
+root        = "doc",
 format      = :html,
 sitename    = "SemanticModels",
 doctest     = false,
@@ -41,14 +46,15 @@ pages       = Any[
 ]
 )
 
-# # deploydocs(
-# # deps        = nothing,
-# # make        = nothing,
-# # repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
-# # target      = "build",
-# # julia       = "stable",
-# # osname      = "linux"
-# # )
+deploydocs(
+root        = "doc",
+target      = "build",
+deps        = nothing,
+make        = nothing,
+repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
+# julia       = "stable",
+# osname      = "linux"
+)
 
 # # rm(normpath(@__FILE__, "../src/contributing.md"))
 # # rm(normpath(@__FILE__, "../src/license.md"))
