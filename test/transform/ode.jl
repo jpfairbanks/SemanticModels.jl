@@ -4,32 +4,32 @@ using Cassette
 using SemanticModels.Dubstep
 
 Cassette.@context SolverCtx
-function Cassette.execute(ctx::SolverCtx, args...)
-    if Cassette.canoverdub(ctx, args...)
+function Cassette.overdub(ctx::SolverCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
         #newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
-        return Cassette.overdub(ctx, args...)
+        return Cassette.recurse(ctx, args...)
     else
         return Cassette.fallback(ctx, args...)
     end
 end
 
-function Cassette.execute(ctx::SolverCtx, f::typeof(Base.vect), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(Base.vect), args...)
     @info "constructing a vector length $(length(args))"
     return Cassette.fallback(ctx, f, args...)
 end
 
 # We don't need to overdub basic math. this hopefully makes execution faster.
 # if these overloads don't actually make it faster, they can be deleted.
-function Cassette.execute(ctx::SolverCtx, f::typeof(+), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(+), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(-), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(-), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(*), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(*), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(/), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(/), args...)
     return Cassette.fallback(ctx, f, args...)
 end
 
@@ -54,7 +54,7 @@ sir_ode(du,u,p,t) = begin
     du[3] = g*I
 end
 
-function Cassette.execute(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
+function Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
     y = Cassette.fallback(ctx, f, args...)
     # add a lagniappe of infection
     extra = args[1][1] * ctx.metadata.factor
@@ -89,7 +89,7 @@ run the function f with a perturbation specified by factor.
 function perturb(f, factor)
     t = (factor=factor,extras=Float64[])
     ctx = ODEXform.SolverCtx(metadata = t)
-    val = Cassette.overdub(ctx, f)
+    val = Cassette.recurse(ctx, f)
     return val, t
 end
 
