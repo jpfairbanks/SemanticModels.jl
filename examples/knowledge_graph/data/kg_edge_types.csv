@@ -1,0 +1,33 @@
+﻿edge_relation,src_type,dst_type,value_field,example
+IsCalledBy,code_method,code_method,argument(s),(runSimulation(args) IsCalledBy PredictFluDiagnoses(args))
+CoOccursWith,any,any,occurrence_location,(differentialequations CoOccursWith mechanisticmodels doc1:sentence1)
+IsInputTo,argument,code_method,nothing,(num_people=1000 IsInputTo runSimulation(::Int))
+IsInputTo,argument_tuple,code_method,nothing,"((num_people=1000, num_years=5) IsInputTo runSimulation(::Int, ::Int))"
+IsOutputBy,return_value,code_method,nothing,(final_size=500 IsOutputBy runSimulation(args))
+IsOutputBy,return_tuple,code_method,nothing,"((final_size=500, num_vaccines=200) IsOutputBy runSimulation(args))"
+IsOutputBy,numeric_value,math_function,nothing,(3 IsOutputBy f(x) = x + 2; x= 1)
+IsMeasuredIn,variable,unit,nothing,(t IsMeasuredIn years)
+IsMeasuredIn,aggregation,unit,nothing,(population IsMeasuredIn people)
+IsMeasuredIn,value,unit,nothing,(2.1 IsMeasuredIn people/day)
+IsComponentOf,control_flow_block,code_method,type_parameters,"(control_flow_block IsComponentOf runSimulation(args) RepeatedEvaluation ""while"")"
+IsComponentOf,concept,concept,any,(integrate IsComponentOf Quadrature.jl)
+Implements,code_function,concept,nothing,"(SIRModel Represents ""disease model"")"
+Implements,code_method,concept,nothing,"(SIRModel(args) Represents ""disease model"")"
+IsSubTypeOf,type,type,type_parameters,(SIRModel <: AbstractCompartmentModel)
+Represents,type,concept,type_parameters,"(SIRModel Represents ""disease model"")"
+Verb ,any,any,verb_token,(quadrature Verb integration solves)
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
