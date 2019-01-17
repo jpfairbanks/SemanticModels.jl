@@ -8,7 +8,6 @@ import JSON
 # Cause - is concept label, Effect - definition label
 # within a RelationMention with labels "Definition, Entity"
 
-def_output_dir = "../test/kg"
 
 """    definitiongraph(dir::String, namefunc)
 
@@ -25,19 +24,31 @@ function definitiongraph(dir::String, namefunc)
     return definitiongraph(files, namefunc)
 end
 
+"""    term(record)
+
+get the text of a definition's term
+"""
 function term(record)
     return record["arguments"]["cause"][1]["text"]
 end
 
+"""    definition(record)
+
+get the text of a definition's body
+"""
 function definition(record)
     return record["arguments"]["effect"][1]["text"]
 end
 
-function sequentialnamer()
+"""    sequentialnamer(prefix="")
+
+A closure used to get sequential vertex names from a stream of strings.
+"""
+function sequentialnamer(prefix="")
     i = 0
     function genname(s)
         i += 1
-        return "$i"
+        return "$prefix$i"
     end
     return genname
 end
@@ -87,7 +98,8 @@ function definitiongraph(files::Vector{String}, namefunc)
     return metagraph
 end
 
-with_logger(ConsoleLogger(stderr, Logging.Debug)) do 
+with_logger(ConsoleLogger(stderr, Logging.Debug)) do
+  def_output_dir = "../test/kg"
   g = definitiongraph(def_output_dir, sequentialnamer())
   @show g
   @show props(g)
