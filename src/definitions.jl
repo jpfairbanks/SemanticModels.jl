@@ -1,4 +1,5 @@
-
+module Extraction
+using Logging
 using LightGraphs, MetaGraphs
 
 import JSON
@@ -7,68 +8,95 @@ import JSON
 # Cause - is concept label, Effect - definition label
 # within a RelationMention with labels "Definition, Entity"
 
-definitions_output_file = "/Users/scott/Documents/JuliaProjects/SemanticModels.jl/test/definitions.jl/automates_output_1sentence_definition.json"
-def_output_dir = "/Users/scott/Documents/JuliaProjects/SemanticModels.jl/test/definitions.jl"
+def_output_dir = "../test/kg"
+
+"""    definitiongraph(dir::String, namefunc)
+
+read a directory of json files and ingest all the Automates matches into a metagraph.
+
+dir is the directory containing the json files and
+namefunc is a function to convert objects into vertex names.
+
+See also: sequentialnamer
+"""
+function definitiongraph(dir::String, namefunc)
+    files = [joinpath(dir, f) for f in readdir(dir)]
+    @info "Processing files: $files"
+    return definitiongraph(files, namefunc)
+end
+
+function term(record)
+    return record["arguments"]["cause"][1]["text"]
+end
+
+function definition(record)
+    return record["arguments"]["effect"][1]["text"]
+end
+
+function sequentialnamer()
+    i = 0
+    function genname(s)
+        i += 1
+        return "$i"
+    end
+    return genname
+end
 
 
-function info_extract_from_automates(output_dir::String)
-    file_list = readdir(output_dir)
+function definitiongraph(files::Vector{String}, namefunc)
     graph = DiGraph()
     changes_recorded = []
     v_count = 0
-    for def_file in file_list
-        json_res = JSON.parsefile(string(def_output_dir, "/",def_file))
-        # json_res = JSON.parsefile(definitions_output_file)
+    for def_file in files
+        @info "Reading Definitions from: $def_file"
+        json_res = JSON.parsefile(def_file)
         mentions = json_res["mentions"]
-        # println("JSON Mentions is:\n")
-        # println(mentions)
-        # println("End mentions\n")
         for val in mentions
             if haskey(val,"type") && val["type"] == "RelationMention"
-                JSON.print(val, 4)
+                @debug "Parsed JSON record" json=val
                 v_count += 1
-                cause = val["arguments"]["cause"][1]["text"]
-                effect = val["arguments"]["effect"][1]["text"]
-                println(string("Cause is: ", cause, "\n"))
-                println(string("Effect is: ", effect, "\n"))
-                println("Add new vertex for Concept to Graph")
+                cause = term(val)
+                effect = definition(val)
+                @info "Found Definition" term=cause definition=effect
+                @debug("Add new vertex for Concept to Graph")
                 add_vertex!(graph)
-                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string(cause, hash(effect)), :id => v_count, :cause => cause)))
+                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string("Term_", namefunc(effect)), :id => v_count, :text => cause)))
                 v_count += 1
                 add_vertex!(graph)
-                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string("Def_",hash(effect)), :id => v_count, :definition => effect)))
-                println("Adding edge from Concept to Definition")
+                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string("Def_",namefunc(effect)), :id => v_count, :text => effect)))
+                @debug("Adding edge from Concept to Definition")
                 add_edge!(graph, v_count-1, v_count)
-                push!(changes_recorded, Dict(:edge=> Edge(v_count-1,v_count), :type=> "AddEdge", :values=> Dict(:name=> "is defined by")))
-                # JSON.print(val["arguments"]["effect"][1]["text"])
-                # println("\n")
+                push!(changes_recorded, Dict(:edge=> Edge(v_count-1,v_count), :type=> "AddEdge", :values=> Dict(:name=> "is defined as")))
             end 
         end
     end
 
     # Create MetaGraph after digraph is created using changes record
-    meta_graph = MetaGraph(graph)
+    metagraph = MetaGraph(graph)
     for change in changes_recorded
-        println("Change keys are: ")
-        println(keys(change))
-        println("\n")
         if change[:type] == "AddEdge"
-            set_props!(meta_graph, change[:edge], change[:values])
-            # set_props!(meta_graph, Edge(change["from"], change["to"]), Dict(:name=> "is defined by"))
-            println("Print edge details:")
-            println(props(meta_graph, change[:edge]))
+            set_props!(metagraph, change[:edge], change[:values])
+            @info("Adding Edge",edge=change[:edge], props(metagraph, change[:edge])...)
         end
         if change[:type] == "AddVertex"
-            # set_props!(meta_graph, v_count, Dict(:name=> string(cause, hash(effect)), :id => v_count))
-            # set_props!(meta_graph, v_count, Dict(:name=> string("Def_",hash(effect)), :id => v_count, :definition => effect))
-            set_props!(meta_graph, change[:v_id], change[:values])
-            println("Print vertex details:")
-            println(props(meta_graph, change[:v_id]))
+            set_props!(metagraph, change[:v_id], change[:values])
+            @info("Adding Vertex",vertex=change[:v_id], props(metagraph, change[:v_id])...)
         end
     end
-    println("MetaGraph is: ")
-    println(props(meta_graph))
-    return meta_graph
+    set_indexing_prop!(metagraph, :name)
+    return metagraph
 end
 
-info_extract_from_automates(def_output_dir)
+with_logger(ConsoleLogger(stderr, Logging.Debug)) do 
+  g = definitiongraph(def_output_dir, sequentialnamer())
+  @show g
+  @show props(g)
+  for (k,v) in g.vprops
+      println(join(["Vertex", k, v], " "))
+  end
+  for (k,v) in g.eprops
+      println(join(["Edge", k, v], " "))
+  end
+end
+end
+
