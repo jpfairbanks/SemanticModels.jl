@@ -71,14 +71,24 @@ function definitiongraph(files::Vector{String}, namefunc)
                 @info "Found Definition" term=cause definition=effect
                 @debug("Add new vertex for Concept to Graph")
                 add_vertex!(graph)
-                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string("Term_", namefunc(effect)), :id => v_count, :text => cause)))
+                push!(changes_recorded, Dict(:v_id=>v_count,
+                                             :type=> "AddVertex",
+                                             :values => Dict(:name=> string("Term_", namefunc(effect)),
+                                                             :id => v_count,
+                                                             :text => cause)))
                 v_count += 1
                 add_vertex!(graph)
-                push!(changes_recorded, Dict(:v_id=>v_count, :type=> "AddVertex", :values => Dict(:name=> string("Def_",namefunc(effect)), :id => v_count, :text => effect)))
+                push!(changes_recorded, Dict(:v_id=>v_count,
+                                             :type=> "AddVertex",
+                                             :values => Dict(:name=> string("Def_",namefunc(effect)),
+                                                             :id => v_count,
+                                                             :text => effect)))
                 @debug("Adding edge from Concept to Definition")
                 add_edge!(graph, v_count-1, v_count)
-                push!(changes_recorded, Dict(:edge=> Edge(v_count-1,v_count), :type=> "AddEdge", :values=> Dict(:name=> "is defined as")))
-            end 
+                push!(changes_recorded, Dict(:edge=> Edge(v_count-1,v_count),
+                                             :type=> "AddEdge",
+                                             :values=> Dict(:name=> "is defined as")))
+            end
         end
     end
 
