@@ -22,6 +22,11 @@ There is a docs folder which contains the documentation, including reports sent 
 
 Documentation is currently published at jpfairbanks.com/doc/aske and jpfairbanks.com/doc/aske/slides.pdf
 
+Many of our documentation and examples are built with Jupyter notebooks. We use
+[jupytext](https://github.com/mwouts/jupytext) to support diff friendly outputs in the repo.
+Please follow the jupytext readme to install this jupyter plugin.
+
+
 ### Examples
 
 In addition to the examples in the documentation, there are fully worked out examples in the folder
