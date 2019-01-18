@@ -9,25 +9,11 @@ IsOutputBy,numeric_value,math_function,nothing,(3 IsOutputBy f(x) = x + 2; x= 1)
 IsMeasuredIn,variable,unit,nothing,(t IsMeasuredIn years)
 IsMeasuredIn,aggregation,unit,nothing,(population IsMeasuredIn people)
 IsMeasuredIn,value,unit,nothing,(2.1 IsMeasuredIn people/day)
-IsComponentOf,control_flow_block,code_method,type_parameters,"(control_flow_block IsComponentOf runSimulation(args) RepeatedEvaluation ""while"")"
+IsComponentOf,control_flow_block,code_method,type_parameters,"(control_flow_block IsComponentOf runSimulation(args) (RepeatedEvaluation ""while""))"
 IsComponentOf,concept,concept,any,(integrate IsComponentOf Quadrature.jl)
 Implements,code_function,concept,nothing,"(SIRModel Represents ""disease model"")"
 Implements,code_method,concept,nothing,"(SIRModel(args) Represents ""disease model"")"
 IsSubTypeOf,type,type,type_parameters,(SIRModel <: AbstractCompartmentModel)
 Represents,type,concept,type_parameters,"(SIRModel Represents ""disease model"")"
+Has,any,property,any,(codeblock_1 has forloop index=(i in 1:10))
 Verb ,any,any,verb_token,(quadrature Verb integration solves)
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
-,,,,
