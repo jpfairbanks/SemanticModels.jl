@@ -11,13 +11,16 @@ function load_graph_data(input_data)
     
     return input_data
 end
-
-function generate_synthetic_vertices(vertex_type_defs::String, output_path::String)
     
-    """
-    This function generates a synthetic vertex for each vertex type in our schema.
-    This synthetic vertex dataframe can be used for testing/debugging/developing the knowledge graph.
-    """
+"""    generate_synthetic_vertices(vertex_type_defs::String, output_path::String)
+
+Generate synthetic test data. The synthetic vertices are returned as a dataframe 
+that can be used for testing/debugging/developing the knowledge graph.
+
+see also: generate_synthetic_edges
+"""
+function generate_synthetic_vertices(vertex_type_defs::String, output_path::String)
+
     
     vertex_types = CSV.read(vertex_type_defs)
     
