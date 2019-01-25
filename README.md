@@ -62,3 +62,6 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 - Code
 - Model
 - Paper
+## Acknowledgements
+
+This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008.
