@@ -34,13 +34,13 @@ pages       = Any[
     "Library Reference" => "library.md",
     "Slides"               => "slides.md",
     "Dubstep" => "dubstep.md",
-    "Flu Model" => "FluModel.md"
+    "Flu Model" => "FluModel.md",
     # "Model Types"                   => "types.md",
     # # "Reading / Writing Models"    => "persistence.md",
     # # "Plotting"                    => "plotting.md",
     # # "Parallel Algorithms"         => "parallel.md",
     # "Contributing"                  => "contributing.md",
-    # "Developer Notes"               => "developing.md",
+    "Developer Notes"               => "development.md",
     # "License Information"           => "license.md",
     # "Citing SemanticModels"         => "citing.md"
 ]
