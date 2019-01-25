@@ -30,7 +30,7 @@ end
 
 This function outputs a vertex name that reflects the provided type and tag, and includes a random component to ensure uniqueness.
 
-see also: generate_synthetic_vertices, gen_vertex_hash
+see also: [`Graphs.generate_synthetic_vertices`](@ref), [`gen_vertex_hash`](@ref)
 """
 function gen_rand_vertex_name(vertex_type::String, tag="synth")
     return string(tag, "_", vertex_type, "_", randstring(MersenneTwister(), 'a':'z', 6))
@@ -40,7 +40,7 @@ end
 
 This function computes the hash of a vertex's name and type; this combination is assumed to be unique within the graph.
 
-see also: generate_synthetic_vertices, gen_rand_vertex_name
+see also: [`generate_synthetic_vertices`](@ref), [`gen_rand_vertex_name`](@ref)
 """
 function gen_vertex_hash(vertex_name::String, vertex_type::String)
     return hash(string(vertex_name, vertex_type))
@@ -51,7 +51,7 @@ end
 Generate synthetic test data. The synthetic vertices are returned as a dataframe
 that can be used for testing/debugging/developing the knowledge graph.
 
-see also: generate_synthetic_edges
+see also: [`generate_synthetic_edges`](@ref)
 """
 function generate_synthetic_vertices(vertex_type_defs::String, output_path::String)
     vertex_types = CSV.read(vertex_type_defs)
@@ -79,7 +79,7 @@ end
 Generate synthetic test data. The synthetic edges are returned as a dataframe
 that can be used for testing/debugging/developing the knowledge graph.
 
-see also: generate_synthetic_vertices
+see also: [`generate_synthetic_vertices`](@ref)
 """
 function generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)
 
@@ -139,7 +139,7 @@ end
 
 Ingests and evaulates a Julia file containing vertex information; instantiates an empty knowledge graph and inserts each unique vertex into this graph.
 
-see also: insert_edges_from_jl
+see also: [`insert_edges_from_jl`](@ref)
 """
 function insert_vertices_from_jl(vertices_file::String, input_graph::Nothing)
     # The graph is currently empty;
@@ -171,7 +171,7 @@ end
 Ingests and evaulates a Julia file containing vertex information; instantiates
 an empty knowledge graph and inserts each unique vertex into this graph.
 
-see also: insert_edges_from_jl
+see also: [`insert_edges_from_jl`](@ref)
 """
 function insert_vertices_from_jl(vertices_file::String, input_graph::MetaDiGraph)
     v_df = DataFrame(include(vertices_file))
@@ -219,7 +219,7 @@ end
 Helper function that instantiates a new MetaDiGraph and inserts vertices/edges
 from an (existing) input graph.
 
-see also: insert_edges_from_jl
+see also: [`insert_edges_from_jl`](@ref)
 """
 function copy_input_graph_to_new_graph(input_graph::MetaDiGraph)
     G = MetaDiGraph()
@@ -250,7 +250,7 @@ Takes as input an existing graph and an edge file. Each edge in the file is
 either inserted (if new) or (if already in G), an associated integer weight is
 incremented.
 
-see also: insert_vertices_from_jl, copy_input_graph_to_new_graph
+see also: [`insert_vertices_from_jl`](@ref), [`copy_input_graph_to_new_graph`](@ref)
 """
 function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
     # Edges may contain vertices that are \notin G (e.g. v \in E_1 \bigcup E_0 may be \emptyset)

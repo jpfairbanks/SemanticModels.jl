@@ -25,7 +25,7 @@ using SemanticModels
 makedocs(
 modules     = [SemanticModels],
 root        = "doc",
-format      = :html,
+format      = Documenter.HTML(),
 sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
@@ -34,7 +34,8 @@ pages       = Any[
     "Library Reference" => "library.md",
     "Slides"               => "slides.md",
     "Dubstep" => "dubstep.md",
-    "Flu Model" => "FluModel.md"
+    "Flu Model" => "FluModel.md",
+    "Knowledge Graphs" => "graph.md"
     # "Model Types"                   => "types.md",
     # # "Reading / Writing Models"    => "persistence.md",
     # # "Plotting"                    => "plotting.md",
