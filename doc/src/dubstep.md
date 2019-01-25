@@ -1,6 +1,6 @@
 # Dubstep 
 
-This module uses [Cassette.jl](github.com/jrevels/Cassette.jl) ([Zenodo](https://zenodo.org/record/1806173)) to modify programs by overdubbing their executions in a context. 
+This module uses [Cassette.jl](https://www.github.com/jrevels/Cassette.jl) ([Zenodo](https://zenodo.org/record/1806173)) to modify programs by overdubbing their executions in a context. 
 
 ## TraceCtx
 
@@ -33,22 +33,22 @@ We use the Dubstep.LPCtx which is shown here.
 ```julia
 Cassette.@context LPCtx
 
-function Cassette.execute(ctx::LPCtx, args...)
-    if Cassette.canoverdub(ctx, args...)
+function Cassette.overdub(ctx::LPCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
         newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
-        return Cassette.overdub(newctx, args...)
+        return Cassette.recurse(newctx, args...)
     else
         return Cassette.fallback(ctx, args...)
     end
 end
 
 using LinearAlgebra
-function Cassette.execute(ctx::LPCtx, f::typeof(norm), arg, power)
+function Cassette.overdub(ctx::LPCtx, f::typeof(norm), arg, power)
     return f(arg, ctx.metadata[power])
 end
 ```
 
-Note the method definition of `Cassette.execute`
+Note the method definition of `Cassette.overdub`
 for LPCtx when called with the function
 `LinearAlgebra.norm`.
 
@@ -58,7 +58,7 @@ configures how we want to do the substitution.
 @testset "LP" begin 
 @test 2.5980 < g() < 2.599
 ctx = Dubstep.LPCtx(metadata=Dict(1=>2, 2=>1, Inf=>1
-@test Cassette.overdub(ctx, g) == 4.5
+@test Cassette.recurse(ctx, g) == 4.5
 ```
 
 And just like that, we can control the execution
@@ -87,32 +87,32 @@ using Cassette
 using SemanticModels.Dubstep
 
 Cassette.@context SolverCtx
-function Cassette.execute(ctx::SolverCtx, args...)
-    if Cassette.canoverdub(ctx, args...)
+function Cassette.overdub(ctx::SolverCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
         #newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
-        return Cassette.overdub(ctx, args...)
+        return Cassette.recurse(ctx, args...)
     else
         return Cassette.fallback(ctx, args...)
     end
 end
 
-function Cassette.execute(ctx::SolverCtx, f::typeof(Base.vect), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(Base.vect), args...)
     @info "constructing a vector length $(length(args))"
     return Cassette.fallback(ctx, f, args...)
 end
 
 # We don't need to overdub basic math. this hopefully makes execution faster.
 # if these overloads don't actually make it faster, they can be deleted.
-function Cassette.execute(ctx::SolverCtx, f::typeof(+), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(+), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(-), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(-), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(*), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(*), args...)
     return Cassette.fallback(ctx, f, args...)
 end
-function Cassette.execute(ctx::SolverCtx, f::typeof(/), args...)
+function Cassette.overdub(ctx::SolverCtx, f::typeof(/), args...)
     return Cassette.fallback(ctx, f, args...)
 end
 end #module
@@ -121,9 +121,9 @@ end #module
 Then we define our RHS of the differential
 equation that is `du/dt = sir_ode(du, u, p, t)`.
 This function needs to be defined before we define
-the method for `Cassette.execute` with the
+the method for `Cassette.overdub` with the
 signature:
-`Cassette.execute(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)` 
+`Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)` 
 because we need to have the function we want to
 overdub defined before we can specify how to
 overdub it.
@@ -147,7 +147,7 @@ sir_ode(du,u,p,t) = begin
     du[3] = g*I
 end
 
-function Cassette.execute(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
+function Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
     y = Cassette.fallback(ctx, f, args...)
     # add a lagniappe of infection
     extra = args[1][1] * ctx.metadata.factor
@@ -201,7 +201,7 @@ run the function f with a perturbation specified by factor.
 function perturb(f, factor)
     t = (factor=factor,extras=Float64[])
     ctx = ODEXform.SolverCtx(metadata = t)
-    val = Cassette.overdub(ctx, f)
+    val = Cassette.recurse(ctx, f)
     return val, t
 end
 ```

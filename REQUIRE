@@ -2,3 +2,9 @@ Test
 Unitful
 DiffEqBase
 DifferentialEquations
+CSV
+DataFrames
+DataFramesMeta
+LightGraphs
+MetaGraphs
+MetaGraphDataFrameBridge

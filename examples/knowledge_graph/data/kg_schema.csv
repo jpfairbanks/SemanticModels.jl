@@ -1,0 +1,16 @@
+﻿high_level_property,catgory
+v_type,code_symbol
+v_type,function
+v_type,local_variable
+v_type,argument
+v_type,oop_object
+v_math_sci_concept,math_expr
+v_math_sci_concept,concept
+v_math_sci_concept,unit
+e_type,IsCalledBy
+e_type,CoOccursWith
+e_type,IsComponentOf
+e_type,IsMeasuredIn
+e_type,Implements
+e_type,Verb
+e_type,IsSubClassOf

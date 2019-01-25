@@ -1,9 +1,15 @@
 using Documenter
+using Latexify
+using CSV
 
 function makefigs(ext="svg")
     try
-        dotfiles = filter(x->endswith(x, ".dot"), readdir("src/img"))
-        run(`dot -T$ext -O src/img/$dotfiles`)
+        imgdir = "doc/src/img"
+        dotfiles = filter(x->endswith(x, ".dot"), readdir(imgdir))
+        for dotfile in dotfiles
+            run(`dot -T$ext -O doc/src/img/$dotfile`)
+        end
+
     catch ex
         @warn "Could not update figures, perhaps dot is not installed."
         @warn ex
@@ -11,16 +17,30 @@ function makefigs(ext="svg")
 
 end
 
+function printmdtable(dir, outdir=".")
+    for path in readdir(dir)
+        df = CSV.read("$dir/$path")
+        s = mdtable(df,latex=false)
+        open("$outdir/$path.md", "w") do fp
+            print(fp, string(s))
+        end
+    end
+end
+
+
 @info "Making Figures"
 makefigs()
 makefigs("png")
+
+# printmdtable("examples/knowledge_graph/data", "doc/src/schema/")
 
 @info "Loading module"
 using SemanticModels
 @info "Making docs"
 makedocs(
 modules     = [SemanticModels],
-format      = :html,
+root        = "doc",
+format      = Documenter.HTML(),
 sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
@@ -29,26 +49,31 @@ pages       = Any[
     "Library Reference" => "library.md",
     "Slides"               => "slides.md",
     "Dubstep" => "dubstep.md",
-    "Flu Model" => "FluModel.md"
+    "Flu Model" => "FluModel.md",
+    "Knowledge Graphs" => "graph.md",
+    "Theory" =>"theory.md",
+    "Validation" => "validation.md",
+    "Category Theory For Scientists" => "categories.md",
     # "Model Types"                   => "types.md",
     # # "Reading / Writing Models"    => "persistence.md",
     # # "Plotting"                    => "plotting.md",
     # # "Parallel Algorithms"         => "parallel.md",
     # "Contributing"                  => "contributing.md",
-    # "Developer Notes"               => "developing.md",
+    "Developer Notes"               => "development.md",
     # "License Information"           => "license.md",
     # "Citing SemanticModels"         => "citing.md"
 ]
 )
 
-# # deploydocs(
-# # deps        = nothing,
-# # make        = nothing,
-# # repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
-# # target      = "build",
-# # julia       = "stable",
-# # osname      = "linux"
-# # )
+deploydocs(
+root        = "doc",
+target      = "build",
+deps        = nothing,
+make        = nothing,
+repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
+# julia       = "stable",
+# osname      = "linux"
+)
 
 # # rm(normpath(@__FILE__, "../src/contributing.md"))
 # # rm(normpath(@__FILE__, "../src/license.md"))
