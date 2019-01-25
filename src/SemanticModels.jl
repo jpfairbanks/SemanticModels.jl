@@ -105,4 +105,6 @@ the model DAG.
 function solve(m::CombinedModel)
     return solve(m.target(m, solve.(m.deps)))
 end
+
+include("graph.jl")
 end

@@ -1,4 +1,6 @@
 using Documenter
+using Latexify
+using CSV
 
 function makefigs(ext="svg")
     try
@@ -15,9 +17,22 @@ function makefigs(ext="svg")
 
 end
 
+function printmdtable(dir, outdir=".")
+    for path in readdir(dir)
+        df = CSV.read("$dir/$path")
+        s = mdtable(df,latex=false)
+        open("$outdir/$path.md", "w") do fp
+            print(fp, string(s))
+        end
+    end
+end
+
+
 @info "Making Figures"
 makefigs()
 makefigs("png")
+
+# printmdtable("examples/knowledge_graph/data", "doc/src/schema/")
 
 @info "Loading module"
 using SemanticModels
@@ -25,7 +40,7 @@ using SemanticModels
 makedocs(
 modules     = [SemanticModels],
 root        = "doc",
-format      = :html,
+format      = Documenter.HTML(),
 sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
@@ -35,6 +50,7 @@ pages       = Any[
     "Slides"               => "slides.md",
     "Dubstep" => "dubstep.md",
     "Flu Model" => "FluModel.md",
+    "Knowledge Graphs" => "graph.md",
     # "Model Types"                   => "types.md",
     # # "Reading / Writing Models"    => "persistence.md",
     # # "Plotting"                    => "plotting.md",
