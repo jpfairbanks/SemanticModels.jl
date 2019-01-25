@@ -51,9 +51,6 @@ end
 
 function main()
     parsed_args = parse_commandline()
-    for (arg,val) in parsed_args
-        println("  $arg  =>  $val")
-    end
     append_module_info(parsed_args["input_jl_file"], parsed_args["output_jl_file"], parsed_args["module_name"])
 end
 
