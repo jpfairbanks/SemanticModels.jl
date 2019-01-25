@@ -17,7 +17,6 @@ function load_graph_data(input_data)
     return input_data
 end
 
-
 """    gen_rand_vertex_name(vertex_type::String, tag::String)
 This function outputs a vertex name that reflects the provided type and tag, and includes a random component to ensure uniqueness.
 see also: generate_synthetic_vertices, gen_vertex_hash
@@ -61,9 +60,7 @@ function generate_synthetic_vertices(vertex_type_defs::String, output_path::Stri
         print(io, repr(load_graph_data(synth_vertices_df)))
     end
 
-    #CSV.write(output_path, synth_vertices_df)
     @info("Synthetic vertex dataframe generated and saved as a Julia file.")
-
     return DataFrame(synth_vertices_df)
 
 end
@@ -264,8 +261,6 @@ see also: insert_vertices_from_jl, copy_input_graph_to_new_graph
 """
 function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
 
-    # Ingest MetaDiGraph containing vertices, and a file containing edges.
-    # Edges are not assumed to be unique; a counter is incremented each time an edge is encountered.
     # Edges may contain vertices that are \notin G (e.g. v \in E_1 \bigcup E_0 may be \emptyset)
 
     e_df = DataFrame(include(edges_file))
