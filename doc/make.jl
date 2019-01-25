@@ -59,7 +59,7 @@ pages       = Any[
     # # "Plotting"                    => "plotting.md",
     # # "Parallel Algorithms"         => "parallel.md",
     # "Contributing"                  => "contributing.md",
-    # "Developer Notes"               => "developing.md",
+    "Developer Notes"               => "development.md",
     # "License Information"           => "license.md",
     # "Citing SemanticModels"         => "citing.md"
 ]
