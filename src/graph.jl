@@ -5,7 +5,6 @@ using GraphDataFrameBridge
 using MetaGraphs
 using CSV
 using LightGraphs
-using GraphPlot
 using Random
 using DataFramesMeta
 

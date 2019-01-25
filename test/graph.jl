@@ -1,4 +1,5 @@
 using SemanticModels
+using SemanticModels.Graphs
 
 function main(path_to_v_types="../examples/knowledge_graph/data/kg_vertex_types.csv", path_to_edge_types="../examples/knowledge_graph/data/kg_edge_types.csv")
 
