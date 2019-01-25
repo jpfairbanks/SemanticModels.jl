@@ -9,6 +9,7 @@ Install this package with
 
 ```julia
 Pkg.develop("git@github.com:jpfairbanks/SemanticModels.jl.git")
+Pkg.develop("Cassette")
 Pkg.test("SemanticModels")
 ```
 
@@ -62,3 +63,7 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 - Code
 - Model
 - Paper
+
+### Overdubbing
+
+You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate. 
