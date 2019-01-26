@@ -9,3 +9,6 @@ main.aux: main.tex refs.bib
 
 main.pdf: main.aux refs.bib
 	biber main && pdflatex main && pdflatex main
+
+deliver: build/index.html
+	rsync -a build/ jpfnet:~/public/doc/aske
