@@ -7,29 +7,28 @@ digraph G {
 6 [ name="code_method",label="code_method",];
 7 [ name="concept",label="concept",];
 8 [ name="control_flow_block",label="control_flow_block",];
-9 [ name="math_function",label="math_function",];
-10 [ name="property",label="property",];
-11 [ name="return_tuple",label="return_tuple",];
-12 [ name="return_value",label="return_value",];
-13 [ name="type",label="type",];
-14 [ name="unit",label="unit",];
-15 [ name="value",label="value",];
-16 [ name="variable",label="variable",];
-1 -> 14 [ label=unit, ]
+9 [ name="property",label="property",];
+10 [ name="return_tuple",label="return_tuple",];
+11 [ name="return_value",label="return_value",];
+12 [ name="type",label="type",];
+13 [ name="unit",label="unit",];
+14 [ name="value",label="value",];
+15 [ name="variable",label="variable",];
+1 -> 13 [ label=unit, ]
 2 -> 2 [ label=verb, ]
-2 -> 10 [ label=has, ]
+2 -> 9 [ label=has, ]
 3 -> 6 [ label=input, ]
 4 -> 6 [ label=input, ]
 5 -> 7 [ label=impl, ]
 6 -> 5 [ label=impl, ]
 6 -> 6 [ label=call, ]
+6 -> 10 [ label=output, ]
+6 -> 11 [ label=output, ]
 7 -> 7 [ label=comp, ]
+7 -> 13 [ label=unit, ]
 8 -> 6 [ label=comp, ]
-11 -> 6 [ label=output, ]
-12 -> 6 [ label=output, ]
-13 -> 7 [ label=repr, ]
-13 -> 13 [ label=inherit, ]
-15 -> 9 [ label=output, ]
-15 -> 14 [ label=unit, ]
-16 -> 14 [ label=unit, ]
+12 -> 7 [ label=repr, ]
+12 -> 12 [ label=inherit, ]
+14 -> 13 [ label=unit, ]
+15 -> 14 [ label=takes, ]
 }

@@ -3,12 +3,12 @@ call,IsCalledBy,code_method,code_method,argument(s),(runSimulation(args) IsCalle
 with,CoOccursWith,any,any,occurrence_location,(differentialequations CoOccursWith mechanisticmodels doc1:sentence1)
 input,IsInputTo,argument,code_method,nothing,(num_people=1000 IsInputTo runSimulation(::Int))
 input,IsInputTo,argument_tuple,code_method,nothing,"((num_people=1000, num_years=5) IsInputTo runSimulation(::Int, ::Int))"
-output,IsOutputBy,return_value,code_method,nothing,(final_size=500 IsOutputBy runSimulation(args))
-output,IsOutputBy,return_tuple,code_method,nothing,"((final_size=500, num_vaccines=200) IsOutputBy runSimulation(args))"
-output,IsOutputBy,value,math_function,nothing,(3 IsOutputBy f(x) = x + 2; x= 1)
-unit,IsMeasuredIn,variable,unit,nothing,(t IsMeasuredIn years)
+output,Outputs,code_method,return_value,nothing,(final_size=500 IsOutputBy runSimulation(args))
+output,Outputs,code_method,return_tuple,nothing,"((final_size=500, num_vaccines=200) IsOutputBy runSimulation(args))"
+takes,TakesAsValue,variable,value,nothing,(x=3)
 unit,IsMeasuredIn,aggregation,unit,nothing,(population IsMeasuredIn people)
 unit,IsMeasuredIn,value,unit,nothing,(2.1 IsMeasuredIn people/day)
+unit,IsMeasuredIn,concept,unit,nothing,(susceptibles IsMeasuredIn people)
 comp,IsComponentOf,control_flow_block,code_method,type_parameters,(control_flow_block IsComponentOf runSimulation(args) (RepeatedEvaluation "while"))
 comp,IsComponentOf,concept,concept,any,(integrate IsComponentOf Quadrature.jl)
 impl,Implements,code_function,concept,nothing,(SIRModel Represents "disease model")

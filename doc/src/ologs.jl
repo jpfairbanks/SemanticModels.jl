@@ -21,6 +21,6 @@ for row in eachrow(ef)
     @show set_prop!(g, v,u, :label, row.edge_relation)
 end
 
-open("olog.dot", "w") do fp
+open("doc/src/img/olog.dot", "w") do fp
     MetaGraphs.savedot(fp, g)
 end
