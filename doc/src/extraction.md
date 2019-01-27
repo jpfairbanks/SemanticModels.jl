@@ -104,7 +104,38 @@ and run it through the code syntactic extractor which will produce the following
 │                                       :(du[2]) => :(+((betaHH * IH + betaHL * IL)) * SH - gamma * IH)
 │                                       :(du[3]) => :(-((betaLH * IH + betaLL * IL)) * SL + gamma * IL)
 └                                       :(du[4]) => :(+((betaLH * IH + betaLL * IL)) * SL - gamma * IL)
-```
+┌ Info: Edges found
+└   path = "examples/epicookbook/notebooks/KeelingRohani/SISModel.jl"
+(:Modeling, :takes, :parms, :([10, 0.1, 0.1, 1, 1]))
+(:Modeling, :has, :parms, :prop_collection)
+(:Modeling, :takes, :init, :([0.19999, 1.0e-5, 0.799, 0.001]))
+(:Modeling, :has, :init, :prop_collection)
+(:Modeling, :structure, :tspan, :((0.0, 15.0)))
+(:Modeling, :comp, :tspan, 0.0)
+(:Modeling, :comp, :tspan, 15.0)
+(:Modeling, :output, :sis_prob, :(ODEProblem(sis_ode, init, tspan, parms)))
+(:Modeling, :input, :sis_ode, Symbol[:init, :tspan, :parms])
+(:Modeling, :output, :sis_sol, :(solve(sis_prob, saveat=0.1)))
+(:Modeling, :input, :sis_prob, Symbol[Symbol("saveat=0.1")])
+("Modeling.sis_ode(du, u, p, t)", :destructure, :((SH, IH, SL, IL)), :u)
+("Modeling.sis_ode(du, u, p, t)", :comp, :u, :SH)
+("Modeling.sis_ode(du, u, p, t)", :comp, :u, :IH)
+("Modeling.sis_ode(du, u, p, t)", :comp, :u, :SL)
+("Modeling.sis_ode(du, u, p, t)", :comp, :u, :IL)
+("Modeling.sis_ode(du, u, p, t)", :destructure, :((betaHH, betaHL, betaLH, betaLL, gamma)), :p)
+("Modeling.sis_ode(du, u, p, t)", :comp, :p, :betaHH)
+("Modeling.sis_ode(du, u, p, t)", :comp, :p, :betaHL)
+("Modeling.sis_ode(du, u, p, t)", :comp, :p, :betaLH)
+("Modeling.sis_ode(du, u, p, t)", :comp, :p, :betaLL)
+("Modeling.sis_ode(du, u, p, t)", :comp, :p, :gamma)
+("Modeling.sis_ode(du, u, p, t)", :output, :(du[1]), :(-((betaHH * IH + betaHL * IL)) * SH + gamma * IH))
+("Modeling.sis_ode(du, u, p, t)", :input, :(-((betaHH * IH + betaHL * IL)) * SH), Symbol[Symbol("gamma * IH")])
+("Modeling.sis_ode(du, u, p, t)", :output, :(du[2]), :(+((betaHH * IH + betaHL * IL)) * SH - gamma * IH))
+("Modeling.sis_ode(du, u, p, t)", :input, :(+((betaHH * IH + betaHL * IL)) * SH), Symbol[Symbol("gamma * IH")])
+("Modeling.sis_ode(du, u, p, t)", :output, :(du[3]), :(-((betaLH * IH + betaLL * IL)) * SL + gamma * IL))
+("Modeling.sis_ode(du, u, p, t)", :input, :(-((betaLH * IH + betaLL * IL)) * SL), Symbol[Symbol("gamma * IL")])
+("Modeling.sis_ode(du, u, p, t)", :output, :(du[4]), :(+((betaLH * IH + betaLL * IL)) * SL - gamma * IL))
+("Modeling.sis_ode(du, u, p, t)", :input, :(+((betaLH * IH + betaLL * IL)) * SL), Symbol[Symbol("gamma * IL")])```
 
 This extractor provides edges to the [Knowledge Graphs](@ref).
 

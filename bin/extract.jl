@@ -1,3 +1,60 @@
+module Edges
+
+function edgetype(var, val::Expr)
+    if val.head == :call
+        return :output
+    elseif length(val.args) >=2 && typeof(val.args[2]) <: Expr && val.args[2].head == :tuple
+        @show val.args
+        return :structure
+    else
+        return :takes
+    end
+end
+
+edgetype(var, val::Symbol) = :destructure
+
+
+function edges(mc, subdef, scope)
+    @info("Making edges",scope=scope)
+    edg = Any[]
+    for ( var,val ) in mc.vc
+        @show var, val
+        typ = edgetype(var, val)
+        val = typ==:structure ? val.args[2] : val
+        e = (scope, typ, var, val)
+        push!(edg, e)
+        if typeof(val) <: Expr && val.head == :vect
+            push!(edg, (scope, :has, var, :prop_collection))
+        end
+        if typeof(val) <: Expr && val.head == :call
+            push!(edg, (scope, :input, val.args[2], Symbol.(val.args[3:end])))
+        end
+        if typ == :destructure
+            @debug var.args
+            for lhs in var.args
+                push!(edg, (scope, :comp, val, lhs))
+            end
+        end
+        if typ == :structure
+            @debug var, val
+            for rhs in val.args
+                push!(edg, (scope, :comp, var, rhs))
+            end
+        end
+
+    end
+    for (funcname, smc) in subdef
+        @debug "Recursing"
+        # @show funcname, smc
+        subedges = edges(smc, [], "$scope.$funcname")
+        for e in subedges
+            push!(edg, e)
+        end
+    end
+    return edg
+end
+end
+
 using SemanticModels.Parsers
 @debug "Done Loading Package"
 
@@ -19,6 +76,13 @@ for func in subdefs
     mc = func[2]
     @info "$funcname uses modules" modules=mc.modc
     @info "$funcname defines functions" funcs=mc.fc.defs
-    @info "$funcname defines glvariables" funcs=mc.vc
+    @info "$funcname defines variables" funcs=mc.vc
 end
 
+
+
+edg = Edges.edges(mc, subdefs, expr.args[2])
+@info("Edges found", path=path)
+for e in edg
+    println(e)
+end
