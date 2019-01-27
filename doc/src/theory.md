@@ -45,3 +45,9 @@ be included in the class of models in a modeling framework.
 We need a good theoretical foundation for proving theorems about manipulating
 models and combining them. [Category Theory](@ref Categories for Science) may be
 that foundation.
+
+The work of Evan Patterson on building semantic representations of data science
+programs is particularly relevant to these modeling questions
+[SRDSP](https://www.epatters.org/assets/papers/2018-semantic-enrichment-ijcai-demo.pdf "Semantic Representations of Data Science Programs").
+[Patterson 2018](https://www.epatters.org/assets/papers/2018-semantic-enrichment-kdd.pdf "Teaching machines to understand data science code by
+semantic enrichment of dataflow graphs") 
