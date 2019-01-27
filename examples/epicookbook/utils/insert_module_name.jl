@@ -14,8 +14,6 @@ function append_module_info(input_jl_file::String, output_jl_file::String, modul
             for ln in eachline(in_file)
                 
                 if isempty(ln) && !(module_inserted)
-
-                    println("goes here, writing module name")
                     write(out_file, "\n")
                     write(out_file, "module $module_name \n")
                     module_inserted = true
