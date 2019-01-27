@@ -107,4 +107,5 @@ function solve(m::CombinedModel)
 end
 
 include("graph.jl")
+include("parse.jl")
 end
