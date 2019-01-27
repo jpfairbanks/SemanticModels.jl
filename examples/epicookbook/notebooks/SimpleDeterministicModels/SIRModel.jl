@@ -12,7 +12,7 @@
 #     language: julia
 #     name: julia-1.0
 # ---
-
+module SIRModel
 using DifferentialEquations
 
 function sir_ode(du, u, p, t)  
@@ -57,3 +57,4 @@ init = [0.99,0.01,0.0]
 tspan = (0.0,200.0)
 sir_prob2 = ODEProblem(sir_ode2,init,tspan,parms)
 sir_sol = solve(sir_prob2,saveat = 0.1)
+end
