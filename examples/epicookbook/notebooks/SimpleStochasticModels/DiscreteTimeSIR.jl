@@ -16,7 +16,7 @@
 using RandomNumbers
 using DataFrames
 
-@inline @fastmath function randbn(n,p,rng)
+function randbn(n,p,rng)
     q = 1.0 - p
     s = p/q
     a = (n+1)*s
@@ -33,8 +33,8 @@ using DataFrames
     end
 end
 
-@inline @fastmath function sir(u, prams, rng)
-     
+function sir(u, prams, rng)
+
     (S, I, R, Y) = u
     (β, γ, ι, N, δt) = prams
     λ = β * (I + ι) / N
@@ -72,7 +72,7 @@ sir_out = simulate(r);
 if(size(sir_out)[1] >= 6)
     first(sir_out,6)
 else
-    first(sir_out,size(sir_out)[1]) 
+    first(sir_out,size(sir_out)[1])
 end
 
 using Plots

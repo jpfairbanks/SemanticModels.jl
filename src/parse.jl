@@ -2,7 +2,8 @@ module Parsers
 using Base.Meta
 import Base.push!
 
-export parsefile
+export parsefile, defs, funcs,
+    MetaCollector, FuncCollector, AbstractCollector
 
 """    parsefile(path)
 
