@@ -172,20 +172,45 @@ end
 
 const ExtractPass = Cassette.@pass extractpass
 
+# defines the set of methods we do NOT want to descend into.
+function Cassette.canrecurse(ctx::TraceCtx,
+                             f::Union{typeof(+), typeof(*), typeof(/), typeof(-),typeof(Base.iterate),
+                                      typeof(Base.sum),
+                                      typeof(Base.mapreduce),
+                                      typeof(Base.Broadcast.copy),
+                                      typeof(Base.Broadcast.instantiate),
+                                      typeof(Base.Broadcast.broadcasted)},
+                             args...)
+    return false
+end
+
+# handle all function calls the same
 function Cassette.overdub(ctx::TraceCtx,
-                          f::Union{typeof(+), typeof(*), typeof(/), typeof(-),typeof(Base.iterate),
-                                   typeof(Base.mapreduce),
-                                   typeof(Base.Broadcast.copy),
-                                   typeof(Base.Broadcast.instantiate),
-                                   typeof(Base.Broadcast.broadcasted)},
+                          f,
                           args...)
     @show f, args
-    retval = Cassette.fallback(ctx, f, args...)
+    # if we are supposed to descend, we call Cassette.recurse
+    if Cassette.canrecurse(ctx, f, args...)
+        subtrace = (Any[],Any[])
+        push!(ctx.metadata[1], (f, args) => subtrace)
+        newctx = Cassette.similarcontext(ctx, metadata = subtrace)
+        retval = Cassette.recurse(newctx, f, args...)
+        # push!(ctx.metadata[2], subtrace[2])
+    else
+        retval = Cassette.fallback(ctx, f, args...)
+        push!(ctx.metadata[1], :t)
+        push!(ctx.metadata[2], retval)
+    end
+    @info "returning"
     @show retval
     return retval
 end
 
+# function Cassette.overdub(ctx::TraceCtx, args...)
+# end
 
+using Random
+Random.seed!(0)
 a = rand(3)
 b = rand(3)
 function add(a, b)
@@ -194,7 +219,7 @@ function add(a, b)
 end
 
 
-ctx = TraceCtx(pass=ExtractPass, metadata = Any[])
+ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
 # before_time = time()
 result = Cassette.overdub(ctx, add, a, b)
 @test result == a + b
@@ -209,5 +234,7 @@ g(x) = begin
     return s
 end
 
+ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
 result = Cassette.overdub(ctx, g, [2,2,2])
+dump(ctx.metadata)
 end
