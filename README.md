@@ -23,6 +23,11 @@ There is a docs folder which contains the documentation, including reports sent 
 
 Documentation is currently published at jpfairbanks.com/doc/aske and jpfairbanks.com/doc/aske/slides.pdf
 
+Many of our documentation and examples are built with Jupyter notebooks. We use
+[jupytext](https://github.com/mwouts/jupytext) to support diff friendly outputs in the repo.
+Please follow the jupytext readme to install this jupyter plugin.
+
+
 ### Examples
 
 In addition to the examples in the documentation, there are fully worked out examples in the folder
@@ -63,7 +68,10 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 - Code
 - Model
 - Paper
-
 ### Overdubbing
 
 You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate. 
+
+## Acknowledgements
+
+This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008.

@@ -13,12 +13,12 @@ using Cassette
 # # TODO: This doesn't work because you can't use code_lowered programmatically
 # Cassette.@context ExtractorCtx
 
-# function Cassette.execute(ctx::ExtractorCtx, args...)
+# function Cassette.overdub(ctx::ExtractorCtx, args...)
 #     subtrace = Any[]
 #     push!(ctx.metadata, args => subtrace)
-#     if Cassette.canoverdub(ctx, args...)
+#     if Cassette.canrecurse(ctx, args...)
 #         newctx = Cassette.similarcontext(ctx, metadata = subtrace)
-#         return Cassette.overdub(newctx, args...)
+#         return Cassette.recurse(newctx, args...)
 #     else
 #         try
 #             @info "lowering code $args"
@@ -33,20 +33,20 @@ using Cassette
 #     end
 # end
 
-# function Cassette.execute(ctx::ExtractorCtx, f::typeof(Base.vect), args...)
+# function Cassette.overdub(ctx::ExtractorCtx, f::typeof(Base.vect), args...)
 #     @info "constructing a vector"
 #     push!(ctx.metadata, (f, args))
 #     return Cassette.fallback(ctx, f, args...)
 # end
 
-# function Cassette.execute(ctx::ExtractorCtx, f::typeof(Core.apply_type), args...)
+# function Cassette.overdub(ctx::ExtractorCtx, f::typeof(Core.apply_type), args...)
 #     @info "applying a type $f"
 #     push!(ctx.metadata, (f, args))
 #     return Cassette.fallback(ctx, f, args...)
 # end
 
 # # TODO: support calls like construct(T, a, f(b))
-# function Cassette.execute(ctx::ExtractorCtx, f::typeof(construct), args...)
+# function Cassette.overdub(ctx::ExtractorCtx, f::typeof(construct), args...)
 #     @info "constructing with type $f"
 #     push!(ctx.metadata, (f, args))
 #     y = Cassette.fallback(ctx, f, args...)
@@ -59,20 +59,21 @@ using Core: CodeInfo, SlotNumber, SSAValue
 
 Cassette.@context Ctx
 
-function Cassette.execute(ctx::Ctx, callback, f, args...)
-    if Cassette.canoverdub(ctx, f, args...)
+function Cassette.overdub(ctx::Ctx, callback, f, args...)
+    if Cassette.canrecurse(ctx, f, args...)
         _ctx = Cassette.similarcontext(ctx, metadata = callback)
-        return Cassette.overdub(_ctx, f, args...) # return result, callback
+        return Cassette.recurse(_ctx, f, args...) # return result, callback
     else
         return Cassette.fallback(ctx, f, args...), callback
     end
 end
 
-function Cassette.execute(ctx::Ctx, callback, ::typeof(println), args...)
+function Cassette.overdub(ctx::Ctx, callback, ::typeof(println), args...)
     return nothing, () -> (callback(); println(args...))
 end
 
-function sliceprintln(::Type{<:Ctx}, ::Type{S}, ir::CodeInfo) where {S}
+function sliceprintln(::Type{<:Ctx}, reflection::Cassette.Reflection)
+    ir = reflection.code_info
     callbackslotname = gensym("callback")
     push!(ir.slotnames, callbackslotname)
     push!(ir.slotflags, 0x00)
@@ -132,7 +133,7 @@ end
 add(a, b)
 @info "dubbed adding"
 ctx = Dubstep.Ctx(pass=Dubstep.sliceprintlnpass, metadata = () -> nothing);
-result, callback = Cassette.overdub(ctx, add, a, b)
+result, callback = Cassette.recurse(ctx, add, a, b)
 callback()
 end
 
@@ -174,7 +175,7 @@ function g()
 end
 
 # trace = Any[]
-# val = Cassette.overdub(Dubstep.ExtractorCtx(metadata=trace), g)
+# val = Cassette.recurse(Dubstep.ExtractorCtx(metadata=trace), g)
 
 # dump(trace)
 # dump(val)
