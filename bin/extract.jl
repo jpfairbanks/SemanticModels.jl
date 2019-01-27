@@ -12,6 +12,8 @@ function edgetype(var, val::Expr)
 end
 
 edgetype(var, val::Symbol) = :destructure
+edgetype(var, val) = :takes
+edgetype(var::Symbol, val::Symbol) = :takes
 
 
 function edges(mc, subdef, scope)
