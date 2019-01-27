@@ -7,6 +7,9 @@ code and test.
 Here we define the schema for our knowledge graph. The vertices and edges have types and
 the metadata associated with the vertex or edge depends on its type.
 
+Here is a diagramatic overview of the schema for the knowledge graph. 
+![Schema Diagram](img/olog.dot.svg)
+
 ### Vertex Types
 
 ```@eval
