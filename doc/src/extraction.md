@@ -20,7 +20,7 @@ extraction rules straightforward.
 
 ### Example
 
-We can read in the file [../../examples/epicookbook/notebooks/KeelingRohani/SISModel.jl](@ref)
+We can read in the file `examples/epicookbook/notebooks/KeelingRohani/SISModel.jl`
 
 ```julia
 using DifferentialEquations
@@ -106,4 +106,11 @@ and run it through the code syntactic extractor which will produce the following
 └                                       :(du[4]) => :(+((betaLH * IH + betaLL * IL)) * SL - gamma * IL)
 ```
 
-This extractor provides edges to the [knowledge graphs](@ref).
+This extractor provides edges to the [Knowledge Graphs](@ref).
+
+
+## API reference
+
+```@autodocs
+Modules = [SemanticModels.Parsers]
+```

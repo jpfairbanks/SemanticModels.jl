@@ -43,7 +43,7 @@ and $D_2$ are sets with homomorphism $g:D_2\mapsto D_1$, then $M_1 = (D_1, R, f)
 be included in the class of models in a modeling framework.
 
 We need a good theoretical foundation for proving theorems about manipulating
-models and combining them. [Category Theory](@ref Categories for Science) may be
+models and combining them. [Categories for Science](@ref) may be
 that foundation.
 
 The work of Evan Patterson on building semantic representations of data science

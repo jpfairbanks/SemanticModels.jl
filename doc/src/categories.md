@@ -29,7 +29,7 @@ doi:10.1371/journal.pone.0024274.
 An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the
 name of the aspect. An aspect is valid if it is a function (1-many relation). 
 
-![Birthday olog][img/olog_birthday] 
+![Birthday olog](img/olog_birthday.png)
 
 
 Olog for a disease: in progress.

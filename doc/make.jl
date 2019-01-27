@@ -51,6 +51,7 @@ pages       = Any[
     "Dubstep" => "dubstep.md",
     "Flu Model" => "FluModel.md",
     "Knowledge Graphs" => "graph.md",
+    "Knowledge Extraction" => "extraction.md",
     "Theory" =>"theory.md",
     "Validation" => "validation.md",
     "Category Theory For Scientists" => "categories.md",
