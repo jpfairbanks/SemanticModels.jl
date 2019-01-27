@@ -2,7 +2,7 @@ module Parsers
 using Base.Meta
 import Base.push!
 
-export parsefile, defs, funcs,
+export parsefile, defs, funcs, recurse,
     MetaCollector, FuncCollector, AbstractCollector
 
 """    parsefile(path)
@@ -109,6 +109,17 @@ function defs(body)
     return mc
 end
 
+function recurse(mc::AbstractCollector)
+    subdefs = Any[]
+    funcdefs = mc.fc.defs
+    @show funcdefs
+    for def in funcdefs
+        funcname = def[1]
+        funcquote = def[2]
+        push!(subdefs, funcname=>defs(funcquote.args))
+    end
+    return subdefs
+end
 
 end
 
