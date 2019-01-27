@@ -7,6 +7,9 @@ module SemanticModels
 
 using Unitful
 using Unitful: Units
+
+export Parsers
+
 abstract type AbstractModel end
 
 abstract type Model end
@@ -108,4 +111,5 @@ end
 
 include("graph.jl")
 include("parse.jl")
+
 end
