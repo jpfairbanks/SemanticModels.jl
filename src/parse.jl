@@ -6,16 +6,24 @@ export parsefile
 
 """    parsefile(path)
 
-read in a julia source file and parse it. currently only works if the top level is a simple expression or module definition.
+read in a julia source file and parse it.
+
+Note: If the top level is not a simple expression or module definition the file is wrapped in a Module named modprefix.
 """
-function parsefile(path)
+function parsefile(path, modprefix="Modeling")
     s = read(path, String)
     # open(path) do fp
     #     s = read(String, fp)
     # end
     @show s
-    expr = Base.Meta.parse(s)
-    return expr
+    try
+        expr = Base.Meta.parse(s)
+        return expr
+    catch
+        s = "module $modprefix\n$s \nend #module $modprefix"
+        expr = Base.Meta.parse(s)
+        return expr
+    end
 end
 
 """    AbstractCollector
@@ -34,7 +42,7 @@ struct FuncCollector{T} <: AbstractCollector
     defs::T
 end
 
-function push!(fc::FuncCollector, expr::LineNumberNode)
+function push!(fc::AbstractCollector, expr::LineNumberNode)
     return nothing
 end
 
@@ -44,6 +52,37 @@ function push!(fc::FuncCollector, expr::Expr)
     end
 end
 
+"""   MetaCollector{T,U,V,W} <: AbstractCollector
+
+collects multiple pieces of information such as
+
+- exprs: expressions
+- fc: functions
+- vc: variable assignments
+- modc: module imports
+"""
+struct MetaCollector{T,U,V,W} <: AbstractCollector
+    exprs::V
+    fc::T
+    vc::U
+    modc::W
+end
+
+function push!(mc::MetaCollector, expr::Expr)
+    push!(mc.exprs, expr)
+    push!(mc.fc, expr)
+    if expr.head == :(=)
+        @debug "pushing into vc" expr=expr
+        push!(mc.vc, expr.args[1]=>expr.args[2])
+    elseif expr.head == :using
+        push!(mc.modc, expr.args[1].args)
+    else
+        @info "unknown expr type for metacollector"
+        @show expr
+    end
+end
+
+
 """    funcs(body)
 
 collect the function definitions from a module expression.
@@ -51,15 +90,35 @@ collect the function definitions from a module expression.
 function funcs(body)
     fs = FuncCollector([])
     for subexpr in body
-        @show subexpr
         push!(fs, subexpr)
     end
     return fs
 end
 
+"""    defs(body)
+
+collect the function definitions and variable assignments from a module expression.
+"""
+function defs(body)
+    # fs = funcs(body)
+    mc = MetaCollector(Any[], FuncCollector([]), Any[], Any[])
+    for expr in body
+        push!(mc, expr)
+    end
+    return mc
 end
 
-@show expr =Parsers.parsefile("examples/epicookbook/notebooks/SimpleDeterministicModels/SIRModel.jl")
+
+end
+
+
+@show expr = Parsers.parsefile("examples/epicookbook/notebooks/SimpleDeterministicModels/SIRModel.jl")
 
 modulename = expr.args[2]
-fs = Parsers.funcs(expr.args[3].args)
+mc = Parsers.defs(expr.args[3].args)
+
+@show expr = Parsers.parsefile("examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRModel.jl")
+
+sericmodulename = expr.args[2]
+seirc = Parsers.defs(expr.args[3].args)
+
