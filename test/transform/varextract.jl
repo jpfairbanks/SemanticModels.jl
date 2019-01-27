@@ -73,7 +73,8 @@ function Base.show(ext::Extraction)
 end
 
 # Define a Cassette pass to log the varnames
-function extractpass(::Type{<:TraceCtx}, ::Type{S}, ir::Core.CodeInfo) where {S}
+function extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
+    ir = reflection.code_info
     slotnames = ir.slotnames
     vn = slotnames[end]
     ext = Extraction(ir)
