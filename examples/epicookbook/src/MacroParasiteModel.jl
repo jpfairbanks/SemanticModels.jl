@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module MacroParasiteModel 
 using DifferentialEquations 
  
  

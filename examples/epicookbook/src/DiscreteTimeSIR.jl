@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module DiscreteTimeSIR 
 using RandomNumbers 
 using DataFrames 
  

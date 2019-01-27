@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module ContinuousTimeSIR 
 using DifferentialEquations 
 using Random 
 using DataFrames 

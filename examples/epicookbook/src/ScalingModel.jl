@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module ScalingModel 
 using DifferentialEquations 
  
 function micro_1(du, u, parms, time) 

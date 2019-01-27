@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module ExactRecursiveExpressions 
 using Plots 
  
 #Get Final Size for SIR Model 

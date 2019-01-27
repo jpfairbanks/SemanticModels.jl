@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module SEIRmodel 
 using DifferentialEquations 
  
 #Susceptible-exposed-infected-recovered model function 

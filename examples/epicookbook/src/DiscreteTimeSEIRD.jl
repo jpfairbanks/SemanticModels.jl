@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module DiscreteTimeSEIRD 
 using DifferentialEquations 
  
 function seird(du, u, parms, t) 

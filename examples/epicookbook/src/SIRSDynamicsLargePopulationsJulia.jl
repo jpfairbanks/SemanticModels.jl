@@ -11,7 +11,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module SIRSDynamicsLargePopulationsJulia 
 using DifferentialEquations 
 using LinearAlgebra 
  

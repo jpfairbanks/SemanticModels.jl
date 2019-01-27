@@ -12,7 +12,8 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
+
+module OneHostSEIR1Vect 
 # # Model Specifications 
  
 # ## Host Specifications 

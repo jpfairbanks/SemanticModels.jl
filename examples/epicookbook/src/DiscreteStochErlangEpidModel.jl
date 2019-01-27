@@ -12,9 +12,9 @@
 #     language: julia 
 #     name: julia-1.0 
 # --- 
- 
 
 module DiscreteStochErlangEpidModel 
+# # Load Packages for Julia 
  
 using DataFrames 
 using Distributions 
