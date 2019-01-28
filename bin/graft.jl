@@ -1,45 +1,7 @@
-module Graft
-using Cassette
-using DifferentialEquations
-
-
-Cassette.@context GraftCtx
-
-
-"""    GraftCtx
-
-grafts an expression from one simulation onto another
-
-This context is useful for modifying simulations by changing out components to add features
-
-see also: [`Dubstep.LPCtx`](@ref)
-"""
-GraftCtx
-
-function Cassette.overdub(ctx::GraftCtx, f, args...)
-    if Cassette.canrecurse(ctx, f, args...)
-        newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
-        return Cassette.recurse(newctx, f, args...)
-    else
-        return Cassette.fallback(ctx, f, args...)
-    end
-end
-
-
-"""    replacefunc(f::Function, d::AbstractDict)
-
-run f, but replace every call to f using the mapping in d.
-"""
-function replacefunc(f::Function, d::AbstractDict)
-    ctx = GraftCtx(metadata=d)
-    return Cassette.recurse(ctx, f)
-end
-
-end #module
-
 using Cassette
 using DifferentialEquations
 using SemanticModels.Parsers
+using SemanticModels.Dubstep
 
 # source of original problem
 include("../examples/epicookbook/src/SEIRmodel.jl")
@@ -95,7 +57,7 @@ end
 
 # define the overdub behavior, all the fucntions needed to be defined at this point
 # using run time values slows down overdub.
-function Cassette.overdub(ctx::Graft.GraftCtx, f::typeof(seir_ode), args...)
+function Cassette.overdub(ctx::SemanticModels.Dubstep.GraftCtx, f::typeof(seir_ode), args...)
     # this call matches the new signature
     return Cassette.fallback(ctx, fprime, args..., ctx.metadata[:lambda])
 end
@@ -117,7 +79,7 @@ end
 # sweep over population growth rates
 function scalegrowth(λ=1.0)
     # ctx.metadata holds our new parameter
-    ctx = Graft.GraftCtx(metadata=Dict(:lambda=>λ))
+    ctx = SemanticModels.Dubstep.GraftCtx(metadata=Dict(:lambda=>λ))
     return Cassette.overdub(ctx, g)
 end
 
