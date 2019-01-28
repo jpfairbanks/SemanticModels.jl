@@ -12,7 +12,23 @@ on various sources files including:
 Our working goal for doing information extraction is to identify and extract
  information elements which may, through situating in a knowledge graph 
  make meaning for use in meta-modeling construction and reasoning tasks.
-
+ 
+### Information Extraction Process
+1. First we process source files including research papers, source code, and documentation files into
+a common format that can be ingested by our information extraction process
+2. For source code files, we extract out comment lines and process them as natural language text
+3. For source code itself, we perform lexical processing to extract out phenomena like 
+function names and parameters
+4. We use a lexical-token based matching algorithm to detect potential matches between
+phenomena of interest in comments that may map to phenomena from actual code
+5. We create an associative array of code extractions to particular comment lines
+6. We run Automates rule-based extraction on the comment lines that were associated
+with a code extraction
+7. If there is a relevant rule match in Automates output to a comment and the rule
+contains the lexical token from the associated code match then we create new
+knowledge based on the nature of the particular rule that was triggered e.g.
+Definition, Concept, parameter setting, etc.
+ 
 ### Rule-based Methodology
 We are currently leveraging a rule-based methodology provided by the AUTOMATES team. 
 We have started creating rules to extract phenomena like definitions of parameters. 
