@@ -214,6 +214,7 @@ function insert_vertices_from_jl(vertices_file::String, input_graph::MetaDiGraph
     return G
 end
 
+
 """    copy_input_graph_to_new_graph(input_graph::MetaDiGraph)
 
 Helper function that instantiates a new MetaDiGraph and inserts vertices/edges
@@ -255,7 +256,16 @@ see also: [`insert_vertices_from_jl`](@ref), [`copy_input_graph_to_new_graph`](@
 function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
     # Edges may contain vertices that are \notin G (e.g. v \in E_1 \bigcup E_0 may be \emptyset)
     e_df = DataFrame(include(edges_file))
-    vertices_already_in_G = [get_prop(input_graph, v, :v_hash) for v in vertices(input_graph)]
+    
+    if nv(input_graph) > 0
+        vertices_already_in_G = [get_prop(input_graph, v, :v_hash) for v in vertices(input_graph)]
+        G = copy_input_graph_to_new_graph(input_graph)
+        set_indexing_prop!(G, :v_hash)
+    else
+        vertices_already_in_G = []
+        G = copy(input_graph)
+    end
+    
     vertices_in_edgelist = cat(dims=1, unique(e_df.src_vhash), unique(e_df.dst_vhash))
     refs_to_existing_vertices  = intersect(Set(vertices_already_in_G), Set(vertices_in_edgelist))
 
@@ -264,17 +274,18 @@ function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
     inter_cardinality = length(refs_to_existing_vertices)
     union_cardinality = length(union(Set(vertices_already_in_G), Set(vertices_in_edgelist)))
 
-    if inter_cardinality != num_vertices_g
+    if num_vertices_g == 0
+        counter = 1
+    elseif inter_cardinality != num_vertices_g
         counter = num_vertices_g + 1
     end
 
-    G = copy_input_graph_to_new_graph(input_graph)
-
-    @info("The input graph contains $num_vertices_g unique vertices", nv=nv(g))
+    @info("The input graph contains $num_vertices_g unique vertices")
     @info("The input edge list refers to $num_vertices_el unique vertices.", nv=num_vertices_el)
     @info("The size of the intersection of these two sets is: $inter_cardinality.", nv=inter_cardinality)
 
     set_indexing_prop!(G, :v_hash)
+    
     for e in eachrow(e_df)
         edge_attrs = Dict(
                         :e_rel=>e.edge_relation,
@@ -350,5 +361,122 @@ function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
     return G
 
 end
+        
+"""    insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
 
+Takes as input an existing graph and an edge file. Each edge in the file is
+either inserted (if new) or (if already in G), an associated integer weight is
+incremented.
+
+see also: [`insert_vertices_from_jl`](@ref), [`copy_input_graph_to_new_graph`](@ref)
+"""
+function insert_edges_from_jl(edges_file::DataFrame, input_graph::MetaDiGraph)
+    # Edges may contain vertices that are \notin G (e.g. v \in E_1 \bigcup E_0 may be \emptyset)
+    e_df = DataFrame(edges_file)
+            
+        if nv(input_graph) > 0
+        vertices_already_in_G = [get_prop(input_graph, v, :v_hash) for v in vertices(input_graph)]
+        G = copy_input_graph_to_new_graph(input_graph)
+        set_indexing_prop!(G, :v_hash)
+    else
+        vertices_already_in_G = []
+        G = copy(input_graph)
+    end
+    
+    vertices_in_edgelist = cat(dims=1, unique(e_df.src_vhash), unique(e_df.dst_vhash))
+    refs_to_existing_vertices  = intersect(Set(vertices_already_in_G), Set(vertices_in_edgelist))
+
+    num_vertices_g = nv(input_graph)
+    num_vertices_el = length(vertices_in_edgelist)
+    inter_cardinality = length(refs_to_existing_vertices)
+    union_cardinality = length(union(Set(vertices_already_in_G), Set(vertices_in_edgelist)))
+
+    if num_vertices_g == 0
+        counter = 1
+    elseif inter_cardinality != num_vertices_g
+        counter = num_vertices_g + 1
+    end
+
+    @info("The input graph contains $num_vertices_g unique vertices")
+    @info("The input edge list refers to $num_vertices_el unique vertices.", nv=num_vertices_el)
+    @info("The size of the intersection of these two sets is: $inter_cardinality.", nv=inter_cardinality)
+
+    set_indexing_prop!(G, :v_hash)
+            
+    for e in eachrow(e_df)
+        edge_attrs = Dict(
+                        :e_rel=>e.edge_relation,
+                        :e_desc=>e.edge_description,
+                        :e_value=>e.value,
+                        :weight=>1)
+
+        # The src vertex is \notin G; we need to insert it before we can insert the edge
+        if !(e.src_vhash in vertices_already_in_G)
+            src_v_hash = e.src_vhash
+            src_v_attrs = Dict(
+                        :v_name=>e.src_name,
+                        :v_type=>e.src_vtype
+            )
+
+            add_vertex!(G)
+            set_indexing_prop!(G, counter, :v_hash, "$src_v_hash")
+            set_props!(G, counter, src_v_attrs)
+
+            counter += 1
+            vertices_already_in_G = cat(dims=1, "$src_v_hash", vertices_already_in_G)
+            vname = e.src_name
+            @info("src vertex $vname was not in G, and has been inserted.", vname=vname)
+        end
+
+        # The dst vertex is \notin G; we need to insert it before we can insert the edge
+        if !(e.dst_vhash in vertices_already_in_G)
+            dst_v_hash = e.dst_vhash
+            dst_v_attrs = Dict(
+                :v_name=>e.dst_name,
+                :v_type=>e.dst_vtype
+            )
+
+            add_vertex!(G)
+            set_indexing_prop!(G, counter, :v_hash, "$dst_v_hash")
+            set_props!(G, counter, dst_v_attrs)
+
+            counter += 1
+            vertices_already_in_G = cat(dims=1, "$dst_v_hash", vertices_already_in_G)
+            vname = e.dst_name
+            @info("dst vertex $vname was not in G, and has been inserted.", vname=vname)
+        end
+
+        # All vertices referenced are now \in G; we can insert the edge or increment an existing edge's counter
+        src_int_id = G[e.src_vhash, :v_hash]
+        dst_int_id = G[e.dst_vhash, :v_hash]
+
+        edge_type = e.edge_relation
+        src_name = e.src_name
+        dst_name = e.dst_name
+
+        # Add a new edge to the graph
+        if !(has_edge(G, src_int_id, dst_int_id))
+            add_edge!(G, src_int_id, dst_int_id)
+            set_props!(G, Edge(src_int_id, dst_int_id), edge_attrs)
+            @info("Inserting directed edge of type $edge_type from $src_name to $dst_name.")
+        #  This edge already exists \in G; increment the (frequency) counter
+        #  (currently used for weight; we will probably want to think about how
+        #  to best normalize these counts)
+        else
+            new_weight = get_prop(G, Edge(src_int_id, dst_int_id), :weight) + 1
+            set_prop!(G, Edge(src_int_id, dst_int_id), :weight, new_weight)
+            @info("Incrementing weight of existing directed edge",
+                  edge_type=edge_type, weight=new_weight,
+                  type=edge_type, src=src_name, dst=dst_name)
+        end
+
+    end
+
+    weightfield!(G, :weight)
+    num_edges_final = ne(G)
+    @info("Returning graph G", nedges=num_edges_final, cardinality=union_cardinality)
+    return G
+
+end
+               
 end #module end
