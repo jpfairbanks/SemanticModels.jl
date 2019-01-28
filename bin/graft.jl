@@ -57,7 +57,7 @@ end
 
 # define the overdub behavior, all the fucntions needed to be defined at this point
 # using run time values slows down overdub.
-function Cassette.overdub(ctx::SemanticModels.Dubstep.GraftCtx, f::typeof(seir_ode), args...)
+function Cassette.overdub(ctx::Dubstep.GraftCtx, f::typeof(seir_ode), args...)
     # this call matches the new signature
     return Cassette.fallback(ctx, fprime, args..., ctx.metadata[:lambda])
 end
@@ -79,7 +79,7 @@ end
 # sweep over population growth rates
 function scalegrowth(λ=1.0)
     # ctx.metadata holds our new parameter
-    ctx = SemanticModels.Dubstep.GraftCtx(metadata=Dict(:lambda=>λ))
+    ctx = Dubstep.GraftCtx(metadata=Dict(:lambda=>λ))
     return Cassette.overdub(ctx, g)
 end
 
