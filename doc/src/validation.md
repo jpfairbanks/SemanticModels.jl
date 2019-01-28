@@ -1,6 +1,18 @@
 # Model Validation with Dynamic Analysis
 
-## Method for validating code
+Validation of scientific models is a type of program verification, but is complicated by the fact that there are no
+global explicit rules about what defines a valid scientific models. In a local sense many disciplines of science have
+developed rules for valid computations. For example unit checking and dimensional analysis and conservation of physical
+laws. Dimensional analysis provides rules for arithmetic of unitful numbers. The rules of dimensional analysis are "you
+can add numbers if the units match, when you multiply/divide, the powers of the units add/subtract." Many physical
+computations obey conservation rules that provide a form of program verification. Based on a law of physics such as "The
+total mass of the system is constant," one can build a program checker that instruments a program with the ability to
+audit the fact that `sum(mass, system[t]) == sum(mass, system[t0])`, these kinds of checks may be expressed in codes.
+
+We can use Cassette.jl to implement a context for validating these computations. The main difficulty is converting the
+human language expressed rule into a mathematical test for correctness. A data driven method is outlined below.
+
+## DeepValidate
 1. Collect a sample of known “good” inputs matched with their corresponding “good” outputs, and a sample of known “bad” inputs matched with their corresponding “bad” outputs.
     1. “Good” here is defined as: given these input(s), the model output(s)/prediction(s) correspond to expected or observed empirical reality, within an acceptable tolerance/range re: error. 
     1. Edge cases to note but not heavily consider @ this point:
@@ -14,7 +26,7 @@
 
 In step 1: for an analytically tractable model, we can generate an arbitrarily large collection of known good and bad inputs.
 
-## IO interface
+### Required Data Format
 
 We need to build a Tensorflow.jl or Flux.jl RNN model that will work on sequences `[(func, var, val, type)]` and produce labels of good/bad
 

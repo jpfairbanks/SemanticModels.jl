@@ -12,6 +12,12 @@ end
 
 Cassette.@context TraceCtx
 
+"""    TraceCtx
+
+builds dynamic analysis traces of a model for information extraction
+"""
+TraceCtx
+
 function Cassette.overdub(ctx::TraceCtx, args...)
     subtrace = Any[]
     push!(ctx.metadata, args => subtrace)
