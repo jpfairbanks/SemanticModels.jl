@@ -1,5 +1,17 @@
 # Knowledge Extraction 
 
+## Documents
+
+SemanticModels.jl takes the opinion that the source code and documentation is more valuable than the scientific papers
+themselves, even though traditional scientific incentive systems focus on only the papers.
+
+Since natural language text is primarily being used for context, understanding and disambiguation of code information,
+we use rules-based methods to extract definitions and conceptual connections. The Automates framework developed at the
+University of Arizona is very helpful for writing rules based information extraction software. Our contributions to
+automates have been contributed upstream.
+
+The primary focus of this document is the extraction of scientific knowledge from codebases.
+
 ## Code
 
 SemanticModels supports extracting knowledge from both the static syntactic level information that is accessible from
