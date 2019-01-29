@@ -1,7 +1,4 @@
 module Edges
-include("../src/graph.jl")
-include("../src/definitions.jl")
-
 using DataFrames
 using GraphDataFrameBridge
 using MetaGraphs
@@ -10,11 +7,17 @@ using LightGraphs
 using Random
 using DataFramesMeta
 using Colors
-using ParserCombinator
-using GraphIO
 
-export edgetype, edges, create_kg_from_code_edges, create_kg_from_markdown_edges, format_edges_dataframe, assign_vertex_colors_by_key, write_graph_to_dot_file
+using SemanticModels.Graphs
+using SemanticModels.Extraction
 
+export edgetype,
+    edges,
+    create_kg_from_code_edges,
+    create_kg_from_markdown_edges,
+    format_edges_dataframe,
+    assign_vertex_colors_by_key,
+    write_graph_to_dot_file
 
 function edgetype(var, val::Expr)
     if val.head == :call
@@ -129,9 +132,9 @@ function create_kg_from_code_edges(code_edges, G::MetaDiGraph)
     return G_prime   
 end
 
-function create_kg_from_markdown_edges()
+function create_kg_from_markdown_edges(path)
     
-    G = Extraction.definitiongraph("../examples/epicookbook/epireceipes_Automates_GTRI_ASKE_2rules_output/json", Extraction.sequentialnamer())
+    G = Extraction.definitiongraph(path, Extraction.sequentialnamer())
     
     # this is a hack for now..
     # TODO: modify the markdown definitions.jl script to ensure vertex/edge props match the schema
@@ -252,9 +255,9 @@ end
 # julia -i --project ../bin/extract.jl ../examples/epicookbook/src/SEIRmodel.jl
 
 using SemanticModels.Parsers
+using SemanticModels.Graphs
+using SemanticModels.Extraction
 @debug "Done Loading Package"
-include("../src/graph.jl")
-include("../src/definitions.jl")
 using DataFrames
 using MetaGraphs
 
@@ -286,16 +289,23 @@ for e in edg
     println(e)
 end
 
+mdown_path = "../examples/epicookbook/epireceipes_Automates_GTRI_ASKE_2rules_output/json"
 output_path = "../examples/epicookbook/data/edges_from_code_1.jl"
 
 @info("Generating a knowledge graph from parsed Epicookbook markdown files.")
-G_markdown = Edges.create_kg_from_markdown_edges()
+
+G_markdown = MetaDiGraph()
+try
+    G_markdown = Edges.create_kg_from_markdown_edges(mdown_path)
+catch ex
+    @warn "Could not generate markdown edges" path=mdown_path ex=ex
+end
+
 G_code_and_markdown = Edges.create_kg_from_code_edges(output_path, G_markdown)
 vcolors = Edges.assign_vertex_colors_by_key(G_code_and_markdown, :v_type)
 
 dot_file_path = "../examples/epicookbook/data/dot_file_ex1.dot"
 Edges.write_graph_to_dot_file(G_code_and_markdown, dot_file_path, "G_code_and_markdown", vcolors)
 
-# TODO: this doesn't work because the dot file is not correctly formatted yet
-#G_from_dot_file = loadgraph(dot_file_path, "G_code_and_markdown", DOTFormat())
-
+#TODO: verify that the following cmd works
+# run(`dot -Tsvg -O $dot_file_path`)
