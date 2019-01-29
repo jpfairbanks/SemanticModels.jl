@@ -62,8 +62,20 @@ function definitiongraph(files::Vector{String}, namefunc)
         @info "Reading Definitions from: $def_file"
         json_res = JSON.parsefile(def_file)
         mentions = json_res["mentions"]
+        
+        unique_keys = []
+        
         for val in mentions
+            
+            #println("val ", val)
+            if !(val["type"] in unique_keys)
+                unique_keys =  cat(dims=1, val["type"], unique_keys)
+            end
+            
+            #if haskey(val,"type") && val["type"] == "RelationMention" #(original)
+            
             if haskey(val,"type") && val["type"] == "RelationMention"
+                println(val["type"])
                 @debug "Parsed JSON record" json=val
                 v_count += 1
                 cause = term(val)
@@ -90,10 +102,11 @@ function definitiongraph(files::Vector{String}, namefunc)
                                              :values=> Dict(:name=> "is defined as")))
             end
         end
+        println(unique_keys)
     end
 
     # Create MetaGraph after digraph is created using changes record
-    metagraph = MetaGraph(graph)
+    metagraph = MetaDiGraph(graph)
     for change in changes_recorded
         if change[:type] == "AddEdge"
             set_props!(metagraph, change[:edge], change[:values])
@@ -112,7 +125,7 @@ with_logger(ConsoleLogger(stderr, Logging.Debug)) do
   def_output_dir = "../test/kg"
   g = definitiongraph(def_output_dir, sequentialnamer())
   @show g
-  @show props(g)
+  #@show props(g)
   for (k,v) in g.vprops
       println(join(["Vertex", k, v], " "))
   end
