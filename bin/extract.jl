@@ -7,6 +7,7 @@ using LightGraphs
 using Random
 using DataFramesMeta
 using Colors
+using Logging
 
 using SemanticModels.Graphs
 using SemanticModels.Extraction
@@ -133,34 +134,34 @@ function create_kg_from_code_edges(code_edges, G::MetaDiGraph)
 end
 
 function create_kg_from_markdown_edges(path)
-    
-    G = Extraction.definitiongraph(path, Extraction.sequentialnamer())
-    
-    # this is a hack for now..
-    # TODO: modify the markdown definitions.jl script to ensure vertex/edge props match the schema
-    for v in vertices(G)     
-       
-        v_hash = Graphs.gen_vertex_hash(get_prop(G, v, :name), "missing")
-        set_indexing_prop!(G, v, :v_hash, "$v_hash")
-       
-        set_props!(G, v,
-            Dict(:v_name=>get_prop(G, v, :name),
-                 :v_type=>"missing"))
-    end
-    
-    for e in LightGraphs.edges(G)  
-        
-        src_vhash = Graphs.gen_vertex_hash(get_prop(G, e.src, :name), "missing")
-        dst_vhash = Graphs.gen_vertex_hash(get_prop(G, e.dst, :name), "missing")
-        
-        set_props!(G, Edge(e.src, e.dst), Dict(:e_rel=>"verb",
-                                                :e_desc=>"Verb",
-                                                :e_value=>"is defined as",
-                                                :weight=>1))
 
-    end
+        G = Extraction.definitiongraph(path, Extraction.sequentialnamer())
 
-    return G   
+        # this is a hack for now..
+        # TODO: modify the markdown definitions.jl script to ensure vertex/edge props match the schema
+        for v in vertices(G)     
+
+            v_hash = Graphs.gen_vertex_hash(get_prop(G, v, :name), "missing")
+            set_indexing_prop!(G, v, :v_hash, "$v_hash")
+
+            set_props!(G, v,
+                Dict(:v_name=>get_prop(G, v, :name),
+                     :v_type=>"missing"))
+        end
+
+        for e in LightGraphs.edges(G)  
+
+            src_vhash = Graphs.gen_vertex_hash(get_prop(G, e.src, :name), "missing")
+            dst_vhash = Graphs.gen_vertex_hash(get_prop(G, e.dst, :name), "missing")
+
+            set_props!(G, Edge(e.src, e.dst), Dict(:e_rel=>"verb",
+                                                    :e_desc=>"Verb",
+                                                    :e_value=>"is defined as",
+                                                    :weight=>1))
+        end
+    
+    return G
+
 end
 
 
@@ -173,13 +174,14 @@ see also: [`assign_edge_styles_by_key`](@ref), [1write_graph_to_dot_file1](@ref)
 """
 function assign_vertex_colors_by_key(G::MetaDiGraph, group_by::Symbol)
     
-    cols = distinguishable_colors(length(unique([get_prop(G, v, group_by) for v in vertices(G)]))+1, [RGB(1,1,1)])[2:end]
-    pcols = map(col -> (red(col), green(col), blue(col)), cols)
+    # element 1 = white; element 2 = black; for sake of making graph easier to read, add +2 buffer and start indexing colors at 3 
+    cols = distinguishable_colors(length(unique([get_prop(G, v, group_by) for v in vertices(G)]))+2, [RGB(1,1,1)])[3:end]    
+    pcols = map(col -> hex(col), cols)
     
     color_type_lookup = Dict()
     
     for (i, v_type) in enumerate(unique([get_prop(G, v, group_by) for v in vertices(G)]))
-        color_type_lookup[v_type] = pcols[i]
+        color_type_lookup[v_type] = "#"*pcols[i]
     end
     
     vertex_color_lookup = Dict()
@@ -208,7 +210,8 @@ end
 # TODO: fix syntax and puncutuation errors so the graph can be loaded from a dot file
 function write_graph_to_dot_file(G::MetaDiGraph, output_path::String, graph_name::String, v_color_lookup)
     
-    head = ("digraph") * graph_name * " {"
+    #head = "Graph(" * "\"" * "\"" * "\"" *  "\n graph " * graph_name * " {"
+    head = "digraph " * graph_name * " {"
  
      open(output_path, "w") do io
         
@@ -216,25 +219,32 @@ function write_graph_to_dot_file(G::MetaDiGraph, output_path::String, graph_name
         
         for v in vertices(G)
             v_color = v_color_lookup[get_prop(G, v, :v_hash)]
-            println(io, string(get_prop(G, v, :v_name), " [color=", "$v_color", "];"))
+            vname = get_prop(G, v, :v_name)
+            println(io, string("\"" * "$vname" *  "\"" * " [color=" * "\"" * "$v_color" *  "\"" * "];"))
         end
 
         for e in LightGraphs.edges(G)
+            
+            src_vname = get_prop(G, e.src, :v_name)
+            dst_vname = get_prop(G, e.dst, :v_name)
+            e_rel = get_prop(G, e, :e_rel)
+            
+            #println("\"" * "$src_vname" * "\"" * " -> " * "\"" * "$dst_vname" * "\"" * " [label=" * "$e_rel" * "];")
 
-            println(io, string("$string(get_prop(G, e.src, :v_name)", " -- ", "$get_prop(G, e.dst, :v_name)", "[label=", get_prop(G, e, :e_rel), "];"))
+            println(io, string("\"" * "$src_vname" * "\"" * 
+                    " -> " * "\"" * "$dst_vname" * "\"" *
+                    " [label=" * "\"" * "$e_rel" * "\""  * "];"))
             
         end
         
         println(io, "}")
-        
-        final_str = "" *  "\n}\n"
-        println(io, final_str)
+        #final_str = "\"" * "\"" * "\"" * ")"
+        #println(io, final_str)
 
     end
     
     # Example dot file
-    #     Graph("""
-    #         graph graphname {
+    #         digraph graphname {
     #          // The label attribute can be used to change the label of a node
     #          a [label="Foo"];
     #          // Here, the node shape is changed.
@@ -243,11 +253,9 @@ function write_graph_to_dot_file(G::MetaDiGraph, output_path::String, graph_name
     #          a -- b -- c [color=blue];
     #          b -- d [style=dotted];
     #      }
-    #     """)
     end
 
 end
-
 
 
 # command-line usage 
@@ -260,6 +268,7 @@ using SemanticModels.Extraction
 @debug "Done Loading Package"
 using DataFrames
 using MetaGraphs
+using LightGraphs
 
 if length(ARGS) < 1
     error("You must provide a file path to a .jl file", args=ARGS)
@@ -285,9 +294,9 @@ end
 
 edg = Edges.edges(mc, subdefs, expr.args[2])
 @info("Edges found", path=path)
-for e in edg
-    println(e)
-end
+#for e in edg
+    #println(e)
+#end
 
 mdown_path = "../examples/epicookbook/epireceipes_Automates_GTRI_ASKE_2rules_output/json"
 output_path = "../examples/epicookbook/data/edges_from_code_1.jl"
@@ -295,17 +304,24 @@ output_path = "../examples/epicookbook/data/edges_from_code_1.jl"
 @info("Generating a knowledge graph from parsed Epicookbook markdown files.")
 
 G_markdown = MetaDiGraph()
+
 try
     G_markdown = Edges.create_kg_from_markdown_edges(mdown_path)
 catch ex
     @warn "Could not generate markdown edges" path=mdown_path ex=ex
 end
 
+G_markdown = Edges.create_kg_from_markdown_edges(mdown_path)
+@info("G_markdown graph has v vertices and e edges.", v=nv(G_markdown), e=ne(G_markdown))
+
+code_edges_df = Edges.format_edges_dataframe(edg, output_path)
 G_code_and_markdown = Edges.create_kg_from_code_edges(output_path, G_markdown)
+
+@info("Final graph has v vertices and e edges.", v=nv(G_code_and_markdown), e=ne(G_code_and_markdown))
 vcolors = Edges.assign_vertex_colors_by_key(G_code_and_markdown, :v_type)
 
 dot_file_path = "../examples/epicookbook/data/dot_file_ex1.dot"
 Edges.write_graph_to_dot_file(G_code_and_markdown, dot_file_path, "G_code_and_markdown", vcolors)
 
-#TODO: verify that the following cmd works
-# run(`dot -Tsvg -O $dot_file_path`)
+# Generate svg file
+run(`dot -Tsvg -O $dot_file_path`)
