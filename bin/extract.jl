@@ -32,6 +32,7 @@ edgetype(var, val) = :takes
 edgetype(var::Symbol, val::Symbol) = :takes
 edgetype(args...) = @show args
 
+
 function edges(mc, subdef, scope)
     @info("Making edges",scope=scope)
     edg = Any[]
@@ -39,24 +40,33 @@ function edges(mc, subdef, scope)
         @show var, val
         typ = edgetype(var, val)
         val = typ==:structure ? val.args[2] : val
-        e = (scope, typ, var, val)
+        e = (scope, typ, :var, var, :val, val)
         push!(edg, e)
+        if typ == :output
+            e = (scope, typ, :var, var, :exp, val)
+            push!(edg, e)
+        end
+        if typ == :structure
+            e = (scope, typ, :var, var, :tuple, val.args[2])
+            push!(edg, e)
+        end
+
         if typeof(val) <: Expr && val.head == :vect
-            push!(edg, (scope, :has, var, :prop_collection))
+            push!(edg, (scope, :has, :value, var, :property, :collection))
         end
         if typeof(val) <: Expr && val.head == :call
-            push!(edg, (scope, :input, val.args[2], Symbol.(val.args[3:end])))
+            push!(edg, (scope, :input, :func, val.args[1], :args, Symbol.(val.args[2:end])))
         end
         if typ == :destructure
             @debug var.args
             for lhs in var.args
-                push!(edg, (scope, :comp, val, lhs))
+                push!(edg, (scope, :comp, :var, val, :var, lhs))
             end
         end
         if typ == :structure
             @debug var, val
             for rhs in val.args
-                push!(edg, (scope, :comp, var, rhs))
+                push!(edg, (scope, :comp, :var, var, :val, rhs))
             end
         end
 
