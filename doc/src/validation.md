@@ -35,7 +35,7 @@ loss(X, Y) = crossentropy(model(X), Y)
 Flux.train!(loss, data, ADAM(...))
 ```
 
-Outputs of the LSTM layer are subject to 50% dropout as a regularization measure to avoid over-fitting, and then fed to a densely connected neural network layer for computation of non-linear feature functions. Outputs of this dense layer are normalized for each batch of training data as another regularization measure to constrict extreme weights. This sequence of dropout-dense-normalization layers is repeated once more to add depth to the non-linear features learned by the model. Finally, a softmax activation function is calculated on the outputs and a binary classification is completed on each case in our dataset. 
+I the above example, outputs of the LSTM layer are subject to 50% dropout as a regularization measure to avoid over-fitting, and then fed to a densely connected neural network layer for computation of non-linear feature functions. Outputs of this dense layer are normalized for each batch of training data as another regularization measure to constrict extreme weights. This sequence of dropout-dense-normalization layers is repeated once more to add depth to the non-linear features learned by the model. Finally, a softmax activation function is calculated on the outputs and a binary classification is completed on each case in our dataset. 
 
 
 To train this DeepValidate model, we execute the following steps:
