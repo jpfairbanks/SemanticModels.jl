@@ -373,8 +373,16 @@ end
 
 mdown_path = "../examples/epicookbook/epireceipes_Automates_GTRI_ASKE_2rules_output/json"
 
-G_markdown = MetaDiGraph()
-G_markdown = Edges.create_kg_from_markdown_edges(mdown_path, "definition")
+function markdowngraph(mdown_path)
+    try
+        return Edges.create_kg_from_markdown_edges(mdown_path, "definition")
+    catch
+        @warn "Failed to read markdown" path=mdown_path
+        return MetaDiGraph()
+    end
+end
+
+G_markdown = markdowngraph(mdown_path)
 
 @info("Graph created from markdown has v vertices and e edges.", v=nv(G_markdown), e=ne(G_markdown))
 
