@@ -1,0 +1,6 @@
+#it looks like graphviz does not support latex labels.
+digraph G{
+  a[label="$a*b$"];
+  b[label="$b^c$"];
+  a->b
+}

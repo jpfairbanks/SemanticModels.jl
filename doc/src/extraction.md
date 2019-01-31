@@ -184,6 +184,47 @@ and run it through the code syntactic extractor which will produce the following
 
 This extractor provides edges to the [Knowledge Graphs](@ref).
 
+## Reasoning
+
+Once the information is extracted from the documentation and code, we can visualize the knowledge as a graph.
+
+![Knowledge Graph from epicookbook](img/reasoning_sir.dot.svg)
+
+This knowledge graph contains all the connections we need to combine components across
+models. Once can view this combination as either a modification of one model by
+substituting components of another model, or as the automatic generation of a metamodel by
+synthesizing components from the knowledge graph into a single coherent model. Further
+theoretical analysis of metamodeling and model modification as mathematical problems is
+warranted to make these categories unambiguous and precisely defined.
+
+Once we identify a subgraph of related components we can identify the graft point between
+the two models. We look for a common variable that is used in two models, specifically in
+a derivative calculation. We find the variable `S` which appears in `dS` and `dY` (as
+`S=Y[1]` and `dY = derivative(Y)`). The knowledge that `dS, dY` are derivatives comes from
+the background knowledge of modeling that comes from reading textbooks and general
+scientific knowledge, while the fact that `S` and `Y[1]` both appear in an expression
+`mu-beta*S*I - mu*S` comes from the specific documents and codebases under consideration
+by the metamodeler.
+
+![Knowledge Subgraph showing model modification](img/reasoning_sir_subgraph.dot.svg)
+
+This subgraph must then extend out to capture all of the relevant information such as the
+parameter sets encountered, the function calls that contain these variables and
+expressions. We have found the *largest relevant subgraph* for some unspecified definition
+of *relevant*. From this subgraph a human modeler can easily instruct the SemanticModels
+system on how to combine the `SEIRmodel` and `ScalingModel` programs into a single model
+and generate a program to execute it.
+
+Since the goal of this project is to augment scientists through knowledge extraction,
+reasoning, and generation, we leave some decisions up to the human user. The user must
+program the library to build the metamodel. This requires some way for the user to
+instruct the machine on what they want to know. Any API that supports augmenting
+scientists will require some human intervention in the reasoning and generation stages as
+the system must get input from the user as to the questions being asked of it. We veiw
+this to analogous to a data analyst working with a database system, a query planner is
+able to optimize queries based on knowledge about the schema and data statistics, but it
+must still wait for a human to provide a query. In this way `SemanticModels` similarly
+uses user guidance for reasoning and generation tasks.
 
 ## API reference
 
