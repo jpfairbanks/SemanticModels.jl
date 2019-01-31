@@ -27,10 +27,10 @@ after_success:
 
 jobs:
   include:
+    - stage: "Testing"
+      script:
+        - julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
     - stage: "Documentation"
-      julia: 1.0
-      os: linux
       script:
         - julia --project -e 'using Pkg; Pkg.instantiate();'
         - julia --project doc/make.jl
-      after_success: skip
