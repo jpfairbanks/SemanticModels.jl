@@ -1,7 +1,9 @@
 module Dubstep
 
 using Cassette
-export construct, TracedRun, trace, TraceCtx, LPCtx, replacenorm
+using LinearAlgebra
+export construct, TracedRun, trace, TraceCtx, LPCtx, replacenorm,
+    GraftCtx, replacefunc
 
 function construct(T::Type, args...)
     @info "constructing a model $T"
@@ -9,6 +11,12 @@ function construct(T::Type, args...)
 end
 
 Cassette.@context TraceCtx
+
+"""    TraceCtx
+
+builds dynamic analysis traces of a model for information extraction
+"""
+TraceCtx
 
 function Cassette.overdub(ctx::TraceCtx, args...)
     subtrace = Any[]
@@ -84,7 +92,6 @@ function Cassette.overdub(ctx::LPCtx, args...)
     end
 end
 
-using LinearAlgebra
 function Cassette.overdub(ctx::LPCtx, f::typeof(norm), arg, power)
     p = get(ctx.metadata, power, power)
     return f(arg, p)
@@ -96,6 +103,42 @@ run f, but replace every call to norm using the mapping in d.
 """
 function replacenorm(f::Function, d::AbstractDict)
     ctx = LPCtx(metadata=d)
+    return Cassette.recurse(ctx, f)
+end
+
+Cassette.@context GraftCtx
+
+
+"""    GraftCtx
+
+grafts an expression from one simulation onto another
+
+This context is useful for modifying simulations by changing out components to add features
+
+see also: [`Dubstep.LPCtx`](@ref)
+"""
+GraftCtx
+
+function Cassette.overdub(ctx::GraftCtx, f, args...)
+    if Cassette.canrecurse(ctx, f, args...)
+        newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
+        return Cassette.recurse(newctx, f, args...)
+    else
+        return Cassette.fallback(ctx, f, args...)
+    end
+end
+
+
+"""    replacefunc(f::Function, d::AbstractDict)
+
+run f, but replace every call to f using the context GraftCtx.
+in order to change the behavior you overload overdub based on the context.
+Metadata used to influence the context is stored in d.
+
+see also: `bin/graft.jl` for an example.
+"""
+function replacefunc(f::Function, d::AbstractDict)
+    ctx = GraftCtx(metadata=d)
     return Cassette.recurse(ctx, f)
 end
 

@@ -7,6 +7,9 @@ module SemanticModels
 
 using Unitful
 using Unitful: Units
+
+export Parsers, Extraction, Graphs
+
 abstract type AbstractModel end
 
 abstract type Model end
@@ -107,4 +110,7 @@ function solve(m::CombinedModel)
 end
 
 include("graph.jl")
+include("definitions.jl")
+include("parse.jl")
+
 end
