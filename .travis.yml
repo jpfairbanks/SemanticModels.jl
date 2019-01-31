@@ -29,7 +29,7 @@ jobs:
   include:
     - stage: "Testing"
       script:
-        - julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
+        - travis_wait 30 julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
     - stage: "Documentation"
       script:
         - julia --project -e 'using Pkg; Pkg.instantiate();'
