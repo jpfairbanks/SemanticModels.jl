@@ -89,18 +89,26 @@ function edges(mc, subdef, scope)
 end
 
 function preprocess_vertex_name(orig_str_rep)
-    clean_str = replace(replace(replace(replace(orig_str_rep, "^" => "exp"), "*" => "star"), "-" => "neg"), "\"" => " ")
+    #TODO this should work and be faster:
+    # replace(orig_str_rep, "^" => "exp", "*" => "star", "-" => "neg", "\"" => " ") # \" #this comment works around a bug in emacs julia formater
+    clean_str = replace(
+                  replace(
+                      replace(
+                          replace(orig_str_rep, "^" => "exp"),
+                          "*" => "star"),
+                      "-" => "neg"),
+                  "\"" => " ") # \" #this comment works around a bug in emacs julia formater
     return clean_str
 end
 
 function format_edges_dataframe(code_edges, output_path::String)
-    
+
     edges_df = []
-    
+
     for e in code_edges
-        
+
         # Going from left to right, there are two edges we need to create (?)
-        
+
         # Edge one
         src_1_vname = "$(e[1])"
         src_1_vtype = "missing"
@@ -108,14 +116,14 @@ function format_edges_dataframe(code_edges, output_path::String)
         dst_1_vname = "$(e[4])"
         #dst_1_vtype = e[3] # this is the data type; we'll use it once we have reconciliation rules in place
         dst_1_vtype = "missing"
-        
+
         src_1_vhash = Graphs.gen_vertex_hash("$src_1_vname", "src_1_vtype")
         dst_1_vhash = Graphs.gen_vertex_hash("$dst_1_vname", "dst_1_vtype")
-        
+
         edge_1_relation = e[2]
         edge_1_description = e[2]
         edge_1_value = e[6] # check this; unclear if we want to (only) store as metadata or actually create edge 2
-            
+
         edge_1_attrs = (src_vhash = "$src_1_vhash",
             src_name = src_1_vname,
             src_vtype = src_1_vtype,
@@ -126,23 +134,23 @@ function format_edges_dataframe(code_edges, output_path::String)
             edge_description = edge_1_description,
             value = "$edge_1_value"
          )
-        
+
         push!(edges_df, edge_1_attrs)
-        
-        # Edge two 
+
+        # Edge two
         src_2_vname = dst_1_vname
         src_2_vtype = dst_1_vtype
         #dst_2_vname = preprocess_vertex_name(("\""*"\""*"$(e[6])"*"\""*"\""))
         dst_2_vname = "$(e[6])"
         dst_2_vtype = "missing"
-               
+
         src_2_vhash = dst_1_vhash
         dst_2_vhash = Graphs.gen_vertex_hash("$dst_2_vname", "dst_2_vtype")
-        
+
         edge_2_relation = string(e[5])
         edge_2_description = string(e[5])
         edge_2_value = string(e[6])
-        
+
         edge_2_attrs = (src_vhash = "$src_2_vhash",
             src_name = src_2_vname,
             src_vtype = src_2_vtype,
@@ -153,39 +161,39 @@ function format_edges_dataframe(code_edges, output_path::String)
             edge_description = edge_2_description,
             value = "$edge_2_value"
          )
-        
+
         push!(edges_df, edge_2_attrs)
     end
-    
+
     open(output_path, "w") do io
         print(io, repr(Graphs.load_graph_data(edges_df)))
     end
-    
+
     return edges_df
-    
+
 end
 
 
-function create_kg_from_code_edges(code_edges)   
-    
+function create_kg_from_code_edges(code_edges)
+
     G = MetaDiGraph()
     G_prime = Graphs.insert_edges_from_jl(code_edges, G)
-    return G_prime    
+    return G_prime
 end
 
-function create_kg_from_code_edges(code_edges, G::MetaDiGraph)    
-    
+function create_kg_from_code_edges(code_edges, G::MetaDiGraph)
+
     G_prime = Graphs.insert_edges_from_jl(code_edges, G)
-    return G_prime   
+    return G_prime
 end
 
 function create_kg_from_markdown_edges(path)
-    
+
     G = Extraction.definitiongraph(path, Extraction.sequentialnamer())
 
     # this is a hack for now..
     # TODO: modify the markdown definitions.jl script to ensure vertex/edge props match the schema
-    for v in vertices(G)     
+    for v in vertices(G)
 
         v_hash = Graphs.gen_vertex_hash(get_prop(G, v, :name), "missing")
         set_indexing_prop!(G, v, :v_hash, "$v_hash")
@@ -195,7 +203,7 @@ function create_kg_from_markdown_edges(path)
                  :v_type=>"missing"))
     end
 
-    for e in LightGraphs.edges(G)  
+    for e in LightGraphs.edges(G)
 
         src_vhash = Graphs.gen_vertex_hash(get_prop(G, e.src, :name), "missing")
         dst_vhash = Graphs.gen_vertex_hash(get_prop(G, e.dst, :name), "missing")
@@ -205,21 +213,21 @@ function create_kg_from_markdown_edges(path)
                                                 :e_value=>"is defined as",
                                                 :weight=>1))
     end
-    
+
     return G
 end
 
 
 function create_kg_from_markdown_edges(path, extraction_rule="definition")
-    
+
     G = Extraction.definitiongraph(path, Extraction.sequentialnamer())
-    
-#     vertex_df = DataFrame(vertex=String[], 
+
+#     vertex_df = DataFrame(vertex=String[],
 #                           v_hash=String[],
-#                           v_name=String[], 
-#                           v_type=String[], 
+#                           v_name=String[],
+#                           v_type=String[],
 #                           v_text=String[])
-    
+
 #     edges_df = DataFrame(src_vhash = String[],
 #                         src_name = String[],
 #                         src_vtype = String[],
@@ -232,7 +240,7 @@ function create_kg_from_markdown_edges(path, extraction_rule="definition")
 
     # this is a hack for now..
     # TODO: modify the markdown definitions.jl script to ensure vertex/edge props match the schema
-    for v in vertices(G)     
+    for v in vertices(G)
 
         v_hash = Graphs.gen_vertex_hash(get_prop(G, v, :name), "concept")
         set_indexing_prop!(G, v, :v_hash, "$v_hash")
@@ -241,12 +249,12 @@ function create_kg_from_markdown_edges(path, extraction_rule="definition")
             Dict(:v_name=>get_prop(G, v, :name),
                  :v_type=>"concept",
                  :v_text=>length(get_prop(G, v, :text))==0 ? "no_text" : get_prop(G, v, :text)))
-        
+
 #         push!(vertex_df, (vertex="$v", v_hash="$v_hash", v_name=get_prop(G, v, :name), v_type="concept",  v_text=length(get_prop(G, v, :text))==0 ? "no_text" : get_prop(G, v, :text)))
-        
+
     end
 
-    for e in LightGraphs.edges(G)  
+    for e in LightGraphs.edges(G)
 
         src_vhash = Graphs.gen_vertex_hash(get_prop(G, e.src, :name), "concept")
         dst_vhash = Graphs.gen_vertex_hash(get_prop(G, e.dst, :name), "concept")
@@ -256,15 +264,15 @@ function create_kg_from_markdown_edges(path, extraction_rule="definition")
                                                 :e_desc=>"Verb",
                                                 :e_value=>"is defined as",
                                                 :weight=>1))
-        
+
 #         push!(edges_df, (src_vhash="$src_vhash", src_name = get_prop(G, e.src, :name), src_vtype="concept",
 #                 dst_vhash="$dst_vhash", dst_name = get_prop(G, e.dst, :name), dst_vtype = "concept",
 #                 edge_relation= "verb", edge_description="Verb", value="is defined as"))
     end
-    
-    # for debugging 
-    #CSV.write("../examples/epicookbook/data/markdown_vertices.csv",vertex_df) 
-    #CSV.write("../examples/epicookbook/data/markdown_edges.csv",edges_df) 
+
+    # for debugging
+    #CSV.write("../examples/epicookbook/data/markdown_vertices.csv",vertex_df)
+    #CSV.write("../examples/epicookbook/data/markdown_edges.csv",edges_df)
     return G
 end
 
@@ -277,22 +285,22 @@ Groups the vertices in G by the group_by field, computes the number of unique co
 see also: [`assign_edge_styles_by_key`](@ref), [1write_graph_to_dot_file1](@ref)
 """
 function assign_vertex_colors_by_key(G::MetaDiGraph, group_by::Symbol)
-    
-    # element 1 = white; element 2 = black; for sake of making graph easier to read, add +2 buffer and start indexing colors at 3 
-    cols = distinguishable_colors(length(unique(get_prop(G, v, group_by) for v in vertices(G)))+2, [RGB(1,1,1)])[3:end]    
+
+    # element 1 = white; element 2 = black; for sake of making graph easier to read, add +2 buffer and start indexing colors at 3
+    cols = distinguishable_colors(length(unique(get_prop(G, v, group_by) for v in vertices(G)))+2, [RGB(1,1,1)])[3:end]
 
     color_type_lookup = Dict()
-    
+
     for (i, v_type) in enumerate(unique([get_prop(G, v, group_by) for v in vertices(G)]))
         color_type_lookup[v_type] = "#$(hex(cols[i]))"
     end
-    
+
     vertex_color_lookup = Dict()
-    
+
     for v in vertices(G)
         vertex_color_lookup[get_prop(G, v, :v_hash)] = color_type_lookup[get_prop(G, v,group_by)]
     end
-    
+
     return vertex_color_lookup
 
 end
@@ -314,33 +322,33 @@ end
 function write_graph_to_dot_file(G::MetaDiGraph, output_path::String, graph_name::String, v_color_lookup)
 
     head = "digraph " * graph_name * " {"
- 
+
      open(output_path, "w") do io
-        
+
         println(io, head)
-        
+
         for v in vertices(G)
             v_color = v_color_lookup[get_prop(G, v, :v_hash)]
             vname = preprocess_vertex_name(get_prop(G, v, :v_name))
             println(io, string("$v" *  " [color=" * "\"" * "$v_color" *  "\"" * " ," * " label=" * "\"" * "$vname" * "\"" * "];"))
-           
+
         end
 
         for e in LightGraphs.edges(G)
-            
+
             src_vname = preprocess_vertex_name(get_prop(G, e.src, :v_name))
             dst_vname = preprocess_vertex_name(get_prop(G, e.dst, :v_name))
             e_rel = get_prop(G, e, :e_rel)
             #e_value = get_prop(G, e, :e_value)
 
             println(io, string("$(e.src)" * " -> " * "$(e.dst)" * " [label=" * "\"" * "$(e_rel)" * "\""  * "];"))
-            
+
         end
-        
+
         println(io, "}")
-        
+
     end
-    
+
     # Example dot file
     #         digraph graphname {
     #          // The label attribute can be used to change the label of a node
@@ -356,7 +364,7 @@ function write_graph_to_dot_file(G::MetaDiGraph, output_path::String, graph_name
 end
 
 
-# command-line usage 
+# command-line usage
 # julia -i --project ../bin/extract.jl ../examples/epicookbook/src/ScalingModel.jl ../examples/epicookbook/src/SEIRmodel.jl
 
 using SemanticModels.Parsers
@@ -390,7 +398,7 @@ num_files = length(ARGS)
 global G_temp = MetaDiGraph()
 
 for i in 1:num_files
-    
+
     output_path = "../examples/epicookbook/data/edges_from_code_$i.jl"
 
     path = ARGS[i]
@@ -418,7 +426,7 @@ for i in 1:num_files
     #end
 
     code_edges_df = Edges.format_edges_dataframe(edg, output_path)
-    
+
     if i == 1
         # We only need to ingest the markdown info once.
         G_code = Edges.create_kg_from_code_edges(output_path, G_markdown)
@@ -430,7 +438,7 @@ for i in 1:num_files
 
     global vcolors = Edges.assign_vertex_colors_by_key(G_code, :v_type)
     global G_temp = copy(G_code)
-    
+
 end
 
 @info("All markdown and code files have been parsed; writing final knowledge graph to dot file")
@@ -439,4 +447,3 @@ Edges.write_graph_to_dot_file(G_temp, dot_file_path, "G_code_and_markdown", vcol
 
 # Generate svg file
 run(`dot -Tsvg -O $dot_file_path`)
-
