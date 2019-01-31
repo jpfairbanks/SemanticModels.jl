@@ -9,6 +9,7 @@ using GLM
 using DataFrames
 using Plots
 
+include("parse.jl")
 include("cassette.jl")
 include("transform/ode.jl")
 

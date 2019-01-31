@@ -13,9 +13,19 @@ Pkg.develop("Cassette")
 Pkg.test("SemanticModels")
 ```
 
-Then you can load it with `using SemanticModels`
+Note that loading this package for the first time can take a while because `DifferentialEquations` is a large library that
+requires a long precompilation step. Various functions in the `SemanticModels.Dubstep` module can also have long
+precompile times, due to heavy use of generated functions.
 
-See the tests for example usage.
+Then you can load it at the julia REPL with `using SemanticModels`
+
+There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
+package. For example `julia --project bin/extract.jl
+examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl` will extract code based knowledge elements from
+the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl`. 
+
+See the tests and documentation for example usage.
+
 
 ## Documentation
 

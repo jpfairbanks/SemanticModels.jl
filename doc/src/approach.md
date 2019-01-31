@@ -1,4 +1,4 @@
-# Automatic Scientific Knowledge Extraction
+# Approaches
 Architecture, Approaches, and Techniques
 
 We provide a high-level overview of the open-source
