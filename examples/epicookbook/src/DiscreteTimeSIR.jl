@@ -13,10 +13,11 @@
 #     name: julia-1.0
 # ---
 
+module DiscreteTimeSIR
 using RandomNumbers
 using DataFrames
 
-function randbn(n,p,rng)
+@inline @fastmath function randbn(n,p,rng)
     q = 1.0 - p
     s = p/q
     a = (n+1)*s
@@ -33,7 +34,7 @@ function randbn(n,p,rng)
     end
 end
 
-function sir(u, prams, rng)
+@inline @fastmath function sir(u, prams, rng)
 
     (S, I, R, Y) = u
     (β, γ, ι, N, δt) = prams
@@ -79,3 +80,5 @@ using Plots
 using StatPlots
 
 @df sir_out plot(:Time, [:S :I :R], colour = [:red :green :blue], xlabel="Time",ylabel="Number")
+
+end
