@@ -181,7 +181,11 @@ and run it through the code syntactic extractor, which will produce the followin
 ("Modeling.sis_ode(du, u, p, t)", :input, :(+((betaLH * IH + betaLL * IL)) * SL), Symbol[Symbol("gamma * IL")])
 ```
 
-This extractor provides edges to the [Knowledge Graphs](@ref).
+This extractor provides edges to the [Knowledge Graphs](@ref). Once the extraction is
+complete, the knowledge graph can be stored and transmitted to scientists across many
+disciplines. These knowledge graphs are a compact representation of the code and text.
+As new papers and codes are written, they can be ingested into an online graph database
+providing access to many scholars.
 
 ## Reconciliation and Disambiguation
 

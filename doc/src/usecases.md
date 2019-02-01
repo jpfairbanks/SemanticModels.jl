@@ -9,9 +9,9 @@ answering those questions with models.
 
 Suppose the model is 
 
-\[
+$$
   du/dt = f_p(u,t) 
-\]
+$$
 
 where $u$ is the observable, $du/dt$ is the derivative, $f$ is a function, $t$ is the time variable, and $p$ is a parameter. 
 

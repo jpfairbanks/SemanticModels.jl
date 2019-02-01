@@ -1,6 +1,9 @@
 # Dubstep 
 
 This module uses [Cassette.jl](https://www.github.com/jrevels/Cassette.jl) ([Zenodo](https://zenodo.org/record/1806173)) to modify programs by overdubbing their executions in a context. 
+Overdubbing allows you to define a context that defines allows a program to control the execution behavior of programs
+that are passed to it. Cassette is a novel approach to software development and integrates deeply with the Julia
+compiler to provide high performance aspect oriented programming.
 
 ## TraceCtx
 

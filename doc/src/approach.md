@@ -700,6 +700,10 @@ number of papers will be too large for manual tasks per paper.
 When a new paper or code snippet is ingested by the system, we may need
 to generate new leaf types for that paper automatically.
 
+By hooking into the Julia type system we are able to use multidispatch to reprogram existing functions. Our approach
+takes this to the next level by using Cassette.jl contexts and overdubbing to reprogram code to provide new
+functionality without changing the architecture of the existing software.
+
 ### User Interface
 
 Our system is used by expert scientists who want to reduce their time
