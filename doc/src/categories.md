@@ -32,4 +32,10 @@ name of the aspect. An aspect is valid if it is a function (1-many relation).
 ![Birthday olog](img/olog_birthday.png)
 
 
-Olog for a disease: in progress.
+We can represent an SIR model as an olog as shown below.
+
+![SIR olog](img/olog_sir.png)
+
+Another category theory representation without the human readable names used in an olog shows a simpler representation.
+
+![SIR Category](img/category_sir.png)
