@@ -99,7 +99,6 @@ plot(sis_sol,xlabel="Time (Years)",ylabel="Proportion of Population")
 
 and run it through the code syntactic extractor, which will produce the following information:
 
-, etc.
 ```julia
 ┌ Info: script uses modules
 │   modules =

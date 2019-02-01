@@ -47,6 +47,7 @@ pages       = Any[
     "SemanticModels.jl"               => "index.md",
     "Intended Use Cases" => "usecases.md",
     "News" => "news.md",
+    "Example" => "example.md",
     "Approaches" => "approach.md",
     "Slides"               => "slides.md",
     "Flu Model" => "FluModel.md",

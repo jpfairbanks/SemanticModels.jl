@@ -10,7 +10,7 @@ include("../examples/epicookbook/src/SEIRmodel.jl")
 seir_ode = SEIRmodel.seir_ode
 
 # source of the problem we want to take from
-expr = parsefile("examples/epicookbook/src/ScalingModel.jl")
+expr = parsefile("../examples/epicookbook/src/ScalingModel.jl")
 
 
 # Find the expression we want to graft
