@@ -2,6 +2,11 @@
 
 ## Release v0.2
 
+Release v0.2 includes an initial version of every step in the SemanticModels pipeline. 
+Users can now extract information, build knowledge graphs, and generate new models.
+
+The following is a summary of the most important new features and updates:
+
 - New submodules
   - Dubstep
     - [`SemanticModels.Dubstep.TraceCtx`](@ref) builds dynamic analysis traces of a model for information extraction.
@@ -23,13 +28,14 @@
   
 
 - New docs pages
+  - [Intended Use Cases](@ref)
   - [Dubstep](@ref)
   - [Knowledge Graphs](@ref)
   - [Knowledge Extraction](@ref)
-  - [Validation](./validation.md)
-  - [Theory](./theory.md)
-  - [Contributing](./contributing.md)
+  - [Model Validation with Dynamic Analysis](@ref)
+  - [Semantic Modeling Theory](@ref)
+  - [Developer Guidelines](@ref)
 
 ## Release v0.1
 
-Initial release
+Initial release with documentation and some examples designed to illustrate the inteded scope of the software.

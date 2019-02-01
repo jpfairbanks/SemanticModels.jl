@@ -732,7 +732,7 @@ LLVM compilation for the new method of that function. When using Unitful
 numbers in calculations, changes to the units of the numbers create new
 types and thus additional compile time overhead. This overhead is
 necessary to provide unitful numbers that are no slower for calculations
-than bare bits types provided by the processor. As we push more
+than primitive number types provided by the processor. As we push more
 information into the type system, this trade-off of additional compiler
 overhead will need to be managed.
 
@@ -782,7 +782,7 @@ to measure the quality of the solution is to measure both the error and
 the residual. The error is defined as $\mid x-x^\star\mid$, which is the
 difference from the correct solution in the domain of $x$ and the
 residual is $\mid f(x) - f(x^\star)\mid$ or the difference from the
-correct solution in the co-domain. We will frame our validation in terms
+correct solution in the codomain. We will frame our validation in terms
 of error and residual, where the error is how close did we get to the
 best metamodel, and residual is the difference between the observed
 versus predicted phenomena.

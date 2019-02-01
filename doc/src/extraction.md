@@ -2,7 +2,7 @@
 
 ## Documents
 
-```SemanticModels.jl``` takes the opinion that the source code and documentation is more valuable than the scientific papers
+`SemanticModels.jl` takes the opinion that the source code and documentation is more valuable than the scientific papers
 themselves, even though traditional scientific incentive systems focus on only the papers.
 
 Since natural language text is primarily being used for context, understanding, and disambiguation of code information,
@@ -46,7 +46,7 @@ meta-modeling related functionalities users will be able to work with.
 ## Code
 
 SemanticModels currently supports extracting knowledge from the static syntactic level information that is accessible from
-the source code. We use the same Julia code parser as the ```julia``` program.
+the source code. We use the same Julia code parser as the `julia` program.
 
 This parser takes text representations of Julia code and returns an abstract syntax tree (AST).
 We then walk this AST looking for Julia program expressions that create information. For example, function definitions,
@@ -54,11 +54,11 @@ variable assignments and module imports. We recurse into the function definition
 (and closures) used in implementing the functions. 
 
 This form of static program analysis provides a more direct way to access user defined functions. However it cannot
-access the type information and run time values. For this we use ```Cassette.jl```, which is a library for context-dependent
+access the type information and run time values. For this we use `Cassette.jl`, which is a library for context-dependent
 execution. SemanticModels uses a custom compiler pass to access code infomation and extract information at compile time.
-In addition, we use the ```overdub``` component of Cassette to build a tracer for capturing run time values. Since Julia syntax
+In addition, we use the `overdub` component of Cassette to build a tracer for capturing run time values. Since Julia syntax
 is very regular and metaprogramming is a standard (albeit advanced) practice in the Julia community, the syntax trees and
-```CodeInfo``` objects are designed to be manipulated programmatically, which makes writing recursive generic syntax
+`CodeInfo` objects are designed to be manipulated programmatically, which makes writing recursive generic syntax
 extraction rules straightforward.
 
 ### Example
@@ -188,7 +188,7 @@ This extractor provides edges to the [Knowledge Graphs](@ref).
 As our information extraction pipeline outlined above illustrates, the task of knowledge graph construction implicitly requires us to either assert or infer a crosswalk between (1) vertices extracted from text and vertices extracted from code with a common higher-level source (e.g., a published paper that is associated with source code that also includes comments); and (2) vertices (and by extension, edges) that are already present in the graph, when the combined information conveyed by the user-provided vertex name, and provided/inferred vertex type is not a sufficient guarantee of uniqueness, and/or a reliable signal of user intent (e.g., the user may seek to (1) enforce uniqueness by differentiating a new vertex, $v_i$, from lexically identical but semantically different vertices $\in V$, or (2) insert $v_i$ iff $V \cap_{semantic} v_i = \emptyset$, regardless of their lexical (dis)similarity).
 
 When two or more knowledge artifacts share provenance (e.g., the narrative markdown text, programmer-provided comments, and programmer-interpretable source code that, when taken in tandem, represent a single [recipe](http://epirecip.es/epicookbook/chapters/1host1vector/julia) in the [Epicookbook](http://epirecip.es/epicookbook/chapters/simple)), we currently consider code text and markdown/comments text as strings, and 
-use regular expression-based rules to associate text with code objects; these lexical matches are then parsed in an effort to extract edges of the type ```repr```, which connect a (code) ```type``` source vertex to a (scientific) ```concept``` destination vertex. 
+use regular expression-based rules to associate text with code objects; these lexical matches are then parsed in an effort to extract edges of the type `repr`, which connect a (code) `type` source vertex to a (scientific) `concept` destination vertex. 
 
 We intend to extend this approach in the future by: (1) creating new syntactical parsing rules to capture additional relationships; (2) considering the ways in which information related to scope, and/or position within the program-level call graph can be informative for the purpose of co-reference resolution; and/or (3) representing both sources of text sequences as real-valued vectors, to determine whether cosine similarity and/or RNN-based approaches can help to detect co-referential lexical elements [^1].
 
