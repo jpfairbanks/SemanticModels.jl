@@ -12,3 +12,5 @@ main.pdf: main.aux refs.bib
 
 deliver: build/index.html
 	rsync -a build/ jpfnet:~/public/doc/aske
+doc.tar.gz: build/index.html
+	tar zcf doc.tar.gz build

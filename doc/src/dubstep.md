@@ -9,17 +9,18 @@ You can change out the metadata that you pass in order to collect different info
 
 ## LPCtx
 
-Replaces all calls to `norm(x,p)` which `norm(x,ctx.metadata[p])` so you can change the norms that a code uses to
+Replaces all calls to `norm(x,p)` with `norm(x,ctx.metadata[p])` so you can change the norms that a code uses to
 compute. 
 
 ### Example
-Here is an example of changing an internal component of a mathematical operation using cassette to rewrite the norm function.
+Here is an example of changing an internal component of a mathematical operation using cassette to rewrite the norm function:
 
-
-First we define a function that uses norm, and
-another function that calls it. 
+First we define a function that uses ```norm```, and
+another function that calls it: 
 ```julia
+
 subg(x,y) = norm([x x x]/6 - [y y y]/2, 2)
+
 function g()
     a = 5+7
     b = 3+4
@@ -28,7 +29,7 @@ function g()
 end
 ```
 
-We use the Dubstep.LPCtx which is shown here.
+We use the ```Dubstep.LPCtx```, which is shown here:
 
 ```julia
 Cassette.@context LPCtx
@@ -53,11 +54,11 @@ for LPCtx when called with the function
 `LinearAlgebra.norm`.
 
 We then construct an instance of the context that
-configures how we want to do the substitution.
+configures how we want to do the substitution:
 ```julia
 @testset "LP" begin 
 @test 2.5980 < g() < 2.599
-ctx = Dubstep.LPCtx(metadata=Dict(1=>2, 2=>1, Inf=>1
+ctx = Dubstep.LPCtx(metadata=Dict(1=>2, 2=>1, Inf=>1))
 @test Cassette.recurse(ctx, g) == 4.5
 ```
 
@@ -67,18 +68,18 @@ of a program without rewriting it at the lexical level.
 
 ## Transformations
 
-You can also transform model by executing it in a
+You can also transform a model by executing it in a
 context that changes the function calls.
 Eventually we will support writing compiler passes
 for modifying models at the expression level, but
-for now function calls are a good entry point.
+for now, function calls are a good entry point.
 
 ### Example: Perturbations
 
 This example comes from the unit tests `test/transform/ode.jl`.
 
 The first step is to define a context for solving
-models.
+models:
 
 ```julia
 module ODEXform
@@ -191,7 +192,7 @@ end
 We define a perturbation function that handles
 setting up the context and collecting the results.
 Note that we store the extras in the
-context.metadata using a modifying operator push!.
+```context.metadata``` using a modifying operator ```push!```.
 
 ```julia
 """    perturb(f, factor)
@@ -239,10 +240,10 @@ end
 ```
 
 This example illustrates how you can use a
-Cassette.Context to highjack the execution of a
+```Cassette.Context``` to highjack the execution of a
 scientific model in order to change the execution
 in a meaningful way. We also see how the execution
-allows use to example the sensitivity of the
+allows use to examine the sensitivity of the
 solution with respect to the derivative. This
 technique allows scientists to answer
 counterfactual questions about the execution of
@@ -267,7 +268,7 @@ include("../examples/epicookbook/src/SEIRmodel.jl")
 seir_ode = SEIRmodel.seir_ode
 ```
 
-Once you have identified the entry point to your model, you can identify piecies of another model that you want to graft
+Once you have identified the entry point to your model, you can identify pieces of another model that you want to graft
 onto it. This piece of the other model might take significant preparation in order to be ready to fit onto the base
 model. These transformations include changing variables, and other plumbing aspects. If you stick to taking whole
 functions and not expressions, this prep work is reduced.
@@ -281,11 +282,13 @@ expr = parsefile("examples/epicookbook/src/ScalingModel.jl")
 #vital dynamics S rate expression
 vdsre = expr.args[3].args[5].args[2].args[4]
 @show popgrowth = vdsre.args[2].args[2]
+
 replacevar(expr, old, new) = begin
     dump(expr)
     expr.args[3].args[3].args[3] = new
     return expr
 end
+
 popgrowth = replacevar(popgrowth, :K,:N)
 
 # generate the function newfunc
@@ -320,7 +323,7 @@ function fprime(dY,Y,p,t, ϵ)
 end
 ```
 
-Define the overdub behavior, all the fucntions needed to be defined at this point using run time values slows down overdub.
+Define the overdub behavior; all the functions need to be defined at this point using run time values slows down overdub.
 
 ```julia
 function Cassette.overdub(ctx::Dubstep.GraftCtx, f::typeof(seir_ode), args...)
@@ -359,7 +362,7 @@ for λ in [1.0,1.1,1.2]
 end
 ```
 
-It Works! We can see that increasing the population growth causes a larger infected and recovered population at the end
+It works! We can see that increasing the population growth causes a larger infected and recovered population at the end
 of 1 year.
 
 ## Reference

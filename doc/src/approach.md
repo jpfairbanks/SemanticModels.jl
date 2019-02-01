@@ -44,7 +44,7 @@ engineering and open source software development. Having the source code
 for a library or package is essential to building on it, but perhaps
 even more important are the affordances provided by open source
 licensing models and (social) software distribution systems that can
-significantly reduce the effort required to download others code and
+significantly reduce the effort required to download others' code and
 streamline execution from hours to minutes. This low barrier to entry is
 responsible for the proliferation of open source software that we see
 today. By extracting knowledge from scientific software and representing
@@ -52,11 +52,6 @@ that knowledge, including model semantics, in knowledge graphs, along
 with leveraging type systems to conduct program analysis, we aim to
 increase the interoperability and development of scientific models at
 large scale.
-
-\setcounter{secnumdepth}{2}
-\setcounter{tocdepth}{2}
-\newpage
-\tableofcontents
 
 ## Scientific Domain and Relevant Papers
 
@@ -473,7 +468,7 @@ this information for many of the common open science data access
 protocols[^2] By linking dataset feature (column) names to knowledge
 graph concepts, we will be able to compare datasets for similarity and
 conceptual overlap. The fact that two models are connected to the same
-dataset or concept is an important indicator that the two models are
+dataset(s) or concept(s) is an important indicator that the two models are
 compatible or interchangeable.
 
 ### Schema.org
@@ -707,7 +702,6 @@ to generate new leaf types for that paper automatically.
 
 ### User Interface
 
-
 Our system is used by expert scientists who want to reduce their time
 spent writing code and plumbing models together. As an input it would
 take a set of things known or measured by the scientist and a set of
@@ -738,8 +732,8 @@ LLVM compilation for the new method of that function. When using Unitful
 numbers in calculations, changes to the units of the numbers create new
 types and thus additional compile time overhead. This overhead is
 necessary to provide unitful numbers that are no slower for calculations
-than bare bitstypes provided by the processor. As we push more
-information into the type system, this tradeoff of additional compiler
+than primitive number types provided by the processor. As we push more
+information into the type system, this trade-off of additional compiler
 overhead will need to be managed.
 
 ## Validation
@@ -790,7 +784,7 @@ difference from the correct solution in the domain of $x$ and the
 residual is $\mid f(x) - f(x^\star)\mid$ or the difference from the
 correct solution in the codomain. We will frame our validation in terms
 of error and residual, where the error is how close did we get to the
-best metamodel and residual is the difference between the observed
+best metamodel, and residual is the difference between the observed
 versus predicted phenomena.
 
 These techniques need to generate simple, explainable models for

@@ -1,13 +1,12 @@
 # Knowledge Graphs
 
-We use MetaGraphs.jl `MetaDiGraph`s to represent the knowledge we have extracted from the
-code and test. 
+We use MetaGraphs.jl `MetaDiGraph`s to represent the knowledge we have extracted from code and text. 
+
 ## Schema
 
-Here we define the schema for our knowledge graph. The vertices and edges have types and
-the metadata associated with the vertex or edge depends on its type.
+To construct our knowledge graph, we have developed a schema with defined vertex and edge types; the metadata associated with a given vertex or edge will depend on its type. The diagram below visually represents this schema:
 
-Here is a diagramatic overview of the schema for the knowledge graph. 
+
 ![Schema Diagram](img/olog.dot.svg)
 
 ### Vertex Types
@@ -42,7 +41,7 @@ mdtable(df,latex=false)
 ```@eval
 using CSV
 using Latexify
-df = CSV.read("../../examples/knowledge_graph/data/kg_edges.csv")
+df = CSV.read("../../examples/knowledge_graph/data/synth_kg_edges.csv")
 mdtable(df,latex=false)
 ```
 ## API reference
