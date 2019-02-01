@@ -35,6 +35,22 @@ modification ([Dubstep](@ref)).
 
 ## Table of Contents
 ```@contents
+Pages = [
+     "index.md",
+     "usecases.md",
+     "news.md",
+     "example.md",
+     "dubstep.md",
+     "graph.md",
+     "extraction.md",
+     "validation.md",
+     "library.md",
+     "theory.md",
+     "approach.md",
+     "slides.md",
+     "FluModel.md",
+     "contributing.md"]
+Depth = 3
 ```
 
 This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008.
