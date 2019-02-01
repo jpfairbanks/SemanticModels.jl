@@ -31,7 +31,7 @@ See the tests and documentation for example usage.
 
 There is a docs folder which contains the documentation, including reports sent to our sponsor, DARPA.
 
-Documentation is currently published at jpfairbanks.com/doc/aske and jpfairbanks.com/doc/aske/slides.pdf
+Documentation is currently published aske.gtri.gatech.edu
 
 Many of our documentation and examples are built with Jupyter notebooks. We use
 [jupytext](https://github.com/mwouts/jupytext) to support diff friendly outputs in the repo.
@@ -46,25 +46,7 @@ example, starting with `epicookbook`.
 
 ## Concepts
 
-This package enables representation of complex and diverse model structure in the type system of julia. This will allow generic programing and API development for these complex models.
-
-### ModelStructures
-
-The following concepts are defined in SemanticModels.jl
-
-- Model
-- EpiModel <: Model 
-- NumberClass 
-- Amount <: NumberClass 
-- Rate <: NumberClass 
-- BirthRate <: Rate 
-- DeathRate <: Rate 
-- TransitionRate <: Rate 
-- Equation 
-- Expression 
-- Variable 
-
-A number class is like a Unit in that it can be used to check compatibility of numeric values for various operations.
+Here is a preview of the concepts used in SemanticModels, please see the full documentation for a more thorough description.
 
 ### Knowledge Graph
 
@@ -78,6 +60,7 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 - Code
 - Model
 - Paper
+
 ### Overdubbing
 
 You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate. 
