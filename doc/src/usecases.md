@@ -7,13 +7,7 @@ Knowledge and understanding provide the ability to reason about novel scenarios.
 A crucial aspect of acquiring knowledge is asking questions about the world and
 answering those questions with models.
 
-Suppose the model is 
-
-$$
-  du/dt = f_p(u,t) 
-$$
-
-where $u$ is the observable, $du/dt$ is the derivative, $f$ is a function, $t$ is the time variable, and $p$ is a parameter. 
+Suppose the model is  $du/dt = f_p(u,t)$ where $u$ is the observable, $du/dt$ is the derivative, $f$ is a function, $t$ is the time variable, and $p$ is a parameter. 
 
 Scientific knowledge involves asking and answering questions about the model. For example:
 1. How does `u` depend on `p`?
