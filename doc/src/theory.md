@@ -90,8 +90,8 @@ name of the aspect. An aspect is valid if it is a function (1-many relation).
 
 We can represent an SIR model as an olog as shown below.
 
-![SIR olog](img/olog_sir.png)
+![SIR olog](img/olog_sir.dot.png)
 
 Another category theory representation without the human readable names used in an olog shows a simpler representation.
 
-![SIR Category](img/category_sir.png)
+![SIR Category](img/category_sir.dot.png)

@@ -1,5 +1,5 @@
 digraph G {
-
+  node[shape="box"]
   i [label="I", position="1,0"]
   m [label="M", position="2,0"]
   p [label="P"]

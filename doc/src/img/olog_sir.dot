@@ -1,5 +1,6 @@
 digraph G {
   // layout="circo"
+  node[shape="box"]
   i [label="an initial state", position="1,0"]
   m [label="an SIR model", position="2,0"]
   p [label="a paramterization"]
