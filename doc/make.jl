@@ -45,6 +45,7 @@ sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
     "SemanticModels.jl"               => "index.md",
+    "Intended Use Cases" => "usecases.md",
     "News" => "news.md",
     "Approaches" => "approach.md",
     "Slides"               => "slides.md",
