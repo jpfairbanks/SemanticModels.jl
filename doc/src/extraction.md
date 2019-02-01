@@ -99,7 +99,7 @@ plot(sis_sol,xlabel="Time (Years)",ylabel="Proportion of Population")
 
 and run it through the code syntactic extractor, which will produce the following information:
 
-
+, etc.
 ```julia
 ┌ Info: script uses modules
 │   modules =
@@ -185,22 +185,64 @@ This extractor provides edges to the [Knowledge Graphs](@ref).
 
 ## Reconciliation and Disambiguation
 
-As our information extraction pipeline outlined above illustrates, the task of knowledge graph construction implicitly requires us to either assert or infer a crosswalk between (1) vertices extracted from text and vertices extracted from code with a common higher-level source (e.g., a published paper that is associated with source code that also includes comments); and (2) vertices (and by extension, edges) that are already present in the graph, when the combined information conveyed by the user-provided vertex name, and provided/inferred vertex type is not a sufficient guarantee of uniqueness, and/or a reliable signal of user intent (e.g., the user may seek to (1) enforce uniqueness by differentiating a new vertex, $v_i$, from lexically identical but semantically different vertices $\in V$, or (2) insert $v_i$ iff $V \cap_{semantic} v_i = \emptyset$, regardless of their lexical (dis)similarity).
+As our information extraction pipeline outlined above illustrates, the task of knowledge
+graph construction implicitly requires us to either assert or infer a crosswalk between
+(1) vertices extracted from text and vertices extracted from code with a common
+higher-level source (e.g., a published paper that is associated with source code that also
+includes comments); and (2) vertices (and by extension, edges) that are already present in
+the graph, when the combined information conveyed by the user-provided vertex name, and
+provided/inferred vertex type is not a sufficient guarantee of uniqueness, and/or a
+reliable signal of user intent (e.g., the user may seek to (1) enforce uniqueness by
+differentiating a new vertex, $v_i$, from lexically identical but semantically different
+vertices $\in V$, or (2) insert $v_i$ iff $V \cap_{semantic} v_i = \emptyset$, regardless
+of their lexical (dis)similarity).
 
-When two or more knowledge artifacts share provenance (e.g., the narrative markdown text, programmer-provided comments, and programmer-interpretable source code that, when taken in tandem, represent a single [recipe](http://epirecip.es/epicookbook/chapters/1host1vector/julia) in the [Epicookbook](http://epirecip.es/epicookbook/chapters/simple)), we currently consider code text and markdown/comments text as strings, and 
-use regular expression-based rules to associate text with code objects; these lexical matches are then parsed in an effort to extract edges of the type `repr`, which connect a (code) `type` source vertex to a (scientific) `concept` destination vertex. 
+When two or more knowledge artifacts share provenance (e.g., the narrative text,
+programmer-provided comments, and source code that, when taken in tandem, represent a
+single [recipe](http://epirecip.es/epicookbook/chapters/1host1vector/julia) in the
+[Epicookbook](http://epirecip.es/epicookbook/chapters/simple)), we currently consider code
+text and markdown/comments text as strings, and use rule based learning to associate text
+with code objects; these lexical matches are then parsed in an effort to extract edges of
+the type representation (abbreviated `repr`), which connect a (code) `type` source vertex
+to a (scientific) `concept` destination vertex.
 
-We intend to extend this approach in the future by: (1) creating new syntactical parsing rules to capture additional relationships; (2) considering the ways in which information related to scope, and/or position within the program-level call graph can be informative for the purpose of co-reference resolution; and/or (3) representing both sources of text sequences as real-valued vectors, to determine whether cosine similarity and/or RNN-based approaches can help to detect co-referential lexical elements [^1].
+We intend to extend this approach in the future by: (1) creating new syntactical parsing
+rules to capture additional relationships; (2) considering the ways in which information
+related to scope, and/or position within the program-level call graph can be informative
+for the purpose of co-reference resolution; and/or (3) representing both sources of text
+sequences as real-valued vectors, to determine whether cosine similarity and/or RNN-based
+approaches can help to detect co-referential lexical elements [^1].
 
-With respect to the question of how to best assess/resolve ambiguity surrounding the uniqueness of a vertex upon ingestion, we currently guarantee uniqueness by appending a randomly generated string to the concatenation of the (raw-text) vertex name and the (schema-consistent) vertex type. This approach biases the graph toward smaller, disconnected subgraphs, and makes it harder for us to benefit from the semantic equivalence that often exists when different text and/or code artifacts from the same domain are parsed for the purpose of ingestion. 
+With respect to the question of how to best assess/resolve ambiguity surrounding the
+uniqueness of a vertex upon ingestion, we currently guarantee uniqueness by appending a
+randomly generated string to the concatenation of the (raw-text) vertex name and the
+(schema-consistent) vertex type. This approach biases the graph toward smaller,
+disconnected subgraphs, and makes it harder for us to benefit from the semantic
+equivalence that often exists when different text and/or code artifacts from the same
+domain are parsed for the purpose of ingestion.
 
-We intend to develop a more nuanced approach to vertex ingestion that incorporates exogenous, domain-specific information (for example, a lookup table of parameters that are commonly used within the epidemiological literature; known model imports, etc.). We can begin by manually constructing a dataset with examples of how these known elements are represented in code, and can then train an NER model to detect such references when they occur, so that we can avoid insertion of lexically distinct but (fuzzily) semantically equivalent vertices and encourage semantically meaningful consolidation, resulting in a more connected, parsimonious graph. 
+We intend to develop a more nuanced approach to vertex ingestion that incorporates
+exogenous, domain-specific information (for example, a lookup table of parameters that are
+commonly used within the epidemiological literature; known model imports, etc.). We can
+begin by manually constructing a dataset with examples of how these known elements are
+represented in code, and can then train an NER model to detect such references when they
+occur, so that we can avoid insertion of lexically distinct but (fuzzily) semantically
+equivalent vertices and encourage semantically meaningful consolidation, resulting in a
+more connected, parsimonious graph.
 
-We may also find it helpful to leverage user-provided metadata (such as source/provenance information), and/or unsupervised learning techniques, including clustering methods, for this task as the complexity of the graph grows, and/or knowledge artifacts from additional domains with potentially conflicting named entities are introduced. We may also find it helpful to compare the semantic saliency of the (graph-theoretic) neighborhood(s) that might result from either the source or destination vertex of a new edge being mapped to each of a set of feasible existing vertices; this approach could also benefit from provenance-related metadata.
+We may also find it helpful to leverage user-provided metadata (such as source/provenance
+information), and/or unsupervised learning techniques, including clustering methods, for
+this task as the complexity of the graph grows, and/or knowledge artifacts from additional
+domains with potentially conflicting named entities are introduced. We may also find it
+helpful to compare the semantic saliency of the (graph-theoretic) neighborhood(s) that
+might result from either the source or destination vertex of a new edge being mapped to
+each of a set of feasible existing vertices; this approach could also benefit from
+provenance-related metadata.
 
 ## Reasoning
 
-Once the information is extracted from the documentation and code, we can visualize the knowledge as a graph.
+Once the information is extracted from the documentation and code, we can visualize the
+knowledge as a graph.
 
 ![Knowledge Graph from epicookbook](img/reasoning_sir.dot.svg)
 
@@ -229,15 +271,41 @@ of *relevance*. From this subgraph, a human modeler can easily instruct the Sema
 system on how to combine the `SEIRmodel` and `ScalingModel` programs into a single model
 and generate a program to execute it.
 
-In order to move beyond this relatively manual approach to model modification and metamodeling, it is helpful to frame each of our intended [use cases](usecases.md) as an optimization problem, in which the scientist's required unitful input(s) and/or unitful output(s) (including expected deviation from observed/expected patterns, in the case of model validation) can be formally expressed as constraints, and relevance can be objectively and quantifiably represented, so that competing feasible flows can be assessed, ranked, and returned to the scientist for more informed, efficient review. The specification of the objective function, choice of traversal algorithm(s), and the use of edge weights to convey algorithmically meaningful information, will vary by use case.
+In order to move beyond this relatively manual approach to model modification and
+metamodeling, it is helpful to frame each of our intended [use cases](usecases.md) as an
+optimization problem, in which the scientist's required unitful input(s) and/or unitful
+output(s) (including expected deviation from observed/expected patterns, in the case of
+model validation) can be formally expressed as constraints, and relevance can be
+objectively and quantifiably represented, so that competing feasible flows can be
+assessed, ranked, and returned to the scientist to augment their understanding. The
+specification of the objective function, choice of traversal algorithm(s), and the use of
+edge weights to convey algorithmically meaningful information, will vary by use case.
 
-For example, the metamodeling use case, in which the scientist begins with a vector of known unitful input and a vector of unitful output whose value is unknown, can be formulated as a linear program to solve max flow, with our input vertex representing $s$, our output vertex representing $t$, and edge weights corresponding to the frequency with which a given edge is empirically observed when domain-specific text and code artifacts are ingested. To ensure tractability at scale, we may want to consider a weighting scheme to avoid integer weight values. This approach may also help us to identify disconnected subgraphs, which, if linked by cut-crossing edges, would represent a feasible flow; the scientific insight here is that such a set of edges might represent "missing" functions capable of transforming the "input" src vertex of a cut-crossing edge with its output dst vertex. These function(s) could then be ingested or written. 
+For example, the metamodeling use case, in which the scientist begins with a vector of
+known unitful input and a vector of unitful output whose value is unknown, can be
+formulated as an $s-t$ max flow problem, with our input vertex as $s$, our output vertex
+as $t$, and edge weights corresponding to the frequency with which a given edge is
+empirically observed within a domain-specific text and code corpus. To ensure tractability
+at scale, we may want to consider a weighting scheme to avoid integer constraints. This
+approach may also help us to identify disconnected subgraphs, which, if linked by
+cut-crossing edges, would represent a feasible flow; the scientific insight here is that
+such a set of edges might represent "missing" functions capable of transforming the
+"input" src vertex of a cut-crossing edge with its output dst vertex. These function(s)
+could then be ingested or written by scientists.
 
-While we intend to proceed with algorithmic development of this nature in the near term, it's worth noting that the goal of this project is to augment scientists and their workflows. As such, we envision a human-in-the-loop, semi-automated approach, in which the scientist is in control and has the ability to instruct the machine by providing information about what the scientist already knows, and what they wish to do with that knowledge (e.g., modify, combine, validate, etc.). 
+While we intend to proceed with algorithmic development of this nature in the near term,
+it's worth noting that the goal of this project is to augment scientists and their
+workflows. As such, we envision a human-in-the-loop, semi-automated approach, in which the
+scientist is in control and has the ability to instruct the machine by providing
+information about what the scientist already knows, and what they wish to do with that
+knowledge (e.g., modify, combine, validate) existing models and scripts. 
 
-Any API that supports augmenting scientists will require some human intervention in the reasoning and generation stages as the system must get input from the user as to the questions being asked of it. We view this to analogous to a data analyst working with a database system: a query planning system is
-able to optimize queries based on knowledge about the schema and data statistics, but it
-must still wait for a human to provide a query. In this way, even as our development efforts proceed, `SemanticModels` will rely 
+Any API that supports augmenting scientists will require some human intervention in the
+reasoning and generation stages as the system must get input from the user as to the
+questions being asked of it. We view this to analogous to a data analyst working with a
+database system: a query planning system is able to optimize queries based on knowledge
+about the schema and data statistics, but it must still wait for a human to provide a
+query. In this way, even as our development efforts proceed, `SemanticModels` will rely
 upon user guidance for reasoning and generation tasks.
 
 ## API reference
