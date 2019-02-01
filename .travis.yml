@@ -24,9 +24,9 @@ after_success:
 
 jobs:
   include:
-    - stage: "Testing"
-      script:
-        - travis_wait 30 julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
+    #- stage: "Testing"
+    #  script:
+    #    - travis_wait 30 julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
     - stage: "Documentation"
       script:
         - julia --project -e 'using Pkg; Pkg.instantiate();'
