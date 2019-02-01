@@ -44,38 +44,38 @@ format      = Documenter.HTML(),
 sitename    = "SemanticModels",
 doctest     = false,
 pages       = Any[
-    "SemanticModels.jl"               => "index.md",
-    "News" => "news.md",
-    "Approaches" => "approach.md",
-    "Slides"               => "slides.md",
-    "Flu Model" => "FluModel.md",
-    "Dubstep" => "dubstep.md",
-    "Knowledge Graphs" => "graph.md",
-    "Knowledge Extraction" => "extraction.md",
-    "Validation" => "validation.md",
-    "Library Reference" => "library.md",
-    "Theory" =>"theory.md",
-    # "Model Types"                   => "types.md",
-    # # "Reading / Writing Models"    => "persistence.md",
-    # # "Plotting"                    => "plotting.md",
-    # # "Parallel Algorithms"         => "parallel.md",
-    "Contributing"                  => "contributing.md",
-    # "License Information"           => "license.md",
-    # "Citing SemanticModels"         => "citing.md"
+    "SemanticModels.jl"            => "index.md",
+    "News"                         => "news.md",
+    "Approaches"                   => "approach.md",
+    "Slides"                       => "slides.md",
+    "Flu Model"                    => "FluModel.md",
+    "Dubstep"                      => "dubstep.md",
+    "Knowledge Graphs"             => "graph.md",
+    "Knowledge Extraction"         => "extraction.md",
+    "Validation"                   => "validation.md",
+    "Library Reference"            => "library.md",
+    "Theory"                       =>"theory.md",
+    # "Model Types"                => "types.md",
+    # # "Reading / Writing Models" => "persistence.md",
+    # # "Plotting"                 => "plotting.md",
+    # # "Parallel Algorithms"      => "parallel.md",
+    "Contributing"                 => "contributing.md",
+    # "License Information"        => "license.md",
+    # "Citing SemanticModels"      => "citing.md"
 ]
 )
 
-deploydocs(
-root        = "doc-published",
-target      = "build",
-deps        = nothing,
-make        = nothing,
-devbranch   = "travis-testing",
-devurl      = "doc",
-repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
-# julia       = "stable",
-# osname      = "linux"
-)
+ deploydocs(
+ root        = "doc",
+ target      = "build",
+ deps        = nothing,
+ make        = nothing,
+ devbranch   = "travis-testing",
+ devurl      = "",
+ repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
+ # julia       = "stable",
+ # osname      = "linux"
+ )
 
 # # rm(normpath(@__FILE__, "../src/contributing.md"))
 # # rm(normpath(@__FILE__, "../src/license.md"))
