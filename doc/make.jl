@@ -66,12 +66,9 @@ pages       = Any[
 )
 
 deploydocs(
-root        = "doc-published",
 target      = "build",
 deps        = nothing,
 make        = nothing,
-devbranch   = "travis-testing",
-devurl      = "doc",
 repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
 # julia       = "stable",
 # osname      = "linux"
