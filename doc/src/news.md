@@ -10,7 +10,6 @@
   - Parsers
     - [`Parsers.parsefile`](@ref) reads in a julia source file as an expression
     - [`Parsers.defs`](@ref) extracts from a module definition expression, all the code definitions
-    - [`Parsers.edges`](@ref) extracts edges for the knowledge graph
   - Graphs
     - A knowledge graph schema [Knowledge Graphs](@ref)
     - [`Graphs.insert_edges_from_jl`](@ref) builds a knowledge graph from extracted edges
@@ -20,7 +19,7 @@
 - Scripts
   - `bin/extract.jl` extracts knowledge elements from source code files
   - `bin/graft.jl` performs metamodeling by grafting a component of one model onto another
-  
+
 
 - New docs pages
   - Dubstep
