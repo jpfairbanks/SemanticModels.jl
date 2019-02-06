@@ -68,7 +68,6 @@ pages       = Any[
 )
 
 deploydocs(
-root        = "doc",
 target      = "build",
 deps        = nothing,
 make        = nothing,

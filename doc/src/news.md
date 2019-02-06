@@ -25,7 +25,6 @@ The following is a summary of the most important new features and updates:
 - Scripts
   - `bin/extract.jl` extracts knowledge elements from parsed markdown and source code files.
   - `bin/graft.jl` performs metamodeling by grafting a component of one model onto another.
-  
 
 - New docs pages
   - [Intended Use Cases](@ref)
