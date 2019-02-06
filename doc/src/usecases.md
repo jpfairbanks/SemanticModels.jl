@@ -1,4 +1,4 @@
-# Use-cases
+# Intended Use Cases
 
 Here are some use cases for SemanticModels.jl
 
@@ -7,13 +7,7 @@ Knowledge and understanding provide the ability to reason about novel scenarios.
 A crucial aspect of acquiring knowledge is asking questions about the world and
 answering those questions with models.
 
-Suppose the model is 
-
-\[
-  du/dt = f_p(u,t) 
-\]
-
-where $u$ is the observable, $du/dt$ is the derivative, $f$ is a function, $t$ is the time variable, and $p$ is a parameter. 
+Suppose the model is  $du/dt = f_p(u,t)$ where $u$ is the observable, $du/dt$ is the derivative, $f$ is a function, $t$ is the time variable, and $p$ is a parameter. 
 
 Scientific knowledge involves asking and answering questions about the model. For example:
 1. How does `u` depend on `p`?
@@ -29,7 +23,7 @@ Scientists often want to run counterfactuals through a model. they have question
 3. What if the implementation of this function was different?
 
 The "how" questions can be answered by running counterfactuals of the model.
-In order to run counterfactuals we need to modfiy the code. 
+In order to run counterfactuals we need to modify the code. 
 The current approach is for scientists to modify code writen by other scientists.
 This takes a long time and requires models to be converted from the modeling level to the code level, 
 then someone else reads the code and converts it back to the modeling level.
