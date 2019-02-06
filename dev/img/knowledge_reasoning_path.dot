@@ -1,0 +1,74 @@
+digraph G {
+  splines=false
+  #fontsize=10
+  #edge[weight=.2]
+  #ratio=0.25
+  #scale="10:1"
+  #size=5,2
+  pack="true"
+  #rankdir="LR"
+  edge [dir="none"]
+  node [shape="record", style="filled", fillcolor="#dddddd",penwidth=2.0]
+  ind -> epi [color=orange,penwidth=4.0]
+  inf-> ind [color=orange,penwidth=4.0]
+  thirty -> inf
+  twenty -> mort
+  mort -> ind
+  mort -> rate [style="dashed"]
+  inf -> rate [style="dashed"]
+  birth -> rate [style="dashed"]
+  birth -> ind
+
+  rate -> personper
+  person   -> unit
+  personper-> unit
+  second   -> unit
+  dollars -> unit
+
+  weather [label="NOAA\nWeather", color="orange"]
+  cost    [label="Vaccination\nCost", color="orange"]
+
+  node [color="#5DADE2"]
+  fed  [label="Fed\nForecast"]
+  demo [label="Census\nDemographics"]
+  epi  [label="SIR", color="#5DADE2"]
+  ode  [label="ODESolver"]
+
+
+  rate [label="{Transition\nRate}", color="#66AA55"]
+  unit [label="Unit", color="#66AA55"]
+  personper [label="Person/s", color="#66AA55"]
+  person [label="Person", color="#66AA55"]
+  second [label="second (s)", color="#66AA55"]
+  dollars [label="$", color="#66AA55"]
+
+  inf [label="Infection\nRate", color="#66AA55"]
+  mort [label="Mortality\nRate", color="#66AA55"]
+  birth [label="Birth\nRate",color="#66AA55"]
+  twenty [label="0.2 Persons/s", color="#DD1133"]
+  thirty [label="0.3 Persons/s", color="#DD1133"]
+
+  ind [label="Individual\nContact\nModel",color="#5DADE2", pos="0,1"]
+  temp [label="Temperature", color="#5DADE2"]
+  age  [label="Age", color="#5DADE2"]
+  dGDP [label="Economic Growth", color="#5DADE2"]
+  cases [label="Flu\nCases", color="#5DADE2"]
+  prices [label="Vacc\nPrice", color="#5DADE2"]
+
+  temp -> inf [color=orange,penwidth=4.0]
+  age -> mort
+  demo -> birth
+  dGDP -> prices
+  epi -> cases  [color=orange,penwidth=4.0]
+  prices -> regres
+  cases  -> regres [color=orange,penwidth=4.0]
+
+  weather -> temp [color=orange,penwidth=4.0]
+  demo-> age
+  fed -> dGDP
+
+  ode -> epi
+  regres -> cost [color=orange,penwidth=4.0]
+  dollars -> cost
+  regres [label="Regression"]
+}
