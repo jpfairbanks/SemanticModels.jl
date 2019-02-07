@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Flu Model · SemanticModels</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>SemanticModels</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">SemanticModels.jl</a></li><li><a class="toctext" href="../usecases/">Intended Use Cases</a></li><li><a class="toctext" href="../news/">News</a></li><li><a class="toctext" href="../example/">Example</a></li><li><a class="toctext" href="../dubstep/">Dubstep</a></li><li><a class="toctext" href="../graph/">Knowledge Graphs</a></li><li><a class="toctext" href="../extraction/">Knowledge Extraction</a></li><li><a class="toctext" href="../validation/">Validation</a></li><li><a class="toctext" href="../library/">Library Reference</a></li><li><a class="toctext" href="../theory/">Theory</a></li><li><a class="toctext" href="../approach/">Approaches</a></li><li><a class="toctext" href="../slides/">Slides</a></li><li class="current"><a class="toctext" href>Flu Model</a><ul class="internal"></ul></li><li><a class="toctext" href="../contributing/">Contributing</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Flu Model</a></li></ul><a class="edit-page" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/FluModel.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Flu Model</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="FluModel-1" href="#FluModel-1">FluModel</a></h1><pre><code class="language-julia">using Pkg
+Pkg.activate(&quot;.&quot;)
+using SemanticModels
+using SemanticModels.Unitful: DomainError, s, d, C, uconvert, NoUnits
+using DifferentialEquations
+using DataFrames
+using Unitful
+using Test
+
+using Distributions: Uniform
+using GLM
+using DataFrames
+</code></pre><pre><code class="language-julia">using Plots</code></pre><pre><code class="language-julia">stripunits(x) = uconvert(NoUnits, x)</code></pre><pre><code class="language-none">stripunits (generic function with 1 method)</code></pre><pre><code class="language-julia">function flusim(tfinal)
+    # annual cycle of temperature control flu infectiousness
+    springmodel = SpringModel([u&quot;(1.0/(365*8))d^-2&quot;], # parameters (frequency)
+                              (u&quot;0d&quot;,tfinal), # time domain
+                              [u&quot;25.0C&quot;, u&quot;0C/d&quot;]) # initial_conditions T, T&#39;
+    function create_sir(m, solns)
+        sol = solns[1]
+        initialS = u&quot;10000person&quot;
+        initialI = u&quot;1person&quot; 
+        initialpop = [initialS, initialI, u&quot;0.0person&quot;]
+        β = u&quot;1.0/18&quot;/u&quot;d*C&quot; * sol(sol.t[end-2])[1] #infectiousness
+        @show β
+        sirprob = SIRSimulation(initialpop, #initial_conditions S,I,R
+                                (u&quot;0.0d&quot;, u&quot;20d&quot;), #time domain
+                                SIRParams(β, u&quot;40.0person/d&quot;)) # parameters β, γ
+        return sirprob
+    end
+
+    function create_flu(cm, solns)
+        sol = solns[1]
+        finalI = stripunits(sol(u&quot;8.0d&quot;)[2]) # X
+        population = stripunits(sol(sol.t[end])[2])
+        # population = stripunits(sum(sol.u[end]))
+        df = SemanticModels.generate_synthetic_data(population, 0,100)
+        f = @formula(vaccines_produced ~ flu_patients)
+        model =  lm(f,
+            df[2:length(df.year),
+            [:year, :flu_patients, :vaccines_produced]])
+        println(&quot;GLM Model:&quot;)
+        println(model)
+
+        year_to_predict = 1
+        num_flu_patients_from_sim = finalI
+        vaccines_produced = missing
+        targetDF = DataFrame(year=year_to_predict,
+            flu_patients=num_flu_patients_from_sim, 
+            vaccines_produced=missing)
+        @show targetDF
+
+
+        return RegressionProblem(f, model, targetDF, missing)
+    end
+    cm = CombinedModel([springmodel], create_sir)
+    flumodel = CombinedModel([cm], create_flu)
+    return flumodel
+end
+
+tfinal = 240π*u&quot;d&quot; #(~2 yrs)
+flumodel = flusim(tfinal)
+</code></pre><pre><code class="language-none">CombinedModel{Array{CombinedModel{Array{SpringModel{Array{Quantity{Float64,𝐓^-2,Unitful.FreeUnits{(d^-2,),𝐓^-2,nothing}},1},Tuple{Quantity{Int64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}},Quantity{Float64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}}},Array{Quantity{Float64,D,U} where U where D,1}},1},getfield(Main, Symbol(&quot;#create_sir#9&quot;))},1},getfield(Main, Symbol(&quot;#create_flu#10&quot;))}(CombinedModel{Array{SpringModel{Array{Quantity{Float64,𝐓^-2,Unitful.FreeUnits{(d^-2,),𝐓^-2,nothing}},1},Tuple{Quantity{Int64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}},Quantity{Float64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}}},Array{Quantity{Float64,D,U} where U where D,1}},1},getfield(Main, Symbol(&quot;#create_sir#9&quot;))}[CombinedModel{Array{SpringModel{Array{Quantity{Float64,𝐓^-2,FreeUnits{(d^-2,),𝐓^-2,nothing}},1},Tuple{Quantity{Int64,𝐓,FreeUnits{(d,),𝐓,nothing}},Quantity{Float64,𝐓,FreeUnits{(d,),𝐓,nothing}}},Array{Quantity{Float64,D,U} where U where D,1}},1},#create_sir#9}(SpringModel{Array{Quantity{Float64,𝐓^-2,Unitful.FreeUnits{(d^-2,),𝐓^-2,nothing}},1},Tuple{Quantity{Int64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}},Quantity{Float64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}}},Array{Quantity{Float64,D,U} where U where D,1}}[SpringModel{Array{Quantity{Float64,𝐓^-2,FreeUnits{(d^-2,),𝐓^-2,nothing}},1},Tuple{Quantity{Int64,𝐓,FreeUnits{(d,),𝐓,nothing}},Quantity{Float64,𝐓,FreeUnits{(d,),𝐓,nothing}}},Array{Quantity{Float64,D,U} where U where D,1}}(Quantity{Float64,𝐓^-2,Unitful.FreeUnits{(d^-2,),𝐓^-2,nothing}}[0.000342466 d^-2], (0 d, 753.982 d), Quantity{Float64,D,U} where U where D[25.0 C, 0.0 C d^-1])], #create_sir#9())], getfield(Main, Symbol(&quot;#create_flu#10&quot;))())</code></pre><pre><code class="language-julia">springmodel = flumodel.deps[1].deps[1]
+sirmodel = flumodel.deps[1]
+sol = solve(springmodel)
+plot(sol.t./d, map(x-&gt;x[1], sol.u) ./ C)</code></pre><p><img src="../img/FluModel_files/FluModel_4_0.svg" alt="svg"/></p><pre><code class="language-julia">sirsol = solve(sirmodel)</code></pre><pre><code class="language-none">β = 1.0854014119706108 d^-1
+
+
+
+
+
+retcode: Success
+Interpolation: specialized 9th order lazy interpolation
+t: 16-element Array{Quantity{Float64,𝐓,Unitful.FreeUnits{(d,),𝐓,nothing}},1}:
+                0.0 d
+ 0.2503747748877873 d
+ 0.9420079061012359 d
+ 1.9002912698756584 d
+  2.972126338526902 d
+  4.147568957524303 d
+  5.418240373678765 d
+ 6.7948860959760315 d
+  8.400900825017708 d
+ 10.236958450599571 d
+  12.30882380127413 d
+ 13.728455901957311 d
+ 15.710893594828972 d
+  17.26796601078083 d
+ 19.522036174270298 d
+               20.0 d
+u: 16-element Array{Array{Quantity{Float64,NoDims,Unitful.FreeUnits{(person,),NoDims,nothing}},1},1}:
+ [10000.0 person, 1.0 person, 0.0 person]           
+ [9999.69 person, 1.31091 person, 0.00115006 person]
+ [9998.22 person, 2.76907 person, 0.0065442 person] 
+ [9993.17 person, 7.80133 person, 0.0251661 person] 
+ [9976.09 person, 24.8203 person, 0.0882149 person] 
+ [9912.76 person, 87.9172 person, 0.322914 person]  
+ [9661.17 person, 338.559 person, 1.27032 person]   
+ [8652.58 person, 1343.08 person, 5.33359 person]   
+ [5308.5 person, 4669.16 person, 23.338 person]     
+ [1351.18 person, 8576.06 person, 73.7647 person]   
+ [166.552 person, 9683.51 person, 150.933 person]   
+ [37.1606 person, 9757.62 person, 206.214 person]   
+ [4.57084 person, 9712.98 person, 283.447 person]   
+ [0.889612 person, 9656.35 person, 343.763 person]  
+ [0.0847902 person, 9570.48 person, 430.432 person] 
+ [0.0516352 person, 9552.24 person, 448.71 person]</code></pre><pre><code class="language-julia">plot(sirsol.t./d,map(x-&gt;stripunits.(x)[2], sirsol.u))</code></pre><p><img src="../img/FluModel_files/FluModel_6_0.svg" alt="svg"/></p><pre><code class="language-julia">sol = solve(flumodel)</code></pre><pre><code class="language-none">β = 1.0854014119706108 d^-1
+GLM Model:
+StatsModels.DataFrameRegressionModel{LinearModel{LmResp{Array{Float64,1}},DensePredChol{Float64,LinearAlgebra.Cholesky{Float64,Array{Float64,2}}}},Array{Float64,2}}
+
+Formula: vaccines_produced ~ 1 + flu_patients
+
+Coefficients:
+                 Estimate Std.Error    t value Pr(&gt;|t|)
+(Intercept)       4892.06   342.292    14.2921   &lt;1e-24
+flu_patients  -0.00529781 0.0655031 -0.0808788   0.9357
+
+targetDF = 1×3 DataFrame
+│ Row │ year  │ flu_patients │ vaccines_produced │
+│     │ Int64 │ Float64      │ Missing           │
+├─────┼───────┼──────────────┼───────────────────┤
+│ 1   │ 1     │ 3627.46      │ missing           │
+
+
+┌ Warning: In the future eachcol will have names argument set to false by default
+│   caller = evalcontrasts(::DataFrame, ::Dict{Any,Any}) at modelframe.jl:124
+└ @ StatsModels /Users/jamesfairbanks/.julia/packages/StatsModels/AYB2E/src/modelframe.jl:124
+┌ Warning: In the future eachcol will have names argument set to false by default
+│   caller = getmaxwidths(::DataFrame, ::UnitRange{Int64}, ::UnitRange{Int64}, ::Symbol) at show.jl:105
+└ @ DataFrames /Users/jamesfairbanks/.julia/packages/DataFrames/5Rg4Y/src/abstractdataframe/show.jl:105
+┌ Warning: In the future eachcol will have names argument set to false by default
+│   caller = evalcontrasts(::DataFrame, ::Dict{Symbol,StatsModels.ContrastsMatrix}) at modelframe.jl:124
+└ @ StatsModels /Users/jamesfairbanks/.julia/packages/StatsModels/AYB2E/src/modelframe.jl:124
+
+
+
+
+
+1-element Array{Union{Missing, Float64},1}:
+ 4872.838053691122</code></pre><pre><code class="language-julia"></code></pre><pre><code class="language-julia"></code></pre><footer><hr/><a class="previous" href="../slides/"><span class="direction">Previous</span><span class="title">Slides</span></a><a class="next" href="../contributing/"><span class="direction">Next</span><span class="title">Contributing</span></a></footer></article></body></html>
