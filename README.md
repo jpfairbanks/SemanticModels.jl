@@ -5,7 +5,7 @@ A julia package for representing and manipulating model semantics
 
 ## Getting Started
 
-Install this package with 
+Install this package with
 
 ```julia
 Pkg.develop("git@github.com:jpfairbanks/SemanticModels.jl.git")
@@ -22,7 +22,7 @@ Then you can load it at the julia REPL with `using SemanticModels`
 There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
 package. For example `julia --project bin/extract.jl
 examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl` will extract code based knowledge elements from
-the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl`. 
+the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl`.
 
 See the tests and documentation for example usage.
 
@@ -31,7 +31,7 @@ See the tests and documentation for example usage.
 
 There is a docs folder which contains the documentation, including reports sent to our sponsor, DARPA.
 
-Documentation is currently published aske.gtri.gatech.edu
+Documentation is currently published https://aske.gtri.gatech.edu/docs/latest
 
 Many of our documentation and examples are built with Jupyter notebooks. We use
 [jupytext](https://github.com/mwouts/jupytext) to support diff friendly outputs in the repo.
@@ -63,7 +63,7 @@ You can use the `Extractor` type to pull knowledge elements from an artifact. Th
 
 ### Overdubbing
 
-You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate. 
+You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate.
 
 ## Acknowledgements
 
