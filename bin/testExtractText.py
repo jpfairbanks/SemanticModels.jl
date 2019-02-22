@@ -31,8 +31,7 @@ def testEquationRemoval(inputString):
     else:
         print("Equation Removal Test Passed")
 
-if __name__ == "__main__":
-    
+if __name__ == "__main__": 
     capitalizeVariableTest = r"There are no birth of natural death processes in this model. Parameters are: $\beta$: rate of infection $\delta$: rate at which symptoms"
     testVariableCapitalization(capitalizeVariableTest)
     

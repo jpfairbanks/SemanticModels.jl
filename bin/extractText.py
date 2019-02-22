@@ -6,19 +6,37 @@ Created on Wed Feb 20 09:39:59 2019
 @author: kuncao
 """
 import re
+import sys
+
+
 
 def extract(text):
+    text = removeIntro(text)
     text = removeEquations(text)
-    split_array = text.split(" ")
+    split_array = re.split(" |\n", text)
+
+    for element in split_array:
+        if element.strip() == "":
+            split_array.remove(element)
+            
       
     capitalied_var_array = capitalizeVariables(split_array)
+    
+    for element in split_array:
+        if element.strip() == "":
+            split_array.remove(element)
        
     processedText = arrayToSentence(capitalied_var_array)
     
+
     return processedText
 
+def removeIntro(text):
+    removedIntroText = re.sub('\-\-\-((.|\n)*)\-\-\-', '', text)
+    return removedIntroText
+
 def removeEquations(text):
-    removedEquationText = re.sub('\${2}(.+)\${2}', '', text)
+    removedEquationText = re.sub('\$\$((.|\n)*)\$\$', '', text)
     return removedEquationText
 
     
@@ -50,4 +68,25 @@ def arrayToSentence(word_array):
        
 
 if __name__ == "__main__":
-    temp_String = "Hello World"
+    
+    inputFilePath = ""
+    
+    if len(sys.argv) == 1:
+        print("No input File Path Detected")
+    
+    if len(sys.argv) > 2:
+        print("Too many argument inputs")
+        
+    if len(sys.argv) == 2:
+        inputFilePath = sys.argv[1]
+    
+    print(inputFilePath)
+    
+    input_file_string = open(inputFilePath).read()
+    print(input_file_string)
+    print("****************")
+    proccessedText = extract(input_file_string)
+    print(proccessedText)
+
+    
+
