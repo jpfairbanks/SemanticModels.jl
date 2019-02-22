@@ -1,5 +1,19 @@
 
-module Extract
+#
+# This file copies much of the same functionality from varextract.jl, 
+# with important modifications to write out test traces to a file - 
+# "traces.dat" - for subsequent classification modeling. 
+# 
+
+using Pkg 
+
+packages = ['Distributions','DelimitedFiles','Cassette','Test']
+
+for package in packages
+    haskey(Pkg.installed(),package) || Pkg.add(package)
+
+using Distributions
+using DelimitedFiles
 using Cassette
 using Test
 Cassette.@context TraceCtx
@@ -38,7 +52,7 @@ function Extraction(ir)
 end
 
 function findvars(ext, ir, expr)
-    #@info "Finding Variables"
+    @info "Finding Variables"
     # @show ir
     # dump(expr)
     # if typeof(expr) <: SSAValue
@@ -146,7 +160,7 @@ function extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
         push!(ext, expr)
     end
     if length(ext.varnames) > 0
-        #@info "Working with method: $(modname).$(methname)"
+        @info "Working with method: $(modname).$(methname)"
         show(ext)
         # @show ext.ir
         @show ext.ir.slotnames
@@ -174,10 +188,25 @@ function Cassette.canrecurse(ctx::TraceCtx,
     return false
 end
 
-# handle all function calls the same
-function Cassette.overdub(ctx::TraceCtx, f, args...)
-    @show f, args
 
+#
+# This function has been modified from the version in varextract.jl 
+# in the first line, where instead of "@show f, args" we write these
+# objects to our output file "traces.dat"
+# 
+# Not elegant, but various other approaches did not write out the 
+# correct trace information. This should be updated with a more elegant
+# solution when possible. 
+# 
+
+function Cassette.overdub(ctx::TraceCtx,
+                          f,
+                          args...)
+    open("traces.dat", "a") do file
+        write(file, string(f))
+        write(file, string(args))
+    end
+    
     # if we are supposed to descend, we call Cassette.recurse
     if Cassette.canrecurse(ctx, f, args...)
         subtrace = (Any[],Any[])
@@ -190,7 +219,7 @@ function Cassette.overdub(ctx::TraceCtx, f, args...)
         push!(ctx.metadata[1], :t)
         push!(ctx.metadata[2], retval)
     end
-    #@info "returning"
+    @info "returning"
     @show retval
     return retval
 end
@@ -201,9 +230,50 @@ function add(a, b)
     return c
 end
 
-const OverDub = Cassette.overdub
+#
+# This testset produces 30,000 traces on these basic arithmetic 
+# functions, and writes them to a file called "traces.dat"
+# 
 
-export OverDub, TraceCtx, ExtractPass
+@testset "TraceExtract" begin
+    g(x) = begin
+        y = add(x.*x, -x)
+        z = 1
+        v = y .- z
+        s = sum(v)
+        return s
+    end
+    h(x) = begin
+        z = g(x)
+        zed = sqrt(z)
+        return zed
+    end
 
+    open("traces.dat", "w") do f
+        write(f, "")
+    end
 
+    # Error conditions happen when our inputs are sufficiently small, so 
+    # Normal(0,2) gives us a good range of values to generate a reasonable
+    # percentage of "bad" traces on which to train. Empirically the share
+    # of "bad" traces is about 15-17%.
+
+    seeds = rand(Normal(0,2),30000,3)
+    
+    for i=1:size(seeds,1)
+        ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
+        try
+            result = Cassette.overdub(ctx, h, seeds[i,:])
+        catch DomainError
+            dump(ctx.metadata)
+        finally
+            open("traces.dat", "a") do f
+                write(f, "\n")
+            end
+        end
+        if i%1000 == 0
+            @info string(i)
+        end
+    end
 end
+
