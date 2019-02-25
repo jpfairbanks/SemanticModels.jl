@@ -13,23 +13,25 @@ import sys
 def extract(text):
     text = removeIntro(text)
     text = removeEquations(text)
+    text = removeStarHeaders(text)
+    text = removeNumerics(text)
+       
     split_array = re.split(" |\n", text)
 
-    for element in split_array:
-        if element.strip() == "":
-            split_array.remove(element)
-            
-      
-    capitalied_var_array = capitalizeVariables(split_array)
-    
-    for element in split_array:
-        if element.strip() == "":
-            split_array.remove(element)
-       
+    capitalied_var_array = capitalizeVariables(split_array)      
     processedText = arrayToSentence(capitalied_var_array)
-    
+            
 
     return processedText
+
+def removeNumerics(text):
+    removedNumerText = re.sub(r'[0-9]+','',text)
+    return removedNumerText
+
+def removeStarHeaders(text):
+    removedIntroText = re.sub('\*((.|\n)*)\*', '', text)
+    return removedIntroText
+    
 
 def removeIntro(text):
     removedIntroText = re.sub('\-\-\-((.|\n)*)\-\-\-', '', text)
@@ -60,7 +62,8 @@ def capitalizeVariables(split_array):
 def arrayToSentence(word_array):
     returnString = ""
     for word in word_array:
-        returnString += str(word) + " "
+        if word != "":
+            returnString += str(word) + " "
     
     return returnString.strip()
         
@@ -71,22 +74,26 @@ if __name__ == "__main__":
     
     inputFilePath = ""
     
-    if len(sys.argv) == 1:
-        print("No input File Path Detected")
+    if len(sys.argv) < 3:
+        print("<source file path> <output file path>")
     
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         print("Too many argument inputs")
         
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         inputFilePath = sys.argv[1]
-    
-    print(inputFilePath)
+        outputFilePath = sys.argv[2]
     
     input_file_string = open(inputFilePath).read()
-    print(input_file_string)
-    print("****************")
+
     proccessedText = extract(input_file_string)
-    print(proccessedText)
+    
+    with open(outputFilePath, 'w') as filetowrite:
+        filetowrite.write(proccessedText)
+        filetowrite.close()
+        
+    print(outputFilePath + " file created")
+
 
     
 
