@@ -29,6 +29,10 @@ def run(key, alt_url, filepath):
     # api.set_option('modelType','perceptron') # Valid for Chinese and Japanese only
 
     morphology_parts_of_speech_data = open(inputFilePath).read()
+    #morphology_parts_of_speech_data = "Kermack and McKendrick, proposed, The susceptibleinfectedrecovered SIR model in a closed population, as a special case of a more general model, ''"
+    #morphology_parts_of_speech_data = "The susceptibleinfectedrecovered SIR model in a closed population, forms, '', '', ''"
+    #morphology_parts_of_speech_data = "I and infected individuals, recover, '', at a percapita rate, ''"
+
     params = DocumentParameters()
     params["content"] = morphology_parts_of_speech_data
     try:
@@ -47,7 +51,5 @@ PARSER.add_argument('-u', '--url', help="Alternative API URL",
 if __name__ == '__main__':
     inputFilePath = sys.argv[1]
     RESULT = run("5e6d3db318804b1c730aed6a4bf43d38", 'https://api.rosette.com/rest/v1/', inputFilePath)
-# =============================================================================
-#     print(RESULT)
-# =============================================================================
-    print(json.dumps(RESULT, indent=2, ensure_ascii=False, sort_keys=True).encode("utf8"))
+    print(RESULT)
+    # print(json.dumps(RESULT, indent=2, ensure_ascii=False, sort_keys=True).encode("utf8"))

@@ -1,0 +1,10 @@
+facts:
+
+Kermack and McKendrick, proposed, The susceptibleinfectedrecovered SIR model in a closed population, as a special case of a more general model, ''
+['PROPN', 'CONJ', 'PROPN', 'PUNCT', 'VERB', 'PUNCT', 'DET', 'VERB', 'PROPN', 'NOUN', 'ADP', 'DET', 'ADJ', 'NOUN', 'PUNCT', 'ADP', 'DET', 'ADJ', 'NOUN', 'ADP', 'DET', 'ADV', 'ADJ', 'NOUN', 'PUNCT', 'PUNCT', 'PUNCT']
+
+The susceptibleinfectedrecovered SIR model in a closed population, forms, '', '', ''
+['DET', 'VERB', 'PROPN', 'NOUN', 'ADP', 'DET', 'ADJ', 'NOUN', 'PUNCT', 'NOUN', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT']
+
+I and infected individuals, recover, '', at a percapita rate, ''
+['PRON', 'CONJ', 'VERB', 'NOUN', 'PUNCT', 'VERB', 'PUNCT', 'PUNCT', 'PUNCT', 'PUNCT', 'ADP', 'DET', 'ADJ', 'NOUN', 'PUNCT', 'PUNCT', 'PUNCT']
