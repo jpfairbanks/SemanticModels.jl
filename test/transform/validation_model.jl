@@ -11,11 +11,6 @@
 
 using Pkg
 
-packages = ["Flux","DelimitedFiles","MLDataPattern"]
-
-for package in packages
-    haskey(Pkg.installed(),package) || Pkg.add(package)
-
 using DelimitedFiles
 using Flux
 using Flux: onehot, throttle, crossentropy, onehotbatch, params, shuffle

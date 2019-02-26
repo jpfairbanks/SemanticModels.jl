@@ -5,13 +5,6 @@
 # "traces.dat" - for subsequent classification modeling. 
 # 
 
-using Pkg 
-
-# packages = ['Distributions','DelimitedFiles','Cassette','Test']
-
-# for package in packages
-#     haskey(Pkg.installed(),package) || Pkg.add(package)
-
 using Distributions
 using DelimitedFiles
 using Cassette
