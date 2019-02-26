@@ -17,22 +17,29 @@ There are an intractable number of permutations of valid deep learning model arc
 
 Given that our deep learning task in this instance is relatively straightforward and supportive of the overall thrust of this project rather than central to it, we adopt a common and well tested <a href='http://www.bioinf.jku.at/publications/older/2604.pdf'>long short-term memory</a> (LSTM) recurrent neural network (RNN) architecture for our variable-length sequence classification task. LSTM models have a rich history of success in complex natural language processing tasks, specifically where <a href='https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8'>comprehension</a> and classification of computer programming code is concernd, and they remain the most popular and <a href='https://www.microsoft.com/en-us/research/wp-content/uploads/2016/04/Intent.pdf'>effective</a> approach to these tasks. Our base model will use binary cross entropy as its cost function given our task is one of binary classification, and an Adam optimizer for training optimization. Introduced in 2014, the <a href='https://arxiv.org/abs/1412.6980'>Adam</a> optimization algorithm generally remains the most robust and efficient back propagation optimization method in deep learning. Input traces are first tokenized as indices representing specific functions, variables, and types in vocabularies compiled from our modeling corpus, while values are passed as is. These sequences are fed in to a LSTM layer which reads each token/value in sequence and calculates activations on them, while also passing values ahead in the chain subject to functions which either pass, strengthen or “forget” the memory value. 
 
-As mentioned, this LSTM RNN model will be written using Julia’s Flux.jl package, and a preliminary outline is provided below:
+As mentioned, this LSTM RNN model is written using Julia’s Flux.jl package, with a similar architecture to the standard language classification model:
 
 ```julia
-model = Chain(
-  LSTM(128, 256, X),
-  Dropout(0.5),
-  Dense(768, 128),
-  BatchNormalization(),
-  Dropout(0.5),
-  Dense(768, 2),
-  BatchNormalization(),
-  softmax)
+scanner = Chain(Dense(length(alphabet), seq_len, σ), LSTM(seq_len, seq_len))
+encoder = Dense(seq_len, 2)
 
-loss(X, Y) = crossentropy(model(X), Y)
+function model(x)
+  state = scanner.([x])[end]
+  Flux.reset!(scanner)
+  softmax(encoder(state))
+end
 
-Flux.train!(loss, data, ADAM(...))
+loss(tup) = crossentropy(mod(tup[1]), tup[2])
+accuracy(tup) = mean(argmax(m(tup[1])) .== argmax(tup[2]))
+
+testacc() = mean(accuracy(t) for t in test)
+testloss() = mean(loss(t) for t in test)
+
+opt = ADAM(0.01)
+ps = params(mod)
+evalcb = () -> @show testloss(), testacc()
+
+Flux.train!(loss, ps, train, opt, cb = throttle(evalcb, 10))
 ```
 
 In the above example, outputs of the LSTM layer are subject to 50% dropout as a regularization measure to avoid over-fitting, and then fed to a densely connected neural network layer for computation of non-linear feature functions. Outputs of this dense layer are normalized for each batch of training data as another regularization measure to constrict extreme weights. This sequence of dropout-dense-normalization layers is repeated once more to add depth to the non-linear features learned by the model. Finally, a softmax activation function is calculated on the outputs and a binary classification is completed on each case in our dataset. 
