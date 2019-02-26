@@ -11,7 +11,7 @@
 
 using Pkg
 
-packages = ['Flux','DelimitedFiles','MLDataPattern']
+packages = ["Flux","DelimitedFiles","MLDataPattern"]
 
 for package in packages
     haskey(Pkg.installed(),package) || Pkg.add(package)
