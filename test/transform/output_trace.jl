@@ -7,10 +7,10 @@
 
 using Pkg 
 
-packages = ['Distributions','DelimitedFiles','Cassette','Test']
+# packages = ['Distributions','DelimitedFiles','Cassette','Test']
 
-for package in packages
-    haskey(Pkg.installed(),package) || Pkg.add(package)
+# for package in packages
+#     haskey(Pkg.installed(),package) || Pkg.add(package)
 
 using Distributions
 using DelimitedFiles
@@ -258,7 +258,7 @@ end
     # percentage of "bad" traces on which to train. Empirically the share
     # of "bad" traces is about 15-17%.
 
-    seeds = rand(Normal(0,2),30000,3)
+    seeds = rand(Normal(0,2),3000,3)
     
     for i=1:size(seeds,1)
         ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))

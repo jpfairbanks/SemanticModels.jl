@@ -22,6 +22,7 @@ using Flux: onehot, throttle, crossentropy, onehotbatch, params, shuffle
 using MLDataPattern: stratifiedobs
 using Base.Iterators: partition
 
+include("../../src/validation/utils.jl")
 
 #
 # Set up inputs for model
@@ -32,9 +33,7 @@ using Base.Iterators: partition
 
 cd(@__DIR__)
 
-text = collect.(readdlm("traces.csv"));
-alphabet = [unique(vcat(text...))..., '\n'];
-N = length(alphabet)
+text, alphabet, N = get_data("traces.csv")
 stop = onehot('\n', alphabet);
 
 # Partition into subsequences to input to our model
@@ -68,13 +67,15 @@ function model(x)
   softmax(encoder(state))
 end
 
-loss(tup) = crossentropy(model(tup[1]), tup[2])
+loss(tup) = crossentropy(mod(tup[1]), tup[2])
+accuracy(tup) = mean(argmax(m(tup[1])) .== argmax(tup[2]))
 
+testacc() = mean(accuracy(t) for t in test)
 testloss() = mean(loss(t) for t in test)
 
 opt = ADAM(0.01)
-ps = params(scanner, encoder)
-evalcb = () -> @show testloss()
+ps = params(mod)
+evalcb = () -> @show testloss(), testacc()
 
 Flux.train!(loss, ps, train, opt, cb = throttle(evalcb, 10))
 
