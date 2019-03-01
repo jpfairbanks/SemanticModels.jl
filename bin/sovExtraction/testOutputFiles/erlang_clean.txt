@@ -1,0 +1,1 @@
+Discrete time Erlang models [Getz and Dougherty ()](https://doi.org/./..) formulate deterministic, discrete-time analogues of Erlang models, that model non-exponential passage times using the method of stages ([Cox and Miller ()](https://www.crcpress.com/The-Theory-of-Stochastic-Processes/Cox-Miller/p/book/)).

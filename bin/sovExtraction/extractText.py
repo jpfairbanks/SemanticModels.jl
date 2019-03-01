@@ -11,8 +11,12 @@ import sys
 
 
 def extract(text):
-    text = removeIntro(text)
+# =============================================================================
+#     text = removeIntro(text)
+# =============================================================================
+
     text = removeEquations(text)
+    text = removeFigures(text)
     text = removeStarHeaders(text)
     text = removeNumerics(text)
     
@@ -29,6 +33,7 @@ def extract(text):
     
     
             
+    print(processedText)
 
     return processedText
 
@@ -52,6 +57,9 @@ def removeEquations(text):
     removedEquationText = re.sub('\$\$((.|\n)*)\$\$', '', text)
     return removedEquationText
 
+def removeFigures(text):
+    removedEquationText = re.sub('\`\`\`((.|\n)*)\`\`\`', '', text)
+    return removedEquationText
     
 def capitalizeVariables(split_array):
 
