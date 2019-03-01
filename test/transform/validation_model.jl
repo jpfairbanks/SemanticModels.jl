@@ -9,12 +9,9 @@
 # import.
 # 
 
-using Pkg
-
-packages = ['Flux','DelimitedFiles','MLDataPattern']
-
-for package in packages
-    haskey(Pkg.installed(),package) || Pkg.add(package)
+# packages = ['Flux','DelimitedFiles','MLDataPattern']
+# for package in packages
+#     haskey(Pkg.installed(),package) || Pkg.add(package)
 
 using DelimitedFiles
 using Flux
