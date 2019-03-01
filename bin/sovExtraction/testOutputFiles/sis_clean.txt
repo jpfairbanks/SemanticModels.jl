@@ -1,0 +1,1 @@
+SIS model Description The susceptible-infected-susceptible (SIS) model is one of the simplest models that has an endemic equilibrium. Susceptible individuals, S are infected by infected individuals, I at a per-capita rate beta I, and infected individuals recover at a per-capita rate Gamma to become susceptible again. Equations

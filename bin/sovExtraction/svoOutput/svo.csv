@@ -1,0 +1,18 @@
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+the SIR model,extend,The susceptible model
+an exposed infectious class,include,the SIR model
+proportions of ,consider,The implementation in this section
+infection,associate,additional mortality

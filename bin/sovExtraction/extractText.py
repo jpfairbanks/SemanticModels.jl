@@ -15,14 +15,25 @@ def extract(text):
     text = removeEquations(text)
     text = removeStarHeaders(text)
     text = removeNumerics(text)
+    
+    text = re.split("### References", text)
+
        
-    split_array = re.split(" |\n", text)
+    split_array = re.split(" |\n", text[0])
+
+    
+
 
     capitalied_var_array = capitalizeVariables(split_array)      
     processedText = arrayToSentence(capitalied_var_array)
+    
+    
             
 
     return processedText
+
+
+    
 
 def removeNumerics(text):
     removedNumerText = re.sub(r'[0-9]+','',text)
@@ -43,18 +54,25 @@ def removeEquations(text):
 
     
 def capitalizeVariables(split_array):
-    pattern = re.compile("\$\\\(.+)+\$")
+
+    variable_pattern1 = re.compile("\$\\\(.+)+\$")
+    variable_pattern2 = re.compile("\$(.+)+\$")
     caps = False
     for i in range (len(split_array)):
         split_array[i] = split_array[i].strip()
         
         
-        if pattern.match(split_array[i]) is not None:
+        if variable_pattern1.match(split_array[i]) is not None\
+        or variable_pattern2.match(split_array[i]) is not None:
             caps = True
             
-        split_array[i] = re.sub('\W', '', split_array[i])
+        cleaned_text = re.sub('\W', '', split_array[i])
+        if len(cleaned_text.strip()) == 0:
+            split_array[i] = cleaned_text
+        
+
         if caps == True:
-            split_array[i] = split_array[i].capitalize()
+            split_array[i] = cleaned_text.capitalize()
             caps = False
     
     return split_array
@@ -63,7 +81,7 @@ def arrayToSentence(word_array):
     returnString = ""
     for word in word_array:
         if word != "":
-            returnString += str(word) + " "
+            returnString += re.sub("[$\\\]", '', str(word)) + " "
     
     return returnString.strip()
         
