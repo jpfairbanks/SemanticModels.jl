@@ -176,6 +176,7 @@ function Cassette.canrecurse(ctx::TraceCtx,
                                       typeof(Base.mapreduce),
                                       typeof(Base.Broadcast.copy),
                                       typeof(Base.Broadcast.instantiate),
+                                      typeof(Base.Math.throw_complex_domainerror),
                                       typeof(Base.Broadcast.broadcasted)},
                              args...)
     return false
@@ -212,8 +213,8 @@ function Cassette.overdub(ctx::TraceCtx,
         push!(ctx.metadata[1], :t)
         push!(ctx.metadata[2], retval)
     end
-    @info "returning"
-    @show retval
+    # @info "returning"
+    # @show retval
     return retval
 end
 

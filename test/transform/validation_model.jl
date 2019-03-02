@@ -9,8 +9,6 @@
 # import.
 # 
 
-using Pkg
-
 using DelimitedFiles
 using Flux
 using Flux: onehot, throttle, crossentropy, onehotbatch, params, shuffle
@@ -62,8 +60,8 @@ train = [(Xtrain[i], Ytrain[i]) for i in 1:length(Ytrain)];
 test = [(Xtest[i], Ytest[i]) for i in 1:length(Ytest)];
 
 scanner = Chain(LSTM(length(alphabet), 32), 
-				LSTM(32, seq_len), 
-				Dense(seq_len, seq_len, σ))
+		LSTM(32, seq_len), 
+		Dense(seq_len, seq_len, σ))
 encoder = Dense(seq_len, 2)
 
 function model(x)
