@@ -270,3 +270,11 @@ end
     end
 end
 
+text = split(String(read("traces.dat")), "\n");
+Ys = Int.(occursin.(Ref(r"(Base[\S(?!\))]+error)"i), text));
+
+text = split.(text, Ref(r"(Base[\S(?!\))]+error)"i));
+text = [t[1] for t in text];
+
+writedlm( "traces.csv",  text[1:end-1], ',')
+writedlm( "y_results.csv",  Ys[1:end-1], ',')
