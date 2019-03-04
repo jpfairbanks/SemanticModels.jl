@@ -7,7 +7,9 @@ Created on Wed Feb 20 09:39:59 2019
 """
 import re
 import sys
-
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 
 def extract(text):
@@ -33,7 +35,8 @@ def extract(text):
     
     
             
-    print(processedText)
+    
+    logging.info(processedText)
 
     return processedText
 
@@ -101,11 +104,10 @@ if __name__ == "__main__":
     inputFilePath = ""
     
     if len(sys.argv) < 3:
-        print("<source file path> <output file path>")
+        logging.warn("<source file path> <output file path>")
     
     if len(sys.argv) > 3:
-        print("Too many argument inputs")
-        
+        logging.fatal("Too many argument inputs")
     if len(sys.argv) == 3:
         inputFilePath = sys.argv[1]
         outputFilePath = sys.argv[2]
@@ -118,7 +120,7 @@ if __name__ == "__main__":
         filetowrite.write(proccessedText)
         filetowrite.close()
         
-    print(outputFilePath + " file created")
+    logging.info(outputFilePath + " file created")
 
 
     
