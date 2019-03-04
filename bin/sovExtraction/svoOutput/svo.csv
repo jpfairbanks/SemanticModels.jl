@@ -1,3 +1,4 @@
+subject, verb, object
 This section,implements,model
 the number of parasites per host,follows,a Binomial distribution with k
 one of the simplest models,be,The susceptible ( SIS ) model
