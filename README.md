@@ -26,6 +26,13 @@ the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicMo
 
 See the tests and documentation for example usage.
 
+### Docker
+
+You can easily spin up a `SemanticModels.jl` Jupyterlab instance with docker.
+
+1. `docker run -it --rm -p 88889:8888 jpfa/semanticmodels:stretch`
+1. Navigate to the link it returns: `localhost:8888/?token=...`
+1. From there you can run the examples included in this repository, or write your own code to explore the functionality of `SemanticModels.jl`
 
 ## Documentation
 
