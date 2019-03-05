@@ -15,7 +15,8 @@ expr = parsefile("../examples/epicookbook/src/ScalingModel.jl")
 
 # Find the expression we want to graft
 #vital dynamics S rate expression
-vdsre = expr.args[3].args[5].args[2].args[4]
+micro1def = findfunc(expr, :micro_1)[1]
+vdsre = findassign(micro1def, :dS)[1]
 @show popgrowth = vdsre.args[2].args[2]
 replacevar(expr, old, new) = begin
     dump(expr)

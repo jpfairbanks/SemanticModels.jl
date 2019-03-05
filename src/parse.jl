@@ -3,7 +3,10 @@ using Base.Meta
 import Base.push!
 
 export parsefile, defs, funcs, recurse,
-    MetaCollector, FuncCollector, AbstractCollector
+    MetaCollector, FuncCollector, AbstractCollector,
+    walk, findfunc, findassign
+
+include("findfunc.jl")
 
 """    parsefile(path)
 
