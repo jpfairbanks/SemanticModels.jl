@@ -4,7 +4,7 @@ import Base.push!
 
 export parsefile, defs, funcs, recurse,
     MetaCollector, FuncCollector, AbstractCollector,
-    walk, findfunc, findassign
+    walk, findfunc, findassign, replacevar
 
 include("findfunc.jl")
 

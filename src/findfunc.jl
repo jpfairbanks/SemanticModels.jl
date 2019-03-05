@@ -80,3 +80,19 @@ function findassign(expr::Expr, name::Symbol)
     walk(expr, f, g)
     return matches
 end
+
+function replacevar(expr::Expr, name::Symbol, newname::Symbol)
+    g(x::Any) = x
+    f(x::Any) = x
+    f(x::Symbol) = (x==name ? newname : x)
+    f(x::Expr) = walk(x, f, g)
+    return walk(expr, f, g)
+end
+
+function replacevar(expr::Expr, tr::Dict{Symbol, Any})
+    g(x::Any) = x
+    f(x::Any) = x
+    f(x::Symbol) = get(tr, x, x)
+    f(x::Expr) = walk(x, f, g)
+    return walk(expr, f, g)
+end

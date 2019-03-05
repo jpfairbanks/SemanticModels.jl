@@ -17,13 +17,8 @@ expr = parsefile("../examples/epicookbook/src/ScalingModel.jl")
 #vital dynamics S rate expression
 micro1def = findfunc(expr, :micro_1)[1]
 vdsre = findassign(micro1def, :dS)[1]
+vdsre = replacevar(vdsre, :K,:N)
 @show popgrowth = vdsre.args[2].args[2]
-replacevar(expr, old, new) = begin
-    dump(expr)
-    expr.args[3].args[3].args[3] = new
-    return expr
-end
-popgrowth = replacevar(popgrowth, :K,:N)
 
 # generate the function newfunc
 # this eval happens at the top level so should only happen once
