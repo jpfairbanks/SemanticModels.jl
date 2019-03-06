@@ -31,20 +31,23 @@ function describe(sm::StateModel)
     return collect(map(x->Pair(x...), zip(sm.states, counts)))
 end
 
+function main(nsteps)
+    n = 10
+    a = fill(:S, n)
+    T = Dict(
+        :S=>(x...)->rand(Bool) ? :I : :S,
+        :I=>(x...)->rand(Bool) ? :I : :R,
+        :R=>(x...)->rand(Bool) ? :R : :S,
+    )
 
-n = 10
-a = fill(:S, n)
-T = Dict(
-    :S=>(x...)->rand(Bool) ? :I : :S,
-    :I=>(x...)->rand(Bool) ? :I : :R,
-    :R=>(x...)->rand(Bool) ? :R : :S,
-)
 
+    sam = StateModel([:S, :I, :R], a, T)
+    newsam = step!(deepcopy(sam), nsteps)
+    @show newsam.agents
+    counts = describe(newsam)
+    return newsam, counts
+end
 
-sam = StateModel([:S, :I, :R], a, T)
-newsam = step!(deepcopy(sam), 5)
-@show newsam.agents
-@show describe(newsam)
 
 
 end
