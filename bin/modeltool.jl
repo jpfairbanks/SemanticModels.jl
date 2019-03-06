@@ -88,4 +88,9 @@ function model(::Type{ExpODEProblem}, expr::Expr)
     return ExpODEProblem(matches, funcs, vars, tdomain, initial)
 end
 
+lhs(x::Expr) = begin
+    @show x
+    x.head == :(=) || error("x is not an assignment")
+    return x.args[1]
+end
 end
