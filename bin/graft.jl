@@ -3,6 +3,9 @@ using DifferentialEquations
 using SemanticModels.Parsers
 using SemanticModels.Dubstep
 
+#TODO move this to src/modeltool.jl
+include("./modeltool.jl")
+
 # source of original problem
 include("../examples/epicookbook/src/SEIRmodel.jl")
 model1 = parsefile("../examples/epicookbook/src/SEIRmodel.jl")

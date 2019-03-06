@@ -1,5 +1,6 @@
 module ModelTool
 using SemanticModels.Parsers
+import Base: show
 
 """    callsites(expr::Expr, name::Symbol)
 
@@ -93,4 +94,26 @@ lhs(x::Expr) = begin
     x.head == :(=) || error("x is not an assignment")
     return x.args[1]
 end
+
+struct ExpStateModel <: AbstractProblem
+    expr::Expr
+    states
+    agents
+    transitions
 end
+
+function model(::Type{ExpStateModel}, expr::Expr)
+    constructor = callsites(expr, :StateModel)[1]
+    states = constructor.args[2]
+    #TODO: find out why this identifies extra assignments possibly from the (i,a) = enumerate(sm.agents) part.
+    agents = findassign(expr, constructor.args[3])
+    transitions = findassign(expr, constructor.args[4])
+    return ExpStateModel(expr, states, agents, transitions)
+end
+
+function show(io::IO, m::ExpStateModel)
+    write(io, "ExpStateModel(\n  states=$(repr(m.states)),\n  agents=$(repr(m.agents)),\n  transitions=$(repr(m.transitions))\n)")
+end
+
+end
+
