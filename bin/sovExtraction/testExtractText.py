@@ -11,9 +11,11 @@ from extractText import extract
 
 
 def testVariableCapitalization(inputString):
+    
     returnString = extract(inputString)
+    
     try:
-        assert(returnString == "There are no birth of natural death processes in this model Parameters are Beta rate of infection Delta rate at which symptoms")
+        assert(returnString == "There are no birth of natural death processes in this model. Parameters are: Beta rate of infection Delta rate at which symptoms")
     except AssertionError:
         print("Variable Capitalization Test Failed")
     else:
@@ -54,7 +56,7 @@ def testEquationRemoval(inputString):
     returnString = extract(inputString)
     
     try:
-        assert(returnString == "in an open population with no additional mortality associated with infection such that the population size remains constant and R is not modelled explicitly")
+        assert(returnString == "in an open population, with no additional mortality associated with infection (such that the population size remains constant and R is not modelled explicitly).")
     except AssertionError:
         print("Equation Removal Test Failed")
     else:
@@ -74,8 +76,10 @@ if __name__ == "__main__":
     equationRemovalTest = r"in an open population, with no additional mortality associated with infection (such that the population size remains constant and $R$ is not modelled explicitly).$$ \frac{dS(t)}{dt} = \mu-\beta S(t) I(t) - \mu S(t)\ \frac{dE(t)}{dt} = \beta S(t) I(t)- (\sigma + \mu) E(t)\ \frac{dI(t)}{dt} = \sigma E(t)- (\gamma + \mu) I(t)\ \frac{dR(t)}{dt} = \gamma I(t) = \mu R $$"
     testEquationRemoval(equationRemovalTest)
     
-    
-    titleHeaderTest = "--- \n title: 'SIS model ' \npermalink: 'chapters/sis/intro' \npreviouschapter:--- Leftover"
-    removeTitleHeaders(titleHeaderTest)
+# =============================================================================
+#     
+#     titleHeaderTest = "--- \n title: 'SIS model ' \npermalink: 'chapters/sis/intro' \npreviouschapter:--- Leftover"
+#     removeTitleHeaders(titleHeaderTest)
+# =============================================================================
     
     

@@ -13,9 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 def extract(text):
-# =============================================================================
-#     text = removeIntro(text)
-# =============================================================================
+    text = removeIntro(text)
 
     text = removeEquations(text)
     text = removeFigures(text)
