@@ -537,6 +537,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "extraction/#SemanticModels.Parsers.findassign-Tuple{Expr,Symbol}",
+    "page": "Knowledge Extraction",
+    "title": "SemanticModels.Parsers.findassign",
+    "category": "method",
+    "text": "findassign(expr::Expr, name::Symbol)\n\nfindassign walks the AST of expr to find the assignments to a variable called name.\n\nThis function returns a reference to the original expression so that you can modify it inplace and is intended to help users rewrite expressions for generating new models.\n\nSee also: findfunc.\n\n\n\n\n\n"
+},
+
+{
+    "location": "extraction/#SemanticModels.Parsers.findfunc-Tuple{Expr,Symbol}",
+    "page": "Knowledge Extraction",
+    "title": "SemanticModels.Parsers.findfunc",
+    "category": "method",
+    "text": "findfunc(expr::Expr, name::Symbol)\n\nfindfunc walks the AST of expr to find the definition of function called name.\n\nThis function returns a reference to the original expression so that you can modify it inplace and is intended to help users rewrite the definitions of functions for generating new models.\n\n\n\n\n\n"
+},
+
+{
     "location": "extraction/#SemanticModels.Parsers.funcs-Tuple{Any}",
     "page": "Knowledge Extraction",
     "title": "SemanticModels.Parsers.funcs",
@@ -545,11 +561,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "extraction/#SemanticModels.Parsers.inexpr-Tuple{Any,Any}",
+    "page": "Knowledge Extraction",
+    "title": "SemanticModels.Parsers.inexpr",
+    "category": "method",
+    "text": "inexpr(expr, x)\n\nSimple expression match; will return true if the expression x can be found inside expr.     inexpr(:(2+2), 2) == true\n\n\n\n\n\n"
+},
+
+{
     "location": "extraction/#SemanticModels.Parsers.parsefile",
     "page": "Knowledge Extraction",
     "title": "SemanticModels.Parsers.parsefile",
     "category": "function",
     "text": "parsefile(path)\n\nread in a julia source file and parse it.\n\nNote: If the top level is not a simple expression or module definition the file is wrapped in a Module named modprefix.\n\n\n\n\n\n"
+},
+
+{
+    "location": "extraction/#SemanticModels.Parsers.postwalk-Tuple{Any,Any}",
+    "page": "Knowledge Extraction",
+    "title": "SemanticModels.Parsers.postwalk",
+    "category": "method",
+    "text": "postwalk(f, expr)\n\nApplies f to each node in the given expression tree, returning the result. f sees expressions after they have been transformed by the walk. See also prewalk.\n\n\n\n\n\n"
+},
+
+{
+    "location": "extraction/#SemanticModels.Parsers.prewalk-Tuple{Any,Any}",
+    "page": "Knowledge Extraction",
+    "title": "SemanticModels.Parsers.prewalk",
+    "category": "method",
+    "text": "prewalk(f, expr)\n\nApplies f to each node in the given expression tree, returning the result. f sees expressions before they have been transformed by the walk, and the walk will be applied to whatever f returns. This makes prewalk somewhat prone to infinite loops; you probably want to try postwalk first.\n\n\n\n\n\n"
 },
 
 {
