@@ -20,7 +20,6 @@ function parsefile(path, modprefix="Modeling")
     # open(path) do fp
     #     s = read(String, fp)
     # end
-    @show s
     try
         expr = Base.Meta.parse(s)
         return expr
