@@ -21,7 +21,10 @@ manipulation and generation.
 
 We focus on three problems:
 
-1. **Model modification:** taking an existing model and modifying its components to add features or make comparisons.
+1. **Model augmentation:** taking an existing model and modifying its components to add features or make comparisons.
+
+![SemanticModels Diagram](/img/semanticmodels_jl.dot.svg)
+
 2. **Metamodel construction:** combining models or components of models to automatically generate scientific computing workflows.
 3. **Model Verification:** given a model, corpus of previous applications of that model, and an input to the model, detect if the model is properly functioning.
    
@@ -46,6 +49,7 @@ Pages = [
      "validation.md",
      "library.md",
      "theory.md",
+     "kgtypes.md",
      "approach.md",
      "slides.md",
      "FluModel.md",
