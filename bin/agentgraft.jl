@@ -39,14 +39,9 @@ println("\nInfected individuals recover or die in one step")
 ModelTools.replace!(m, :(:I => (x...)->rand(Bool) ? :D : :I))
 
 m[:I] = :((x...)->rand(Bool) ? :I : :D)
-@show m
-# -
 
-# TODO: make a better api for replacing expressions with other expressions
-# rrule′ = replacevar(m.transitions[1].args[2].args[4], :(:S), :(:D))
-# TODO: make replacevar handle quotenodes
-# rrule′ = replacevar(m.transitions[1].args[2].args[4], :S, :D)
-# m.transitions[1].args[2].args[4] = rrule′
+
+m
 
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
