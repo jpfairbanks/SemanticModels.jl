@@ -1,6 +1,6 @@
-module ModelTool
+module ModelTools
 using SemanticModels.Parsers
-import Base: show
+import Base: show, getindex, setindex!
 
 """    callsites(expr::Expr, name::Symbol)
 
@@ -115,5 +115,32 @@ function show(io::IO, m::ExpStateModel)
     write(io, "ExpStateModel(\n  states=$(repr(m.states)),\n  agents=$(repr(m.agents)),\n  transitions=$(repr(m.transitions))\n)")
 end
 
+function put!(m::ExpStateModel, expr::Expr)
+  sym = expr.args[2].value
+  any(x->x.value==sym, m.states.args) && error("Symbol $sym already exists")
+  push!(m.states.args, QuoteNode(sym))
+  any(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args) && error("Symbol $sym has a transition, but is not in the states")
+  push!(m.transitions[1].args[2].args, expr)
+  return expr
 end
 
+function replace!(m::ExpStateModel, expr::Expr)
+  sym = expr.args[2].value
+  !any(x->x.value==sym, m.states.args) && error("Symbol $sym doesn't exist")
+  found=filter(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args)
+  found[1].args[3] = expr.args[3]
+  return expr
+end
+
+function setindex!(m::ExpStateModel, expr::Expr, sym::Symbol)
+  s = QuoteNode(sym)
+  transition = :($s=>$expr)
+  any(x->x.value==sym, m.states.args) && return replace!(m, transition)
+  return put!(m, transition)
+end
+
+function getindex(m::ExpStateModel, sym::Symbol)
+  return filter(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args)[1].args[3]
+end
+
+end

@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 using SemanticModels.Parsers
-include("./modeltool.jl")
+include("./modeltools.jl")
+expr = parsefile("../examples/agentbased.jl")
+m = ModelTools.model(ModelTools.ExpStateModel, expr)
 
 samples = 3
 nsteps = 5
@@ -11,7 +14,7 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 
 
 expr = parsefile("../examples/agentbased.jl")
-m = ModelTool.model(ModelTool.ExpStateModel, expr)
+m = ModelTools.model(ModelTools.ExpStateModel, expr)
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
@@ -20,27 +23,30 @@ for i in 1:samples
 end
 
 
+m
+
+# +
 println("\nThe system states are $(m.states.args)")
 println("\nAdding un estado de los muertos")
-@show push!(m.states.args, :(:D))
+
+ModelTools.put!(m, :(:D => (x...)->:D))
+
 println("\nThe system states are $(m.states.args)")
 # once you are dead, you are dead forever
 println("\nThere is no resurrection in this model")
-newrule = :(:D => (x...)->:D)
-@show newrule
-
 println("\nInfected individuals recover or die in one step")
-# m.transitions[1].args[2].args[4].args[3].args[2].args[2].args[3] = :(:D)
-m.transitions[1].args[2].args[3].args[3].args[2].args[2].args[2] = :(:D)
+
+ModelTools.replace!(m, :(:I => (x...)->rand(Bool) ? :D : :I))
+
+m[:I] = :((x...)->rand(Bool) ? :I : :D)
+@show m
+# -
 
 # TODO: make a better api for replacing expressions with other expressions
 # rrule′ = replacevar(m.transitions[1].args[2].args[4], :(:S), :(:D))
 # TODO: make replacevar handle quotenodes
 # rrule′ = replacevar(m.transitions[1].args[2].args[4], :S, :D)
 # m.transitions[1].args[2].args[4] = rrule′
-
-push!(m.transitions[1].args[2].args, newrule)
-@show m.transitions[1]
 
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
@@ -49,10 +55,11 @@ for i in 1:samples
     push!(finalcounts, (model=:sird, counts=counts))
 end
 
-
-
 println("\nAdding population growth to this model")
 stepr = findfunc(m.expr, :step!)[1]
+
+stepr.args[2].args[2].args[2].args
+
 @show stepr
 println("------------------------")
 push!(stepr.args[2].args[2].args[2].args, :(push!(sm.agents, :S)))
