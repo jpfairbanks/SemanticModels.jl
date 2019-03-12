@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 using SemanticModels.Parsers
-include("./modeltools.jl")
-
-expr = parsefile("../examples/agentbased.jl")
-m = ModelTools.model(ModelTools.ExpStateModel, expr)
+using SemanticModels.ModelTools
 
 samples = 3
 nsteps = 5
@@ -20,7 +17,7 @@ println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
     newsam, counts = AgentModels.main(nsteps)
-    push!(finalcounts, (model=:basic, counts=counts))
+    ModelTools.push!(finalcounts, (model=:basic, counts=counts))
 end
 
 
