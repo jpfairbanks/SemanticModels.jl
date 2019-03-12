@@ -121,10 +121,12 @@ function show(io::IO, m::ExpStateModel)
 end
 
 function put!(m::ExpStateModel, transition::ExpStateTransition)
+    q = QuoteNode(transition.state)
   any(x->x.value==transition.state, m.states.args) && error("Symbol $(transition.state) already exists")
-  any(x->typeof(x) == Expr && x.args[2] == QuoteNode(transition.state), m.transitions[1].args[2].args) && error("Symbol $sym has a transition, but is not in the states")
+  any(x->typeof(x) == Expr && x.args[2] == q, m.transitions[1].args[2].args) && error("Symbol $sym has a transition, but is not in the states")
   push!(m.states.args, QuoteNode(transition.state))
-  push!(m.transitions[1].args[2].args, :(QuoteNode($(transition.state))=>$(transition.expr)))
+    push!(m.transitions[1].args[2].args,
+          :($q=>$(transition.expr)))
   return transition.expr
 end
 
