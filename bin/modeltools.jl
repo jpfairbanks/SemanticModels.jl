@@ -102,6 +102,11 @@ struct ExpStateModel <: AbstractProblem
     transitions
 end
 
+struct ExpStateTransition
+  state::Symbol
+  expr::Expr
+end
+
 function model(::Type{ExpStateModel}, expr::Expr)
     constructor = callsites(expr, :StateModel)[1]
     states = constructor.args[2]
@@ -115,32 +120,30 @@ function show(io::IO, m::ExpStateModel)
     write(io, "ExpStateModel(\n  states=$(repr(m.states)),\n  agents=$(repr(m.agents)),\n  transitions=$(repr(m.transitions))\n)")
 end
 
-function put!(m::ExpStateModel, expr::Expr)
-  sym = expr.args[2].value
-  any(x->x.value==sym, m.states.args) && error("Symbol $sym already exists")
-  push!(m.states.args, QuoteNode(sym))
-  any(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args) && error("Symbol $sym has a transition, but is not in the states")
-  push!(m.transitions[1].args[2].args, expr)
-  return expr
+function put!(m::ExpStateModel, transition::ExpStateTransition)
+  any(x->x.value==transition.state, m.states.args) && error("Symbol $(transition.state) already exists")
+  any(x->typeof(x) == Expr && x.args[2] == QuoteNode(transition.state), m.transitions[1].args[2].args) && error("Symbol $sym has a transition, but is not in the states")
+  push!(m.states.args, QuoteNode(transition.state))
+  push!(m.transitions[1].args[2].args, :(QuoteNode($(transition.state))=>$(transition.expr)))
+  return transition.expr
 end
 
-function replace!(m::ExpStateModel, expr::Expr)
-  sym = expr.args[2].value
-  !any(x->x.value==sym, m.states.args) && error("Symbol $sym doesn't exist")
-  found=filter(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args)
-  found[1].args[3] = expr.args[3]
-  return expr
+function replace!(m::ExpStateModel, transition::ExpStateTransition)
+  !any(x->x.value==transition.state, m.states.args) && error("Symbol $sym doesn't exist")
+  found=filter(x->typeof(x) == Expr && x.args[2] == QuoteNode(transition.state), m.transitions[1].args[2].args)
+  found[1].args[3] = transition.expr
+  return transition.expr
 end
 
 function setindex!(m::ExpStateModel, expr::Expr, sym::Symbol)
-  s = QuoteNode(sym)
-  transition = :($s=>$expr)
-  any(x->x.value==sym, m.states.args) && return replace!(m, transition)
-  return put!(m, transition)
+  any(x->x.value==sym, m.states.args) && return replace!(m, ExpStateTransition(sym, expr))
+  return put!(m, ExpStateTransition(sym, expr))
 end
 
 function getindex(m::ExpStateModel, sym::Symbol)
-  return filter(x->typeof(x) == Expr && x.args[2].value==sym, m.transitions[1].args[2].args)[1].args[3]
+  found=filter(x->typeof(x) == Expr && x.args[2] == QuoteNode(sym), m.transitions[1].args[2].args)
+  length(found) == 0 && error("Symbol $sym doesn't exist")
+  return found[1].args[3]
 end
 
 end

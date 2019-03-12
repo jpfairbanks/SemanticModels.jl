@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 using SemanticModels.Parsers
 include("./modeltools.jl")
+
 expr = parsefile("../examples/agentbased.jl")
 m = ModelTools.model(ModelTools.ExpStateModel, expr)
 
@@ -29,20 +30,20 @@ m
 println("\nThe system states are $(m.states.args)")
 println("\nAdding un estado de los muertos")
 
-ModelTools.put!(m, :(:D => (x...)->:D))
+ModelTools.put!(m, ModelTools.ExpStateTransition(:D, :((x...)->:D)))
 
 println("\nThe system states are $(m.states.args)")
 # once you are dead, you are dead forever
 println("\nThere is no resurrection in this model")
 println("\nInfected individuals recover or die in one step")
 
-ModelTools.replace!(m, :(:I => (x...)->rand(Bool) ? :D : :I))
+ModelTools.replace!(m, ModelTools.ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
 
 m[:I] = :((x...)->rand(Bool) ? :I : :D)
 
+m[:I]
 
-m
-
+# +
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
 for i in 1:samples
