@@ -2,8 +2,8 @@
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 
-samples = 3
-nsteps = 5
+samples = 7
+nsteps = 10
 finalcounts = Any[]
 
 println("Running Agent Based Simulation Augmentation Demo")
@@ -67,4 +67,33 @@ println("\nModel\t Counts")
 println("-----\t ------")
 for result in finalcounts
     println("$(result.model)\t$(result.counts)")
+end
+
+function groupagg(x::Vector{Tuple{S,T}}) where {S,T}
+    c = Dict{S, Tuple{Int, T}}()
+    # c2 = Dict{S, T}()
+    for r in x
+        g = first(r)
+        c[g] = get(c, g,(0, 0.0)) .+ (1, last(r))
+    end
+    return c
+end
+
+mean_healthy_frac = [(r.model,
+                  map(last, filter(x->(x.first == :R || x.first == :S), r.counts))[1] / sum(map(last, r.counts))[1])
+                 for r in finalcounts] |> groupagg
+
+num_unhealthy = [(r.model,
+                  map(last,
+                      sum(map(last, filter(x->(x.first != :R && x.first != :S),
+                             r.counts)))))
+                 for r in finalcounts] |> groupagg
+
+println("\nModel\t Count \t Num Unhealthy \t Mean Healthy %")
+println("-----\t ------\t --------------\t  --------------")
+for (g, v) in mean_healthy_frac
+    μ = last(v)/first(v)
+    μ′ = round(μ*100, sigdigits=5)
+    x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
+    println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
