@@ -12,12 +12,12 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 
 
 expr = parsefile("../examples/agentbased.jl")
-m = ModelTools.model(ModelTools.ExpStateModel, expr)
+m = model(ExpStateModel, expr)
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
     newsam, counts = AgentModels.main(nsteps)
-    ModelTools.push!(finalcounts, (model=:basic, counts=counts))
+    push!(finalcounts, (model=:basic, counts=counts))
 end
 
 
@@ -27,18 +27,16 @@ m
 println("\nThe system states are $(m.states.args)")
 println("\nAdding un estado de los muertos")
 
-ModelTools.put!(m, ModelTools.ExpStateTransition(:D, :((x...)->:D)))
+put!(m, ExpStateTransition(:D, :((x...)->:D)))
 
 println("\nThe system states are $(m.states.args)")
 # once you are dead, you are dead forever
 println("\nThere is no resurrection in this model")
 println("\nInfected individuals recover or die in one step")
 
-ModelTools.replace!(m, ModelTools.ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
-
-m[:I] = :((x...)->rand(Bool) ? :I : :D)
-
-m[:I]
+# replace!(m, ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
+m[:I] = :((x...)->rand(Bool) ? :R : :D)
+@show m[:I]
 
 # +
 println("\nRunning SIRD model")
