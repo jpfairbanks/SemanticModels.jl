@@ -3,8 +3,8 @@ using DifferentialEquations
 using SemanticModels.Parsers
 using SemanticModels.Dubstep
 
-#TODO move this to src/modeltool.jl
-include("./modeltool.jl")
+#TODO move this to src/modeltools.jl
+include("./modeltools.jl")
 
 # source of original problem
 include("../examples/epicookbook/src/SEIRmodel.jl")
