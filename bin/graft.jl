@@ -2,9 +2,7 @@ using Cassette
 using DifferentialEquations
 using SemanticModels.Parsers
 using SemanticModels.Dubstep
-
-#TODO move this to src/modeltool.jl
-include("./modeltool.jl")
+using SemanticModels.ModelTools
 
 # source of original problem
 include("../examples/epicookbook/src/SEIRmodel.jl")
