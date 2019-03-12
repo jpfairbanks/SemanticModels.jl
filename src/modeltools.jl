@@ -95,6 +95,13 @@ lhs(x::Expr) = begin
     return x.args[1]
 end
 
+"""    ExpStateModel
+
+represents an agent based model symbolically, with a collection of stats, agents, and transitions.
+The agents are a collection of states and the transitions map from state to state. This structure allows you to represent an agent based model at the semantic level and apply transformations to that model.
+
+The common transformations for an agent based model are adding, removing, or replacing, states, agents, or transitions. See [`model`](@ref), [`put!`](@ref), [`setindex`](@ref), [`getindex`](@ref), [`put!`](@ref), [`replace!`](@ref).
+"""
 struct ExpStateModel <: AbstractProblem
     expr::Expr
     states
@@ -102,6 +109,10 @@ struct ExpStateModel <: AbstractProblem
     transitions
 end
 
+"""    ExpStateTransiton
+
+represents a state-transition function for an agent based model. `ExpStateTransition(s,x)` represents the transition from state `s` to any other states. The expression `x` should define a function that takes any number of arguments and returns a value representing the new state.
+"""
 struct ExpStateTransition
   state::Symbol
   expr::Expr
