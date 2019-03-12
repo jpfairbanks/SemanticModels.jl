@@ -22,7 +22,7 @@ include("../../src/validation/utils.jl")
 # Set up inputs for model
 #
 
-# Read lines from traces.dat text in to arrays of characters
+# Read lines from trace_test.dat text in to arrays of characters
 # Convert to onehot matrices
 
 cd(@__DIR__)
@@ -59,16 +59,22 @@ Ys = reshape(Ys, length(Ys));
 train = [(Xtrain[i], Ytrain[i]) for i in 1:length(Ytrain)];
 test = [(Xtest[i], Ytest[i]) for i in 1:length(Ytest)];
 
-scanner = Chain(LSTM(length(alphabet), 32), 
-		LSTM(32, seq_len), 
-		Dense(seq_len, seq_len, σ))
-encoder = Dense(seq_len, 2)
 
-function model(x)
-  state = scanner.(x)[end]
-  Flux.truncate!(scanner)
-  softmax(encoder(state))
+mod = Chain(Dense(N, 5), softmax)
+
+function forward(trc)
+  if is_leaf(trc)
+    token = embedding * string(trc.value)
+    phrase, crossentropy(mod(token), sent)
+  else
+    _, sent = tree.value
+    c1, l1 = forward(tree[1])
+    c2, l2 = forward(tree[2])
+    phrase = combine(c1, c2)
+    phrase, l1 + l2 + crossentropy(sentiment(phrase), sent)
+  end
 end
+
 
 function loss(x, y)
 	l = crossentropy(model(x), y)
