@@ -16,9 +16,9 @@ expr = parsefile("../examples/epicookbook/src/ScalingModel.jl")
 model2 = expr
 
 # process the ASTs into a structured representation we can manipulate with regular julia code
-model_1 = ModelTool.model(ModelTool.ExpODEProblem, model1)
-model_2 = ModelTool.model(ModelTool.ExpODEProblem, model2)
-fluxes(x::ModelTool.ExpODEProblem) = x.variables[1].flux
+model_1 = model(ExpODEProblem, model1)
+model_2 = model(ExpODEProblem, model2)
+fluxes(x::ExpODEProblem) = x.variables[1].flux
 
 # Find the expression we want to graft
 #vital dynamics S rate expression
