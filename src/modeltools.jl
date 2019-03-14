@@ -1,6 +1,8 @@
 module ModelTools
 using SemanticModels.Parsers
-import Base: show, getindex, setindex!
+import Base: show, getindex, setindex!, put!, replace!
+export model, callsites, structured, AbstractProblem,
+    ExpStateModel, ExpStateTransition, ExpODEProblem
 
 """    callsites(expr::Expr, name::Symbol)
 
