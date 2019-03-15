@@ -25,6 +25,11 @@ function ∘(f::ConcatTransformation, g::ConcatTransformation)
     return g
 end
 
+function ∘(f::Transformation, g::ConcatTransformation)
+    append!(g.seq, [f])
+    return g
+end
+
 function (t::ExprTransformation)(m::AbstractProblem)
     getfield(ModelTools, t.func)(m, ExpStateTransition(t.state, t.expr))
     return m
@@ -37,13 +42,13 @@ end
 expr = parsefile("../examples/agentbased.jl")
 m = model(ExpStateModel, expr)
 T = ConcatTransformation([])
-T = ConcatTransformation([ExprTransformation(:put!, :D, :((x...)->:D))]) ∘ T
-T = ConcatTransformation([ExprTransformation(:replace!, :I, :((x...)->rand(Bool) ? :R : :D))]) ∘ T
+T = ExprTransformation(:put!, :D, :((x...)->:D)) ∘ T
+T = ExprTransformation(:replace!, :I, :((x...)->rand(Bool) ? :R : :D)) ∘ T
 @show m
 @show T.seq
-m′ = T(m)
+T(m)
 @show m
-#M = eval(Expr(m′))
+#M = eval(Expr(m))
 #sol = M.solve()
 
 end
