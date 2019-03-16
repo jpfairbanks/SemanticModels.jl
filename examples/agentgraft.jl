@@ -37,8 +37,8 @@ println("\nInfected individuals recover or die in one step")
 # replace!(m, ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
 m[:I] = :((x...)->rand(Bool) ? :R : :D)
 @show m[:I]
+# -
 
-# +
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
 for i in 1:samples
@@ -46,6 +46,7 @@ for i in 1:samples
     push!(finalcounts, (model=:sird, counts=counts))
 end
 
+# +
 println("\nAdding population growth to this model")
 stepr = findfunc(m.expr, :step!)[1]
 
@@ -56,6 +57,8 @@ println("------------------------")
 push!(stepr.args[2].args[2].args[2].args, :(push!(sm.agents, :S)))
 @show stepr
 # splice!(stepr.args[2].args[2].args, 2:1, [:(push!(sm.agents, :S))])
+# -
+
 println("\nRunning growth model")
 AgentModels = eval(m.expr)
 for i in 1:samples
@@ -63,6 +66,7 @@ for i in 1:samples
     push!(finalcounts, (model=:growth, counts=counts))
 end
 
+# +
 println("\nModel\t Counts")
 println("-----\t ------")
 for result in finalcounts
@@ -97,3 +101,6 @@ for (g, v) in mean_healthy_frac
     x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
     println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
+# -
+
+
