@@ -95,7 +95,7 @@ end
 # <img src="https://docs.google.com/drawings/d/e/2PACX-1vRfLcbPPaQq6jmxheWApqidYte8FxK7p0Ebs2EyW2pY3ougNh5YiMjA0NbRMuGAIT5pD02WNEoOfdCd/pub?w=1005&amp;h=247">
 
 println("\nAdding population growth to this model")
-stepr = findfunc(m.expr, :tick!)[1]
+stepr = filter(x->isa(x,Expr), findfunc(m.expr, :tick!))[1]
 @show stepr
 push!(Func(), stepr, :(push!(sm.agents, :S)))
 println("------------------------")
