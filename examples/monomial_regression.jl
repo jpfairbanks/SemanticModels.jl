@@ -79,6 +79,7 @@ end;
 # Composition of `Pow{Int}` maps naturally to addition of the power to transform with. You can see how transformations are applied below.
 
 m = model(MonomialRegression, deepcopy(expr))
+@show m.f.args[2]
 m′ = deepcopy(m)
 Pow(+1)(m′)
 m′.f.args[2]

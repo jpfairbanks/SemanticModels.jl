@@ -62,7 +62,17 @@ println("\nThere is no resurrection in this model")
 println("\nInfected individuals recover or die in one step")
 
 # replace!(m, ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
-m[:I] = :((x...)->rand(Bool) ? :R : :D)
+m[:I] = :((x...)->begin
+        roll = mod(rand(Int),3)
+        if roll == 1
+            return :R
+        elseif roll == 2
+            return :D
+        else
+            return :I
+        end
+    end
+)
 @show m[:I]
 # -
 
@@ -76,10 +86,6 @@ end
 # Some utilities for manipulating functions at a higher level than expressions.
 
 # +
-function bodyblock(expr::Expr)
-    expr.head == :function || error("$expr is not a function definition")
-    return expr.args[2].args
-end
 
 struct Func end
 
@@ -147,5 +153,3 @@ for (g, v) in mean_healthy_frac
     x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
     println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
-# -
-
