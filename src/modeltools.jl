@@ -1,7 +1,7 @@
 module ModelTools
 using SemanticModels.Parsers
 import Base: show, getindex, setindex!, put!, replace!
-export model, callsites, structured, AbstractProblem,
+export model, callsites, structured, AbstractProblem, pusharg!, setarg!,
     ExpStateModel, ExpStateTransition, ExpODEProblem
 
 """    callsites(expr::Expr, name::Symbol)
@@ -58,6 +58,7 @@ tells the model function to parse an expression as the definition
 of an ODE model. Used for dispatch.
 """
 struct ExpODEProblem
+    expr::Expr
     calls
     funcs
     variables
@@ -88,13 +89,33 @@ function model(::Type{ExpODEProblem}, expr::Expr)
                    params=params(x)), funcs)
     tdomain = map(m->findassign(expr, m.args[4]), matches)
     initial = map(m->findassign(expr, m.args[3]), matches)
-    return ExpODEProblem(matches, funcs, vars, tdomain, initial)
+    return ExpODEProblem(expr, matches, funcs, vars, tdomain, initial)
+end
+
+function show(io::IO, m::ExpODEProblem)
+    write(io, "ExpODEProblem(\n  calls=$(repr(m.calls)),\n  funcs=$(repr(m.funcs)),\n  variables=$(repr(m.variables)),\n  domains=$(repr(m.domains)),  values=$(repr(m.values))\n)")
 end
 
 lhs(x::Expr) = begin
     @show x
     x.head == :(=) || error("x is not an assignment")
     return x.args[1]
+end
+
+function pusharg!(ex::Expr, s::Symbol)
+    ex.head == :function || error("ex is not a function definition")
+    push!(ex.args[1].args, s)
+    return ex
+end
+
+function setarg!(ex::Expr, old, new)
+    ex.head == :call || error("ex is not a function call")
+    for (i, x) in enumerate(ex.args)
+        if x == old
+            ex.args[i] = new
+        end
+    end
+    return ex
 end
 
 """    ExpStateModel
