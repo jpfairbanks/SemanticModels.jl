@@ -1,7 +1,7 @@
 module ModelTools
 using SemanticModels.Parsers
 import Base: show, getindex, setindex!, put!, replace!
-export model, callsites, structured, AbstractProblem, pusharg!, setarg!,
+export model, callsites, structured, AbstractProblem, pusharg!, setarg!, bodyblock, argslist,
     ExpStateModel, ExpStateTransition, ExpODEProblem
 
 """    callsites(expr::Expr, name::Symbol)
@@ -102,12 +102,45 @@ lhs(x::Expr) = begin
     return x.args[1]
 end
 
+"""    bodyblock(expr::Expr)
+
+get the array of args representing the body of a function definition.
+"""
+function bodyblock(expr::Expr)
+    expr.head == :function || error("$expr is not a function definition")
+    return expr.args[2].args
+end
+
+"""    argslist(expr::Expr)
+
+get the array of args representing the arguments of a defined function.
+the first element of this list is the function name
+
+See also [`bodyblock`](@ref), [`pusharg!`](@ref),
+"""
+function argslist(expr::Expr)
+    expr.head == :function || error("$expr is not a function definition")
+    return expr.args[1].args
+end
+
+"""    pusharg!(expr::Expr, s::Symbol)
+
+push a new argument onto the definition of a function.
+
+See also [`argslist`](@ref), [`setarg!`](@ref)
+"""
 function pusharg!(ex::Expr, s::Symbol)
     ex.head == :function || error("ex is not a function definition")
-    push!(ex.args[1].args, s)
+    push!(argslist(ex), s)
     return ex
 end
 
+"""    setarg!(expr::Expr, s::Symbol)
+
+replace the argument in a function call.
+
+See also [`argslist`](@ref), [`pusharg!`](@ref)
+"""
 function setarg!(ex::Expr, old, new)
     ex.head == :call || error("ex is not a function call")
     for (i, x) in enumerate(ex.args)
