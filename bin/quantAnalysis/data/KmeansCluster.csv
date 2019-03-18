@@ -1,0 +1,251 @@
+variable,cluster
+This section,29
+the number of parasites per host,19
+one of the simplest models,29
+an endemic equilibrium,8
+infected individuals,2
+a capita rate beta I,27
+infected individuals,2
+a capita rate beta I,27
+a capita rate Gamma,27
+two metapopulation SEIR models,24
+Lloyd Jansen,12
+matrix Beta,9
+matrix Beta,9
+the effective contact rates,30
+cross - coupling,32
+patches,14
+outflow of each patch,32
+the flow from patch,32
+I,28
+all elements of C,33
+zero,30
+migration between patches,32
+many SEIR models,24
+many SEIR models,24
+between patch contact,32
+a constant total population size ,19
+each time step,6
+each time step,6
+patches,14
+patches,14
+Sigma rate of breakdown,27
+Kermack,12
+a special case of a general model,13
+infected individuals,2
+a capita rate beta I,27
+infected individuals,2
+a capita rate beta I,27
+a capita rate Gamma,27
+SIRS dynamics,4
+This section,29
+which,7
+SEIRD model ,10
+different rates,30
+different rates,30
+different rates,30
+I_d infectious,19
+R recovered D,5
+D,5
+birth of in this model,13
+Beta rate of rate,27
+( ie inverse of mean incubation period,0
+rate immunity,27
+E,5
+( https:doiorg  ),35
+that model times,31
+Beta_textmin,12
+the efficacy of interventions,8
+pneumococcal transmission,19
+pneumococcal transmission,19
+several features : age,24
+the rate of transmission between individuals in the population,8
+compartmental models,10
+compartmental models,10
+time,6
+this,29
+a stochastic process for these parameters,0
+state variables with a system of,34
+values,0
+time,6
+models,10
+forecasting of in,21
+a stochastic process for the transmission rate,22
+the form S,18
+the number of susceptible individuals,19
+time,6
+alternative forms for the process,34
+Brownian motion,0
+a model,17
+log(beta(t,12
+downward drift on the transmission rate,30
+large numbers of,21
+the SIR model,31
+an exposed infectious class,19
+proportions of ,21
+Date,13
+interest in the total number of people,21
+( chapters sir  intro ),35
+[ epicookbook chapters  intro ) ),35
+efficient methods for,22
+the final sizeof,33
+a simple SIR model,31
+other models,24
+Black,13
+a record of the number of infection,19
+Z _,5
+Z_t,12
+Z _  _,5
+one infection event,19
+a recovery event,21
+( Z _ Z _ ),5
+the probability of all paths,33
+the state,13
+Z Z,5
+the states,13
+a flow diagram,22
+a stochastic model of genealogies,26
+some assumptions,15
+numerous extensions to the coalescent,15
+part of the state of the art,13
+the coalescent,23
+the coalescent,23
+a grammar,25
+data structures,15
+genealogies,15
+an clear [ wiki  Newick_format ) of this grammar,16
+an example (,16
+Wikipedia,16
+the Kingman coalescent,23
+Newick format,35
+a way,11
+data structures,0
+this code,29
+another language  things,25
+a language,25
+recursion,25
+model,10
+a Binomial distribution with k,0
+The susceptible ( SIS ) model,16
+Susceptible individuals,2
+Susceptible individuals,2
+S,18
+S,18
+individuals,2
+This code,29
+https:doiorgjmbs  ) ,12
+Cross - coupling between patches,32
+Equations Cross - coupling,32
+matrix Beta,9
+we,3
+we,3
+the elements on ,33
+Element C_ij,26
+Element C_ij,26
+all elements on the row,33
+all elements on the row,33
+we,3
+Model description,17
+This model,17
+many SEIR models,24
+The model,17
+births,21
+deaths,20
+susceptibles in patches,12
+R_n,12
+i,28
+I,28
+The model in a closed population,13
+The model in a closed population,13
+Susceptible individuals,2
+Susceptible individuals,2
+S,18
+S,18
+individuals,2
+the model of,31
+the model of,31
+SIRS ( susceptible ) infection dynamics in a infinite population of households,8
+The model,17
+infected individuals,2
+infected individuals,2
+SEIRD model ,10
+who,11
+who,11
+R,5
+There,1
+Parameters,0
+rate case fatality ratio ( proportion rate (,20
+rate case fatality ratio ( proportion rate (,20
+deterministic  time analogues of  model passage times,26
+the method of ( Cox ),16
+the minimum value of the transmission rate Beta,30
+the network model of ,31
+interventions,8
+interventions,8
+Individuals,2
+These features,24
+parametric models,10
+Flexibility,22
+parameters as transmission rates,30
+One way,11
+One way,11
+they,3
+these models,24
+these parameters,0
+The models,17
+which,7
+We,3
+These models,24
+St,23
+St,23
+I R We,28
+the process,34
+we,3
+We,3
+We,3
+a model,17
+the effect of,21
+there,1
+The susceptible model,17
+the SIR model,31
+The implementation in this section,29
+additional mortality,20
+Simon Frost,12
+there,1
+simulations,26
+simulations,26
+there,1
+efficient methods for,22
+efficient methods for,22
+the method,34
+The details,13
+we,3
+the number of infection events,19
+the number of recovery events,21
+the state of our model,13
+we,3
+we,3
+the system,34
+one,11
+all paths,33
+the system,34
+the dynamics of the Ebola virus,19
+The Kingman coalescent,23
+The model,17
+There,1
+it,11
+the significant assumptions,15
+the significant assumptions,15
+a grammar,25
+the established ways,13
+Wikipedia,16
+The following,13
+an example (,16
+we,3
+trees,33
+Newick format,35
+a way,11
+you,11
+you,11
+you,11
+which,7

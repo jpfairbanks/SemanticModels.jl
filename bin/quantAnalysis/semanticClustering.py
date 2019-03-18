@@ -15,7 +15,7 @@ import sklearn.cluster as cluster
 from sklearn.cluster import DBSCAN
 import spacy
 
-import unicodedata
+
 
 
 
@@ -36,54 +36,39 @@ def createWord2Vec(data):
     
 
     
-def useUMAP(tokenList, variableTokenList):
+def useUMAP(tokenList):
 
     db = DBSCAN(eps=0.3, min_samples=2).fit(np.asarray(tokenList))
     
     umapModel = umap.UMAP(random_state=42).fit(np.asarray(tokenList))
     
     standardEmbedding = umapModel.transform(tokenList)
-    variableEmbeddings = umapModel.transform(np.asarray(variableTokenList))
+     
+    db_umap = DBSCAN(eps=0.3, min_samples=2).fit(standardEmbedding)    
     
+    return np.asarray(db.labels_), np.asarray(db_umap.labels_)
 
 
-    
-    db_umap = DBSCAN(eps=0.3, min_samples=2).fit(standardEmbedding)
-    print(db_umap.labels_)
-    predictedVariables = db_umap.fit_predict(variableEmbeddings)
-    
-    
-    return np.asarray(db.labels_), np.asarray(db_umap.labels_), predictedVariables
-
-def writePredictedCSV(variable_array, predictedLabels):
-    print("generating CSV")
-    outputString = "variable,predictedCluster\n"
-    for i in range(len(variable_array)):
-        outputString += str(variable_array[i]) + "," + str(predictedLabels[i]) + "\n"
-    
-    with open("variableNamePredictedCluster.csv", 'w') as filetowrite:
-        filetowrite.write(outputString)
-        filetowrite.close()
         
         
     
 
-def writeCSV(subj_array, labels, umapLables, labelsSimArray, \
+def writeUMAP_DBSCAN_CSV(subj_array, labels, umapLabels, labelsSimArray, \
              uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray):
     print("Writing CSV")
         
-    outputString = "node,labels,umapLables,dbscanSim,UMAPsim,out_sampleDBSCAN,out_sampleUMAP\n"
+    outputString = "node,labels,umapLabels,dbscanSim,UMAPsim,out_sampleDBSCAN,out_sampleUMAP\n"
     for i in range(len(labels)):
         outputString += str(subj_array[i]) + ","\
         + str(labels[i]) + ","\
-        +str(umapLables[i]) + ","\
+        +str(umapLabels[i]) + ","\
         + str(labelsSimArray[i]) + ","\
         + str(uMapLabelsSimArray[i])+ ","\
         + str(OutSampleLabelsSimArray[i]) + ","\
         + str(OutSampleUMAPSimArray[i]) + "\n"
         
     
-    with open("clusteringLabels.csv", 'w') as filetowrite:
+    with open("data/clusteringLabels.csv", 'w') as filetowrite:
         filetowrite.write(outputString)
         filetowrite.close()
         
@@ -146,80 +131,36 @@ def generatePairs(labels, umapLabels, data):
     return labelsSimArray, uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray
                 
                     
-def cleanVariables(variableArray):
-    for i in range(len(variableArray)):
-
-        variableArray[i] = variableArray[i].replace(",", " ")
-        variableArray[i] = variableArray[i].replace("_", " ")
-        variableArray[i] = containsGreek(variableArray[i])
-        
 
 
-    return variableArray
+    
 
-    
-def containsGreek(inputString):
-    greekLetters = []
-    for s in inputString:
-        name = unicodedata.name(chr(ord(s)))
-        if "GREEK" in name:
-            greekLetters.append(s)
-    
-    
-    for letter in greekLetters:
-        name = unicodedata.name(chr(ord(letter))).split(" ")[3]
-        inputString = inputString.replace(letter, str(name) + str(" "))
-    
-    return inputString
         
 
             
 
 if __name__ == "__main__":
     SVOdata = pd.read_csv("../sovExtraction/svoOutput/svo.csv")
-    variableData = pd.read_csv("JuliaVariableData.csv")
     
-    variable_array = list(variableData["variable"])
     subj_array = list(SVOdata["subject"])   
     obj_array = list(SVOdata["object"])
+    totalNodes = subj_array + obj_array
     
-    variable_array = cleanVariables(variable_array)
-# =============================================================================
-#     print(variable_array)
-# =============================================================================
+    
 
-    tokenList = createWord2Vec(obj_array)
-    variableTokenList = createWord2Vec(variable_array)
+    tokenList = createWord2Vec(totalNodes)
+    
     
     #Use UMAP Clustering
-    labels,umapLabels, predictedVariables = useUMAP(tokenList, variableTokenList)
-# =============================================================================
-#     print(predictedVariables)
-#     
-#     print(obj_array)
-#     print(umapLabels)
-# =============================================================================
-# =============================================================================
-#     print(predictedLabels)
-#     print(variable_array)
-# =============================================================================
-# =============================================================================
-#     labelsSimArray, uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray = \
-#         generatePairs(labels, umapLabels, obj_array)
-# =============================================================================
-        
-    #Write Predicted Variable Names
-    writePredictedCSV(variable_array, predictedVariables)
-    
+    labels,umapLabels = useUMAP(tokenList)
 
+
+    #Retrieves Labels for Similarity
+    labelsSimArray, uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray = \
+        generatePairs(labels, umapLabels, totalNodes)
         
-    
-    
-    
-    
-# =============================================================================
-#     writeCSV(obj_array, labels, umapLabels, labelsSimArray, \
-#              uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray )
-# =============================================================================
+    #Writes CSV for UMAP vs DBScan Labels
+    writeUMAP_DBSCAN_CSV(totalNodes, labels, umapLabels, labelsSimArray, \
+             uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray )
         
         

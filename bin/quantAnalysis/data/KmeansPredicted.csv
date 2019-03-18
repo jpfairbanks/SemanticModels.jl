@@ -1,0 +1,38 @@
+variable,cluster
+sir sol,23
+tspan,12
+du[2],35
+(b  g),35
+S,14
+pram,16
+init,16
+sir prob2,12
+(S  I  R),12
+du[3],35
+parms,35
+BETA ,9
+GAMMA ,9
+I,28
+du[1],35
+sir prob,23
+ALPHA ,27
+sir sol,5
+tspan,12
+BETA s[:  i],12
+w,5
+MU ,9
+K,5
+init,12
+(BETA   r  MU   K  ALPHA ),12
+dS,12
+ws,5
+(S  I),35
+parms,12
+du,12
+r,18
+dI,12
+BETA ,27
+m,28
+BETA s,27
+sir prob,23
+i,28
