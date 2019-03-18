@@ -34,12 +34,17 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 
 expr = parsefile("../examples/agentbased.jl")
 m = model(ExpStateModel, expr.args[3].args[3])
+ModelTools.funclines(m.expr, :main)
+
+
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
     newsam, counts = AgentModels.main(nsteps)
     push!(finalcounts, (model=:basic, counts=counts))
 end
+
+
 
 
 m

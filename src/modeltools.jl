@@ -52,6 +52,12 @@ a placeholder struct to dispatch on how to parse the expression tree into a mode
 """
 abstract type AbstractProblem end
 
+function invoke(m::AbstractProblem, args...)
+    Mod = eval(m.expr)
+    Base.invokelatest(Mod.main, args...)
+end
+
+
 """    ExpODEProblem
 
 tells the model function to parse an expression as the definition
@@ -111,6 +117,18 @@ function bodyblock(expr::Expr)
     return expr.args[2].args
 end
 
+"""    funclines(expr::Expr, s::Symbol)
+
+clean up the lines of a function definition for presentation
+"""
+function funclines(expr::Expr, s::Symbol)
+    q = Expr(:block)
+    isexpr(x) = isa(x, Expr)
+    q.args = (filter(isexpr, findfunc(expr, s))[end]
+              |> bodyblock
+              |> arr -> filter(x->!isa(x, LineNumberNode),arr))
+    return q
+end
 """    argslist(expr::Expr)
 
 get the array of args representing the arguments of a defined function.
