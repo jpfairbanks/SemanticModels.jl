@@ -20,8 +20,8 @@ using Random
 isexpr(x) = isa(x, Expr)
 # -
 
-samples = 35
-nsteps = 20
+samples = 100
+nsteps = 25
 finalcounts = Any[]
 
 println("Running Agent Based Simulation Augmentation Demo")
@@ -384,10 +384,10 @@ function addstate!(m::ExpStateModel)
 
     # replace!(m, ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
     m[:I] = :((x...)->begin
-            roll = mod(rand(Int),3)
-            if roll == 1
+            roll = rand()
+            if roll < ρ
                 return :R
-            elseif roll == 2
+            elseif rand(Bool)
                 return :D
             else
                 return :I
@@ -447,6 +447,8 @@ function connector(finalcounts, i, j)
     # @assert(size(Y) == (n,))
     X = params[:, i]
     Y = Data[:, j]
+    # normalization
+    #Y = Y ./ [sum(Data[i, :]) for i in 1:n]
     @assert size(X,1) == size(Y,1)
     return X,Y
 end
@@ -497,14 +499,22 @@ println(filter(isexpr, findfunc(P.steps[1].expr, :tick!))[end])
 Pipelines.run!(P)
 P.results[end][2]
 
-table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
-for t in table
-    println(join(t, "\t"))
+# Here is the data we observed when running the first stage of the pipeline, stage two fits a polynomial to these observations
+
+try 
+    using Plots
+catch
+    @warn "Plotting is not available, make a table"
+    table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
+    for t in table
+        println(join(t, "\t"))
+    end
 end
+
 
 # ## Results
 #
-# The regression model that we have trained based on the simulated data from the SIRD model with population growth can be presented as a polynomial sampled over the domain. We construct this table to show the nonlinear dependence of the model on the recovery parameter $\rho$. The best 
+# The regression model that we have trained based on the simulated data from the SIRD model with population growth can be presented as a polynomial sampled over the domain. We construct this table to show the nonlinear dependence of the model on the recovery parameter $\rho$. The best fitting polynomial is shown below.
 
 eval(:(f(x,β) = $(poly(P.steps[2]))))
 xdomain = (0.0:0.05:1.0)
@@ -516,8 +526,10 @@ end
 
 using Plots
 
-p = scatter(first.(table), last.(table))
-plot!(first.(z), last.(z))
+p = scatter(first.(table), last.(table), label="obs")
+plot!(first.(z), last.(z), label="fit")
+println("β: ", P.results[end][2].β, "\n", string(poly(P.steps[2])))
+p
 
 # ## Conclusions
 #
@@ -532,3 +544,5 @@ plot!(first.(z), last.(z))
 # SemanticModels.jl also provides transformations on these models that are grounded in category theory and abstract algebra. The concepts of category theory such as Functors and Product Categories allow us to build a general framework fit for any modeling task. In the language of category theory, the Pipelining functor on models commutes with the Product functor on transformations.
 #
 # This examples shows that metamodeling is feasible with SemanticModels and that the algebras of model transformations can be preserved when acting on metamodel workflows.
+
+

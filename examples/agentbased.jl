@@ -39,11 +39,14 @@ end
 function count(sm::StateModel)
     return length(sm.agents)
 end
-# -
+
+# +
+### Define stateload here ##############################################
 
 function stateload(sm::StateModel, state::Symbol)
     return (count(sm, state)+1)/(count(sm)+1)
 end
+# -
 
 #     tick!(sm::StateModel)
 #

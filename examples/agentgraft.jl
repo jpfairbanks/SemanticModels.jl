@@ -66,7 +66,7 @@ println("\nThe system states are $(m.states.args)")
 println("\nThere is no resurrection in this model")
 println("\nInfected individuals recover or die in one step")
 
-# replace!(m, ExpStateTransition(:I, :((x...)->rand(Bool) ? :D : :I)))
+# add a transition rule for infected -> recovered, dead, or infected
 m[:I] = :((x...)->begin
         roll = mod(rand(Int),3)
         if roll == 1
