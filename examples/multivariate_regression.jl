@@ -122,13 +122,12 @@ import Base: show
 
 isexpr = Transformations.isexpr
 
-"""    (t::Pow)(m::MultivariateLsq, i::Int)
+""""    MultivariateLsq
 
-apply the power transformation to the i-th coordinate of m.
-
-Example:
 
 A program that solves min_β || f(X,β) - y ||_2
+
+Example:
 
 `f(X, β) = β[1]*X[:,1]^p + β[2]*X[:,2]^q`
 """
