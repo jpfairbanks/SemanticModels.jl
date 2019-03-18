@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+# ## Agent Based Modeling
+# This script is a self contained agent based model, we define a modeling microframework and then use it to implement an agent based model. This agent based model represents the SIR model of infectious disease with discrete time. This model is not intended as a realistic model of disease, but as an example of how to reverse engineer a model structure from code that implements it. See the agentgraft.jl script for an example of model augmentation on this class of models.
+#
+# Agent based models are useful for representing computations that cannot be done in closed form and need to be simulated. These simulations arise when analyzing complex systems, such as road networks, social behavior, or very small scale physical systems. The basic principles of ABM are to have agents that can be in states, and transitions between those states, the model then advances the simulation forward in time to get from an initial condition to a final condition. This framework is based on synchronous ABM where there is a global clock and all agents update their state once per clock tick.
+
 module AgentModels
 
 import Base: count
-
-# ## Agent Based Modeling
-# This script is a self contained agent based model, we define a modeling microframework and then use it to implement an agent based model. This agent based model represents the SIR model of infectious disease with discrete time. This model is not intended as a realistic model of disease, but as an example of how to reverse engineer a model structure from code that implements it. See the agentgraft.jl script for an example of model augmentation on this class of models.
 
 """    AgentModel
 
@@ -39,14 +41,13 @@ end
 function count(sm::StateModel)
     return length(sm.agents)
 end
+# -
 
-# +
-### Define stateload here ##############################################
-
+# stateload computes the fraction of agents in each state
+# it is used by tick! to update the statemodel for computing the probability of infection.
 function stateload(sm::StateModel, state::Symbol)
     return (count(sm, state)+1)/(count(sm)+1)
 end
-# -
 
 #     tick!(sm::StateModel)
 #
@@ -94,6 +95,16 @@ end
 
 # ## Run the model
 #
+# This script defines a basic agent based model of disease spread called SIRS. Each agent is in one of 3 states
+#
+# 1. $S$ Susceptible
+# 2. $I$ Infected
+# 3. $R$ Recovered
+#
+# <img src="https://docs.google.com/drawings/d/e/2PACX-1vSeA7mAQ-795lLVxCWXzbkFQaFOHMpwtB121psFV_2cSUyXPyKMtvDjssia82JvQRXS08p6FAMr1hj1/pub?w=1031&amp;h=309">
+#
+# The agents go from `S->I`, `I-R`, and `R->S` based on random numbers. The probability of S-> is dependent on the fraction of agents in state :I. The probability of recovering is a constant ρ, and the disease confers some temporary immunity with probability μ.
+#
 # This script has an entrypoint to call it so that you can include this file and run as many simulations as you want. The intended use case is to repeatedly call `main` and accumulate the return values into an array for later analysis.
 
 function main(nsteps)
@@ -121,5 +132,3 @@ end
 # -
 
 end
-
-
