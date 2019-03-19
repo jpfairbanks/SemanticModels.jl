@@ -43,9 +43,16 @@
 # epicookbook/src/ScalingModel.jl, "βs"
 # epicookbook/src/ScalingModel.jl, "sir_prob"
 # epicookbook/src/ScalingModel.jl, "i"
-import Pkg;
-Pkg.add("SemanticModels")
+try
+    using SemanticModels
+catch
+
+    import Pkg;
+    Pkg.add("SemanticModels")
+end
+
 using SemanticModels.Parsers
+import SemanticModels.Parsers.walk
 
 """    findassigns(expr::Expr)
 
