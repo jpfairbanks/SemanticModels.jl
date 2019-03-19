@@ -112,5 +112,6 @@ end
 include("graph.jl")
 include("definitions.jl")
 include("parse.jl")
+include("modeltools.jl")
 
 end
