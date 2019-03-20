@@ -100,7 +100,7 @@ if length(ARGS) > 0
         try
             matches = findvars(file)
             for k in keys(matches)
-                println("$file, \"$k\"")
+                println("$file,\"$k\"")
             end
         catch
             @warn "Processing failed" file=file
