@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # + {}
-module MonomialRegressions
+module MonomialRegressionModels
+using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.Transformations
+import Base: show
 
-export MonomialRegression, model, show
+export MonomialRegressionModel, model
 
-struct MonomialRegression <: AbstractProblem
+struct MonomialRegressionModel <: AbstractModel
     expr
     f
     coefficient
@@ -13,11 +16,11 @@ struct MonomialRegression <: AbstractProblem
     interval
 end
 
-eval(m::MonomialRegression) = eval(m.expr)
+eval(m::MonomialRegressionModel) = eval(m.expr)
 
-function model(::Type{MonomialRegression}, ex::Expr)
+function model(::Type{MonomialRegressionModel}, ex::Expr)
     if ex.head == :block
-        return model(MonomialRegression, ex.args[2])
+        return model(MonomialRegressionModel, ex.args[2])
     end
 
     objective = callsites(ex, :optimize)[end].args[2]
@@ -25,18 +28,18 @@ function model(::Type{MonomialRegression}, ex::Expr)
     interval = findassign(ex, :a₀)[1]
     ldef = filter(isexpr, findfunc(ex, objective))
     coeff = funcarg(ldef[1])
-    return MonomialRegression(ex,
+    return MonomialRegressionModel(ex,
                               f,
                               coeff,
                               objective,
                               interval)
 end
 
-function show(io::IO, m::MonomialRegression)
-    write(io, "MonomialRegression(\n  f=$(repr(m.f)),\n  objective=$(repr(m.objective)),\n  coefficient=$(repr(m.coefficient)),\n  interval=$(repr(m.interval)))")
+function show(io::IO, m::MonomialRegressionModel)
+    write(io, "MonomialRegressionModel(\n  f=$(repr(m.f)),\n  objective=$(repr(m.objective)),\n  coefficient=$(repr(m.coefficient)),\n  interval=$(repr(m.interval)))")
 end
 
-function (t::Pow)(m::MonomialRegression)
+function (t::Pow)(m::MonomialRegressionModel)
     x = m.f.args[1].args[3]
     replacer(a::Any) = a
     replacer(ex::Expr) = begin

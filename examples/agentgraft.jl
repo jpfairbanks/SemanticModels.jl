@@ -17,6 +17,7 @@
 
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.ExpStateModels
 import Base: push!
 
 samples = 7
@@ -36,15 +37,15 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 #
 # Agents progress from the susceptible state to infected and then recovered, and get become susceptible again after recovery. See the file `../examples/agentbased.jl` for a full description of this model
 
-expr = parsefile("../examples/agentbased.jl")
-m = model(ExpStateModel, expr.args[3].args[3])
-ModelTools.funclines(m.expr, :main)
+expr = parsefile("agentbased.jl")
+m = model(ExpStateModel, expr.args[3])
+#ModelTools.funclines(m.expr, :main)
 
 
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels.main(nsteps)
+    newsam, counts = AgentModels(nsteps)
     push!(finalcounts, (model=:basic, counts=counts))
 end
 
@@ -85,7 +86,7 @@ m[:I] = :((x...)->begin
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels.main(nsteps)
+    newsam, counts = AgentModels(nsteps)
     push!(finalcounts, (model=:sird, counts=counts))
 end
 
@@ -116,7 +117,7 @@ println("------------------------")
 println("\nRunning growth model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels.main(nsteps)
+    newsam, counts = AgentModels(nsteps)
     push!(finalcounts, (model=:growth, counts=counts))
 end
 

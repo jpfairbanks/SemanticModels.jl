@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # + {}
-module SimpleProblems
+module SimpleModels
 using SemanticModels.ModelTools
 
-export SimpleProblem, model
+export SimpleModel, model
 
-mutable struct SimpleProblem <: AbstractProblem
+mutable struct SimpleModel <: AbstractModel
     expr::Expr
     imports::Any
     blocks::Vector{Expr}
     functions::Vector{Expr}
 end
 
-function model(::Type{SimpleProblem}, expr::Expr)
+function model(::Type{SimpleModel}, expr::Expr)
     body = expr.args[2].args[3]
     statements = body.args
     imports = filter(issome, 
@@ -25,7 +25,7 @@ function model(::Type{SimpleProblem}, expr::Expr)
     )
     blocks = filter(or(isblock, isfunc), statements)
     funcs = filter(isfunc, statements)
-    return SimpleProblem(expr, imports, blocks, funcs)
+    return SimpleModel(expr, imports, blocks, funcs)
 end
 
 end

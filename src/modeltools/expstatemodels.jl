@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # + {}
 module ExpStateModels
+using SemanticModels.Parsers
 using SemanticModels.ModelTools
+import Base: show, getindex, setindex!, put!, replace!
 
-export ExpStateModel, ExpStateTransition, model, show, put!, replace!, setindex!, getindex
+export ExpStateModel, ExpStateTransition, model
 
 """    ExpStateModel
 
@@ -12,7 +14,7 @@ The agents are a collection of states and the transitions map from state to stat
 
 The common transformations for an agent based model are adding, removing, or replacing, states, agents, or transitions. See [`model`](@ref), [`put!`](@ref), [`setindex`](@ref), [`getindex`](@ref), [`put!`](@ref), [`replace!`](@ref).
 """
-struct ExpStateModel <: AbstractProblem
+struct ExpStateModel <: AbstractModel
     expr::Expr
     states
     agents

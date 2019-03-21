@@ -23,7 +23,7 @@ function ∘(f::ConcatTransformation, g::ConcatTransformation)
     return g
 end
 
-function (f::ConcatTransformation)(m::AbstractProblem)
+function (f::ConcatTransformation)(m::AbstractModel)
     return foldl((m, t)->t(m), [m; f.seq])
 end
 
@@ -71,7 +71,7 @@ struct Product{T} <: Transformation
     dims::T
 end
 
-function (f::Product)(m::AbstractProblem)
+function (f::Product)(m::AbstractModel)
     return foldl((m, t)->t(m), [m; f.dims])
 end
 

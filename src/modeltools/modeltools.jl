@@ -1,16 +1,18 @@
 module ModelTools
 using SemanticModels.Parsers
-import Base: show, getindex, setindex!, put!, replace!
 
-export model, callsites, structured, AbstractProblem, pusharg!, setarg!, bodyblock, argslist
+export model, callsites, structured, AbstractModel,
+    pusharg!, setarg!, bodyblock, argslist, issome,
+    head, isblock, isfunc, or, isexpr, funcarg
 
-"""    AbstractProblem
+
+"""    AbstractModel
 
 a placeholder struct to dispatch on how to parse the expression tree into a model.
 """
-abstract type AbstractProblem end
+abstract type AbstractModel end
 
-function invoke(m::AbstractProblem, args...)
+function invoke(m::AbstractModel, args...)
     Mod = eval(m.expr)
     Base.invokelatest(Mod.main, args...)
 end
@@ -138,9 +140,9 @@ function funcarg(ex::Expr)
 end
 
 include("transformations.jl")
-include("simpleproblems.jl")
-include("expodeproblems.jl")
+include("simplemodels.jl")
+include("expodemodels.jl")
 include("expstatemodels.jl")
-include("monomialregressions.jl")
+include("monomialregressionmodels.jl")
 
 end
