@@ -4,6 +4,8 @@ import Base: show, getindex, setindex!, put!, replace!
 export model, callsites, structured, AbstractProblem, pusharg!, setarg!, bodyblock, argslist,
     ExpStateModel, ExpStateTransition, ExpODEProblem
 
+include("exprs.jl")
+
 """    callsites(expr::Expr, name::Symbol)
 
 extract the location where the function `name` is called in `expr`.
@@ -57,6 +59,7 @@ function invoke(m::AbstractProblem, args...)
     Base.invokelatest(Mod.main, args...)
 end
 
+include("SimpleProblem.jl")
 
 """    ExpODEProblem
 
