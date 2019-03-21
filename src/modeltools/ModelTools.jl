@@ -139,10 +139,10 @@ function funcarg(ex::Expr)
     return ex.args[1].args[2]
 end
 
-include("transformations.jl")
-include("simplemodels.jl")
-include("expodemodels.jl")
-include("expstatemodels.jl")
-include("monomialregressionmodels.jl")
+include("Transformations.jl")
+include("SimpleModels.jl")
+include("ExpODEModels.jl")
+include("ExpStateModels.jl")
+include("MonomialRegressionModels.jl")
 
 end
