@@ -281,6 +281,54 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "dubstep/#SemanticModels.Dubstep.FCollector",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.FCollector",
+    "category": "type",
+    "text": "FCollector(depth::Int,frame::function,data::FCollector)\n\nstruct to collect all the \"frames\" called throughout a script\n\n\n\n\n\n"
+},
+
+{
+    "location": "dubstep/#SemanticModels.Dubstep.FCollector-Tuple{Int64,Any}",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.FCollector",
+    "category": "method",
+    "text": "FCollector(depth::Int,frame::Frame)\n\nthis is an initialization funtion for the FCollector\n\n\n\n\n\n"
+},
+
+{
+    "location": "dubstep/#SemanticModels.Dubstep.Frame",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.Frame",
+    "category": "type",
+    "text": "Frame(func, args, ret, subtrace)\n\na structure to hold metadata for recursive type information for each function call Every frame can be thought of as a single stack frame when a function is called\n\n\n\n\n\n"
+},
+
+{
+    "location": "dubstep/#SemanticModels.Dubstep.TypeCtx",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.TypeCtx",
+    "category": "type",
+    "text": "TypeCtx\n\ncreates a MetaDiGraph tracking the types of args and ret values throughout a script\n\n\n\n\n\n"
+},
+
+{
+    "location": "dubstep/#SemanticModels.Dubstep.buildgraph-Tuple{Any,Any}",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.buildgraph",
+    "category": "method",
+    "text": "buildgraph\n\ninternal function used in the typegraphfrompath takes the collector object and returns a metagraph\n\n\n\n\n\n"
+},
+
+{
+    "location": "dubstep/#SemanticModels.Dubstep.typegraph",
+    "page": "Dubstep",
+    "title": "SemanticModels.Dubstep.typegraph",
+    "category": "function",
+    "text": "typegraph(path::AbstractString,maxdepth::Int)\n\nThis is a function that takes in an array of script and produces a MetaDiGraph descibing the system. takes in optional parameter of recursion depth on the stacktrace defaulted to 3\n\n\n\n\n\n"
+},
+
+{
     "location": "dubstep/#Reference-1",
     "page": "Dubstep",
     "title": "Reference",
