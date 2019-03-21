@@ -141,6 +141,117 @@ function replacefunc(f::Function, d::AbstractDict)
     ctx = GraftCtx(metadata=d)
     return Cassette.recurse(ctx, f)
 end
+            
+#---------------------------------------------------------------------------
+            
+Cassette.@context TypeCtx
+            
+"""   TypeCtx
+
+creates a MetaDiGraph tracking the types of args and ret values throughout a script
+
+"""
+TypeCtx
+            
+            
+
+"""   FCollector(depth::Int,frame::function,data::FCollector)
+
+struct to collect all the "frames" called throughout a script
+        
+"""
+mutable struct FCollector{I,F,C}
+    depth::I
+    frame::F
+    data::Vector{C}
+end
+            
+
+
+"""   FCollector(depth::Int,frame::Frame)
+
+this is an initialization funtion for the FCollector
+
+"""
+function FCollector(d::Int, f)
+    FCollector(d, f, FCollector[])
+end
+
+""" Frame(func, args, ret, subtrace)
+
+a structure to hold metadata for recursive type information for each function call
+Every frame can be thought of as a single stack frame when a function is called
+            
+"""
+mutable struct Frame{F,T,U}
+    func::F
+    args::T
+    ret::U
+end
+            
+function Cassette.overdub(ctx::TypeCtx, f, args...) # add boilerplate for functionality
+    c = FCollector(ctx.metadata.depth-1, Frame(f, args, Any))
+    push!(ctx.metadata.data, c)
+    if c.depth > 0 && Cassette.canrecurse(ctx, f, args...)
+        newctx = Cassette.similarcontext(ctx, metadata = c)
+        z = Cassette.recurse(newctx, f, args...)
+        c.frame.ret = typeof(z)
+        return z
+    else
+        z = Cassette.fallback(ctx, f, args...)
+        c.frame.ret = typeof(z)
+        return z
+    end
+end
+
+Cassette.canrecurse(ctx::TypeCtx,::typeof(Base.vect), args...) = false # limit the stacktrace in terms of which to recurse on
+Cassette.canrecurse(ctx::TypeCtx,::typeof(FCollector)) = false
+Cassette.canrecurse(ctx::TypeCtx,::typeof(Frame)) = false
+     
+"""    buildgraph
+
+internal function used in the typegraphfrompath
+takes the collector object and returns a metagraph
+            
+"""
+function buildgraph(g,collector)
+    try
+        add_vertex!(g,:name,collector.frame.args)
+    catch
+        nothing
+    end
+    try
+        add_vertex!(g,:name,collector.frame.ret)
+    catch
+        nothing
+    end
+    try
+        add_edge!(g,g[collector.frame.args,:name],g[collector.frame.ret,:name],:name,collector.frame.func)
+    catch
+        nothing
+    end
+    for frame in collector.data
+        buildgraph(g,frame)
+    end
+    return g
+end
+
+"""    typegraph(path::AbstractString,maxdepth::Int)
+            
+This is a function that takes in an array of script and produces a MetaDiGraph descibing the system.
+takes in optional parameter of recursion depth on the stacktrace defaulted to 3
+
+"""
+function typegraph(m::Module,maxdepth::Int=3)
+    
+    extractor = FCollector(maxdepth, Frame(nothing, (), nothing,)) # init the collector object     
+    ctx = TypeCtx(metadata = extractor);     # init the context we want             
+    Cassette.overdub(ctx,m.main);    # run the script internally and build the extractor data structure
+    g = MetaDiGraph()    # crete a graph where we will init our tree
+    set_indexing_prop!(g,:name)    # we want to set this metagraph to be able to index by the names
+    return buildgraph(g,extractor)    # pass the collector ds to make the acutal metagraph
+    
+end
 
 end #module
 
