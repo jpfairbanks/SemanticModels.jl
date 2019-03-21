@@ -12,7 +12,6 @@
 #     name: julia-1.0
 # ---
 
-module SIRSDynamicsLargePopulationsJulia
 using DifferentialEquations
 using LinearAlgebra
 
@@ -24,24 +23,24 @@ gamma = 1; # Rate of recovery from infection
 tau = 1; # Rate of loss of protection
 params = [betaHH,gamma,tau,betaG,N]; # Put all the parameters together
 time = (0.0, 30.0) # Simulation time - note it defined as a float
-dim = dim = 0.5*(N+1)*(N+2); # Number of possible configurations - works for three epidemiological classes
-y0 = zeros(Float64, 1, Int(dim)); # Initial condition vector
+dim = dim = convert(Int,0.5*(N+1)*(N+2)); # Number of possible configurations - works for three epidemiological classes
+y0 = vec(zeros(1, dim)); # Initial condition vector
 y0[end-1] = 0.00000001;
 y0[end] = 0.99999999;
 
 function hhTransitions(N,dim)
     # Function to generate transition matrices for household model
     # Input: N is the household size
-
+    
     # Initialize things
-    Qinf = zeros(Float64, Int(dim), Int(dim));
-    Qrec = zeros(Float64, Int(dim), Int(dim));
-    Qext = zeros(Float64, Int(dim), Int(dim));
-    Qwane = zeros(Float64, Int(dim), Int(dim));
-    dataI = zeros(Int64, Int(dim), 3)
+    Qinf = zeros(dim,dim);
+    Qrec = zeros(dim,dim);
+    Qext = zeros(dim,dim);
+    Qwane = zeros(dim,dim);
+    dataI = Array{Int64}(zeros(dim,3))
     m = 0;
-    I = zeros(Int64, Int(N+1), Int(N+1))
-
+    I = Array{Int64}(zeros(N+1,N+1))
+    
     # To help remember where to store the variables
     for ss = 0:N
         for ii = 0:(N-ss)
@@ -49,46 +48,46 @@ function hhTransitions(N,dim)
             I[ss+1,ii+1] = m
         end
     end
-
+    
     # Describe the epidemiological transitions
-
+    
     # Counter for susceptibles
     for ss = 0:N
         # Counter for infecteds
-        for ii = 0:(N-ss)
+        for ii = 0:(N-ss) 
             # If susceptibles and infecteds are more than 1, then infection within the household can occur
-            if (ss > 0 && ii > 0)
+            if (ss > 0 && ii > 0) 
                 Qinf[I[ss+1,ii+1],I[ss,ii+2]] = ii*ss/(N-1);
             end
-
+            
             # If infecteds are more than 1, recovery can occur
             if ii > 0
                 # Rate of recovery
-                Qrec[I[ss+1,ii+1],I[ss+1,ii]] = ii;
+                Qrec[I[ss+1,ii+1],I[ss+1,ii]] = ii; 
             end
-
+            
             # For external infection - just keep track of susceptibles
-            if ss > 0
+            if ss > 0           
                 # Rate of within household infection
-                Qext[I[ss+1,ii+1],I[ss,ii+2]] = ss;
+                Qext[I[ss+1,ii+1],I[ss,ii+2]] = ss;           
             end
-
-            # Loss of protection hence becoming susceptible again. Possible if N-ss-ii = rr > 0
+            
+            # Loss of protection hence becoming susceptible again. Possible if N-ss-ii = rr > 0 
             if (N-ss-ii) > 0
                 # Rate of loss of protection
                 Qwane[I[ss+1,ii+1],I[ss+2,ii+1]] = N-ss-ii;
             end
-
+            
             # Store the relevant indices to help identify the household configurations
             dataI[I[ss+1,ii+1],:] = [ss, ii, N-ss-ii];
         end
     end
 
-    Qinf = Qinf - diagm(0=>vec(sum(Qinf,dims= 2)));
-    Qrec = Qrec - diagm(0=>vec(sum(Qrec,dims = 2)));
+    Qinf = Qinf - diagm(0=>vec(sum(Qinf,dims=2)));
+    Qrec = Qrec - diagm(0=>vec(sum(Qrec,dims=2)));
     Qext = Qext - diagm(0=>vec(sum(Qext,dims=2)));
     Qwane = Qwane - diagm(0=>vec(sum(Qwane,dims=2)));
-
+    
     # Return
     return Qinf, Qrec, Qext, Qwane, dataI
 end
@@ -96,63 +95,68 @@ Qinf, Qrec, Qext, Qwane, dataI = hhTransitions(N,dim);
 
 # +
 function rateSIRS(dy_dt,y0,params,time)
-
+    
     # Extract the parameters
     betaHH = params[1];
     gamma = params[2];
     tau = params[3];
     betaG = params[4];
     N = params[5];
-
+    
     # Generate the transition matrices
     Qinf, Qrec, Qext, Qwane, HHconfig = hhTransitions(N,dim);
-
+    
     # Combine within and external transitions
-    Q = betaHH*Qinf + gamma*Qrec + tau*Qwane + (betaG*((HHconfig[:,2]*y0)/N)*Qext);
-
-
+    Q = betaHH*Qinf + gamma*Qrec + tau*Qwane + betaG*Qext*((HHconfig[:,2]'*y0)/N);
+    
+    # Generate the rates of change for ODE solver
+    dy_dt .= (y0'*Q)';
+    
 end
 
 # Define the ODE problem
 prob = ODEProblem(rateSIRS,y0,time,params);
 
 # Solve
-sol = solve(prob);
+sol = solve(prob, alg=Tsit5());
 # -
 
 using Plots
-using RecursiveArrayTools
+#using RecursiveArrayTools
 
 # +
 Iconfig = dataI[:,2];
-infProp = zeros(Float64,length(sol),1);
+infProp = zeros(length(sol.t),1);
 
 # Prepare the plots
 for i = 1:length(sol.t)
-    infProp[i,1] = *Iconfig/N;
+    infProp[i,1] = sol[:,i]'*Iconfig/N;
 end
+
 # -
 
 # Total infectious in the population
-plot(sol.t,infProp,color="blue",xlabel="Time",ylabel="Proportion infectious",label=["Mean infection"],ylims=[0, 1])
+plot(sol.t, infProp,
+    color="blue",xlabel="Time",
+    ylabel="Proportion infectious",
+    label=["Mean infection"],
+    ylims=[0, 1]);
 
 # Household profile at endemic prevalence
 # Prepare the plots
-using PyPlot
+using Plots
 yprop = zeros(N+1,length(sol.t))
 for j = 1:length(sol.t)
     for i = 1:N+1
-        index = find(Iconfig.==i-1);
+        index = findall(Iconfig.==i-1);
         yprop[i,j] = sum(sol[index,j])
     end
 end
-step(-0.5:1:10.5,[yprop[:,length(sol.t)];0])
+plot(-0.5:1:10.5,[yprop[:,length(sol.t)];0]);
 
 # Household profile at peak prevalence
 # Prepare the plots
-x = find(infProp.==maximum(infProp))
-step(-0.5:1:10.5,[yprop[:,x];0]);
+x = findall(infProp.==maximum(infProp))
+plot(-0.5:1:10.5,[yprop[:,x];0]);
 
 
-
-end
