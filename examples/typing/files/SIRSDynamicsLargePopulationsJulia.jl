@@ -14,7 +14,10 @@
 
 using DifferentialEquations
 using LinearAlgebra
+using Plots
+using RecursiveArrayTools
 
+function main()
 # Set the required model parameters for the SIRS model with two levels of transmission - Within and between households
 N = 10; # Household size - Change to 10 for final analysis
 betaHH = 6; # Within household transmission parameter
@@ -23,8 +26,8 @@ gamma = 1; # Rate of recovery from infection
 tau = 1; # Rate of loss of protection
 params = [betaHH,gamma,tau,betaG,N]; # Put all the parameters together
 time = (0.0, 30.0) # Simulation time - note it defined as a float
-dim = dim = convert(Int,0.5*(N+1)*(N+2)); # Number of possible configurations - works for three epidemiological classes
-y0 = vec(zeros(1, dim)); # Initial condition vector
+dim = dim = 0.5*(N+1)*(N+2); # Number of possible configurations - works for three epidemiological classes
+y0 = zeros(Float64, 1, Int(dim)); # Initial condition vector
 y0[end-1] = 0.00000001;
 y0[end] = 0.99999999;
 
@@ -33,13 +36,13 @@ function hhTransitions(N,dim)
     # Input: N is the household size
     
     # Initialize things
-    Qinf = zeros(dim,dim);
-    Qrec = zeros(dim,dim);
-    Qext = zeros(dim,dim);
-    Qwane = zeros(dim,dim);
-    dataI = Array{Int64}(zeros(dim,3))
+    Qinf = zeros(Float64, Int(dim), Int(dim));
+    Qrec = zeros(Float64, Int(dim), Int(dim));
+    Qext = zeros(Float64, Int(dim), Int(dim));
+    Qwane = zeros(Float64, Int(dim), Int(dim));
+    dataI = zeros(Int64, Int(dim), 3)
     m = 0;
-    I = Array{Int64}(zeros(N+1,N+1))
+    I = zeros(Int64, Int(N+1), Int(N+1))
     
     # To help remember where to store the variables
     for ss = 0:N
@@ -83,8 +86,8 @@ function hhTransitions(N,dim)
         end
     end
 
-    Qinf = Qinf - diagm(0=>vec(sum(Qinf,dims=2)));
-    Qrec = Qrec - diagm(0=>vec(sum(Qrec,dims=2)));
+    Qinf = Qinf - diagm(0=>vec(sum(Qinf,dims= 2)));
+    Qrec = Qrec - diagm(0=>vec(sum(Qrec,dims = 2)));
     Qext = Qext - diagm(0=>vec(sum(Qext,dims=2)));
     Qwane = Qwane - diagm(0=>vec(sum(Qwane,dims=2)));
     
@@ -107,10 +110,8 @@ function rateSIRS(dy_dt,y0,params,time)
     Qinf, Qrec, Qext, Qwane, HHconfig = hhTransitions(N,dim);
     
     # Combine within and external transitions
-    Q = betaHH*Qinf + gamma*Qrec + tau*Qwane + betaG*Qext*((HHconfig[:,2]'*y0)/N);
+    Q = betaHH*Qinf + gamma*Qrec + tau*Qwane + (betaG*((HHconfig[:,2]*y0)/N)*Qext);
     
-    # Generate the rates of change for ODE solver
-    dy_dt .= (y0'*Q)';
     
 end
 
@@ -118,45 +119,39 @@ end
 prob = ODEProblem(rateSIRS,y0,time,params);
 
 # Solve
-sol = solve(prob, alg=Tsit5());
+sol = solve(prob);
 # -
 
-using Plots
-#using RecursiveArrayTools
+
 
 # +
 Iconfig = dataI[:,2];
-infProp = zeros(length(sol.t),1);
+infProp = zeros(Float64,length(sol),1);
 
 # Prepare the plots
 for i = 1:length(sol.t)
-    infProp[i,1] = sol[:,i]'*Iconfig/N;
+    infProp[i,1] = *Iconfig/N;
 end
-
 # -
 
 # Total infectious in the population
-plot(sol.t, infProp,
-    color="blue",xlabel="Time",
-    ylabel="Proportion infectious",
-    label=["Mean infection"],
-    ylims=[0, 1]);
+plot(sol.t,infProp,color="blue",xlabel="Time",ylabel="Proportion infectious",label=["Mean infection"],ylims=[0, 1])
 
 # Household profile at endemic prevalence
 # Prepare the plots
-using Plots
+using PyPlot
 yprop = zeros(N+1,length(sol.t))
 for j = 1:length(sol.t)
     for i = 1:N+1
-        index = findall(Iconfig.==i-1);
+        index = find(Iconfig.==i-1);
         yprop[i,j] = sum(sol[index,j])
     end
 end
-plot(-0.5:1:10.5,[yprop[:,length(sol.t)];0]);
+step(-0.5:1:10.5,[yprop[:,length(sol.t)];0])
 
 # Household profile at peak prevalence
 # Prepare the plots
-x = findall(infProp.==maximum(infProp))
-plot(-0.5:1:10.5,[yprop[:,x];0]);
+x = find(infProp.==maximum(infProp))
+step(-0.5:1:10.5,[yprop[:,x];0]);
 
-
+end
