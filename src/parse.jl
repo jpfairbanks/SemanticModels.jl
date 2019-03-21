@@ -4,7 +4,8 @@ import Base.push!
 
 export parsefile, defs, funcs, recurse,
     MetaCollector, FuncCollector, AbstractCollector,
-    walk, inexpr, findfunc, findassign, replacevar
+    walk, inexpr, findfunc, findassign, replacevar,
+    postwalk, prewalk, replace, inexpr
 
 include("macrotools.jl")
 include("findfunc.jl")
