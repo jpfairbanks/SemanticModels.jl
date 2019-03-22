@@ -57,6 +57,7 @@ end
 
 function tick!(sm::StateModel)
     sm.loads = map(s->stateload(sm, s), sm.states)
+    return sm.loads
 end
 
 #     step!(sm::StateModel, n)

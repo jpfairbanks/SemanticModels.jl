@@ -38,14 +38,12 @@ edgelist_typed = Mod.edgelist
 E_typed = unique((f.func, f.args, f.ret) for f in Edges(edgelist_typed))
 # -
 
-println("Symbols Graph")
+println("=============\nSymbols Graph\n============")
 for e in E
     println(join(e, ", "))
 end
-println("\n\n=Types Graph\n\n")
+println("\n=============\nTypes Graph\n============")
 for e in E_typed
     println(join(e, ", "))
 end
-
-
 
