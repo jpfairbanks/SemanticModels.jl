@@ -5,7 +5,7 @@ export model, callsites, structured, AbstractModel,
     pusharg!, setarg!, bodyblock, argslist, issome,
     head, isblock, isfunc, or, and, isexpr, iscall,
     isusing, isimport, funcarg, funcname,
-    Edge, Edges, typegraph
+    Edge, Edges, typegraph, @typegraph
 
 # TODO Possible imports/exports: invoke
 
