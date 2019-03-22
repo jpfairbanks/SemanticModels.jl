@@ -393,6 +393,86 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "graph/#SemanticModels.Graphs.copy_input_graph_to_new_graph-Tuple{MetaGraphs.MetaDiGraph}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.copy_input_graph_to_new_graph",
+    "category": "method",
+    "text": "copy_input_graph_to_new_graph(input_graph::MetaDiGraph)\n\nHelper function that instantiates a new MetaDiGraph and inserts vertices/edges from an (existing) input graph.\n\nsee also: insert_edges_from_jl\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.gen_rand_vertex_name",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.gen_rand_vertex_name",
+    "category": "function",
+    "text": "gen_rand_vertex_name(vertex_type::String, tag::String)\n\nThis function outputs a vertex name that reflects the provided type and tag, and includes a random component to ensure uniqueness.\n\nsee also: Graphs.generate_synthetic_vertices, gen_vertex_hash\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.gen_vertex_hash-Tuple{String,String}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.gen_vertex_hash",
+    "category": "method",
+    "text": "gen_vertex_hash(vertex_name::String, vertex_type::String)\n\nThis function computes the hash of a vertex\'s name and type; this combination is assumed to be unique within the graph.\n\nsee also: generate_synthetic_vertices, gen_rand_vertex_name\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.generate_synthetic_edges-Tuple{String,DataFrames.DataFrame,String}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.generate_synthetic_edges",
+    "category": "method",
+    "text": "generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)\n\nGenerate synthetic test data. The synthetic edges are returned as a dataframe that can be used for testing/debugging/developing the knowledge graph.\n\nsee also: generate_synthetic_vertices\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.generate_synthetic_vertices-Tuple{String,String}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.generate_synthetic_vertices",
+    "category": "method",
+    "text": "generate_synthetic_vertices(vertex_type_defs::String, output_path::String)\n\nGenerate synthetic test data. The synthetic vertices are returned as a dataframe that can be used for testing/debugging/developing the knowledge graph.\n\nsee also: generate_synthetic_edges\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.insert_edges_from_jl-Tuple{DataFrames.DataFrame,MetaGraphs.MetaDiGraph}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.insert_edges_from_jl",
+    "category": "method",
+    "text": "insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)\n\nTakes as input an existing graph and an edge file. Each edge in the file is either inserted (if new) or (if already in G), an associated integer weight is incremented.\n\nsee also: insert_vertices_from_jl, copy_input_graph_to_new_graph\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.insert_edges_from_jl-Tuple{String,MetaGraphs.MetaDiGraph}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.insert_edges_from_jl",
+    "category": "method",
+    "text": "insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)\n\nTakes as input an existing graph and an edge file. Each edge in the file is either inserted (if new) or (if already in G), an associated integer weight is incremented.\n\nsee also: insert_vertices_from_jl, copy_input_graph_to_new_graph\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.insert_vertices_from_jl-Tuple{String,MetaGraphs.MetaDiGraph}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.insert_vertices_from_jl",
+    "category": "method",
+    "text": "insert_vertices_from_jl(vertices_file::String, input_graph::MetaDiGraph)\n\nIngests and evaulates a Julia file containing vertex information; instantiates an empty knowledge graph and inserts each unique vertex into this graph.\n\nsee also: insert_edges_from_jl\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.insert_vertices_from_jl-Tuple{String,Nothing}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.insert_vertices_from_jl",
+    "category": "method",
+    "text": "insert_vertices_from_jl(vertices_file::String, input_graph::Nothing)\n\nIngests and evaulates a Julia file containing vertex information; instantiates an empty knowledge graph and inserts each unique vertex into this graph.\n\nsee also: insert_edges_from_jl\n\n\n\n\n\n"
+},
+
+{
+    "location": "graph/#SemanticModels.Graphs.load_graph_data-Tuple{Any}",
+    "page": "Knowledge Graphs",
+    "title": "SemanticModels.Graphs.load_graph_data",
+    "category": "method",
+    "text": "load_graph_data(input_data::Array{Any,1})\n\nHelper function that allows a synthetic set of vertices or edges to be represented as an array for the purpose of serialization.\n\n\n\n\n\n"
+},
+
+{
     "location": "graph/#API-reference-1",
     "page": "Knowledge Graphs",
     "title": "API reference",
@@ -633,6 +713,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library/#SemanticModels.SpringModel",
+    "page": "Library Reference",
+    "title": "SemanticModels.SpringModel",
+    "category": "type",
+    "text": "SpringModel\n\nrepresents the second order linear ODE goverened by hookeslaw.\n\n\n\n\n\n"
+},
+
+{
+    "location": "library/#DiffEqBase.solve-Tuple{CombinedModel}",
+    "page": "Library Reference",
+    "title": "DiffEqBase.solve",
+    "category": "method",
+    "text": "solve(m::AbstractModel)\n\nexecutes the solving of a model for models with dependencies, those deps are executed first and then the node is solved. This is the function that evaluates the model DAG.\n\n\n\n\n\n"
+},
+
+{
     "location": "library/#SemanticModels.BasicSIR-Tuple{}",
     "page": "Library Reference",
     "title": "SemanticModels.BasicSIR",
@@ -641,11 +737,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library/#SemanticModels.solve-Tuple{SemanticModels.CombinedModel}",
+    "location": "library/#SemanticModels.hookeslaw-NTuple{4,Any}",
     "page": "Library Reference",
-    "title": "SemanticModels.solve",
+    "title": "SemanticModels.hookeslaw",
     "category": "method",
-    "text": "solve(m::AbstractModel)\n\nexecutes the solving of a model for models with dependencies, those deps are executed first and then the node is solved. This is the function that evaluates the model DAG.\n\n\n\n\n\n"
+    "text": "hookeslaw\n\nthe ODE representation of a spring. The solutions are periodic functions.\n\n\n\n\n\n"
 },
 
 {
