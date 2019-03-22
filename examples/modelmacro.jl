@@ -15,8 +15,9 @@
 
 using SemanticModels
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.SimpleModels
 
-
+import SemanticModels.ModelTools.SimpleModels: entrypoint, entryname, body
 expr = quote
     module StatsMod
     using Statistics
@@ -36,7 +37,7 @@ expr = quote
     end
 end
 
-m = model(SimpleProblem, deepcopy(expr), :(main(n::Int)))
+m = model(SimpleModel, deepcopy(expr), :(main(n::Int)))
 
 StatsMod = eval(m.expr)
 StatsMod.main(10)
@@ -58,7 +59,7 @@ macro model(class, args...)
     return ex
 end
 
-m′ = @model SimpleProblem main(n::Int64) quote
+m′ = @model SimpleModel main(n::Int64) quote
     module StatsMod
     using Statistics
     function foo(x)

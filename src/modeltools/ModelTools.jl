@@ -3,7 +3,8 @@ using SemanticModels.Parsers
 
 export model, callsites, structured, AbstractModel,
     pusharg!, setarg!, bodyblock, argslist, issome,
-    head, isblock, isfunc, or, isexpr, funcarg
+    head, isblock, isfunc, or, and, isexpr, iscall,
+    isusing, isimport, funcarg, funcname
 
 # TODO Possible imports/exports: invoke
 

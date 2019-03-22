@@ -1,5 +1,6 @@
 notebooks = ["agentbased.jl",
              "agentgraft.jl",
+             "modelmacro.jl",
              "monomial_regression.jl",
              "multivariate_regression.jl",
              "polynomial_regression.jl",
