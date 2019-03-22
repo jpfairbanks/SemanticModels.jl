@@ -151,18 +151,13 @@ end
 
 function main(nsteps)
     n = 20
-    @show Susceptible()
     a = Any[]
-    @show a
     for i in 1:n-1
         push!(a, Susceptible())
     end
     push!(a, Infected())
-    @show a
     sam = StateModel(Any[Susceptible(), Infected(), Recovered()], a, transition, zeros(Float64,3))
-    @show sam
     newsam = step!(deepcopy(sam), nsteps)
-    @show newsam.agents
     counts = describe(newsam)
     return newsam, counts
 end

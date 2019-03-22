@@ -96,8 +96,8 @@ function wrap(expr::Expr)
     g = gensym("wrap_storage")
     insert!(b, 1, :(store(args) = begin push!($g, args) end ))
     insert!(b, 1, :($g = Any[]))
-    push!(b, :($g))
-    push!(b, :(Edges($g)))
+    push!(b, :(edgelist=$g))
+    # push!(b, :(Edges($g)))
     expr
 end
 
@@ -109,7 +109,7 @@ used in the macro @typegraph.
 Note: Does not yet support docstrings, kwargs, or varargs.
 """
 function typegraph(expr::Expr)
-    return wrap(postwalk, expr)
+    return wrap(postwalk(annotate, expr))
 end
 
 """    @typegraph(expr::Expr)
