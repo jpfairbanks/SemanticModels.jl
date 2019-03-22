@@ -54,7 +54,7 @@ end
 # stateload computes the fraction of agents in each state
 # it is used by tick! to update the statemodel for computing the probability of infection.
 function stateload(sm::StateModel, state)
-    return (count(sm, state)+1)/(count(sm)+1)
+    return (count(sm, state))/(count(sm))
 end
 
 #     tick!(sm::StateModel)
@@ -150,9 +150,10 @@ function main(nsteps)
     @show Susceptible()
     a = Any[]
     @show a
-    for i in 1:n
+    for i in 1:n-1
         push!(a, Susceptible())
     end
+    push!(a, Infected())
     @show a
     sam = StateModel(Any[Susceptible(), Infected(), Recovered()], a, transition, zeros(Float64,3))
     @show sam
