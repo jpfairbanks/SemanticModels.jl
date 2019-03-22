@@ -111,6 +111,8 @@ end
 #
 # This script has an entrypoint to call it so that you can include this file and run as many simulations as you want. The intended use case is to repeatedly call `main` and accumulate the return values into an array for later analysis.
 
+ρ = 0.5 + randn(Float64)/4 # chance of recovery
+μ = 0.5 # chance of immunity
 function transition(sm::StateModel, i::Int, s::Symbol)
     r = rand(Float64)
     if s == :S
@@ -140,8 +142,6 @@ end
 function main(nsteps)
     n = 20
     a = fill(:S, n)
-    ρ = 0.5 + randn(Float64)/4 # chance of recovery
-    μ = 0.5 # chance of immunity
     T = transition
 
 
