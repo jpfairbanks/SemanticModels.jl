@@ -141,7 +141,7 @@ function funcarg(ex::Expr)
 end
 
 include("exprs.jl")
-include("typegraphs.jl")
+include("typegraph.jl")
 include("Transformations.jl")
 include("SimpleModels.jl")
 include("ExpODEModels.jl")
