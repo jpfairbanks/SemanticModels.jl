@@ -17,6 +17,7 @@
 
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.ExpStateModels
 import Base: push!
 
 samples = 7
@@ -36,9 +37,9 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 #
 # Agents progress from the susceptible state to infected and then recovered, and get become susceptible again after recovery. See the file `../examples/agentbased.jl` for a full description of this model
 
-expr = parsefile("../examples/agentbased.jl")
-m = model(ExpStateModel, expr.args[3].args[3])
-ModelTools.funclines(m.expr, :main)
+expr = parsefile("agentbased.jl")
+m = model(ExpStateModel, expr)
+#ModelTools.funclines(m.expr, :main)
 
 
 println("\nRunning basic model")
@@ -159,3 +160,6 @@ for (g, v) in mean_healthy_frac
     x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
     println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
+# -
+
+

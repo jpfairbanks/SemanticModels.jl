@@ -6,11 +6,10 @@
 #
 # He we will represent a model class *monomial regression* with a data structure `MonomialRegression` and define a set group of transformations that can act on models from this class.
 
-include("groups.jl")
-
 using SemanticModels
 using SemanticModels.ModelTools
-using .Transformations
+using SemanticModels.ModelTools.MonomialRegressionModels
+using SemanticModels.ModelTools.Transformations
 
 # ## Monomial Regression
 #
@@ -78,7 +77,7 @@ end;
 #
 # Composition of `Pow{Int}` maps naturally to addition of the power to transform with. You can see how transformations are applied below.
 
-m = model(MonomialRegression, deepcopy(expr))
+m = model(MonomialRegressionModel, deepcopy(expr))
 @show m.f.args[2]
 m′ = deepcopy(m)
 Pow(+1)(m′)
@@ -94,7 +93,7 @@ m′.f.args[2]
 # ## Chosing the right power
 # Given a fixed dataset, we want to loop over all the models in a class an fit the best coefficients, then we will decide which monomial order allows for the best fit to this data.
 
-m = model(MonomialRegression, expr)
+m = model(MonomialRegressionModel, expr)
 println(m)
 sol = eval(m.expr)
 @show sol.ahat

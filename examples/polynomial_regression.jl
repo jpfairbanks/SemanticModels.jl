@@ -98,17 +98,18 @@ Regression.fit.param
 #
 # You can skip these if you are not interested in how this is implemented.
 
-include("groups.jl")
-using SemanticModels
-using SemanticModels.ModelTools
-using .Transformations
+# +
 using LinearAlgebra
-
-import SemanticModels.ModelTools: model, AbstractProblem
-import SemanticModels.Parsers: findfunc, findassign
 import Base: show
 
-isexpr = Transformations.isexpr
+using SemanticModels
+using SemanticModels.ModelTools
+import SemanticModels.ModelTools: model, AbstractModel, isexpr
+import SemanticModels.ModelTools.Transformations: Pow
+import SemanticModels.Parsers: findfunc, findassign
+# -
+
+ModelTools.Transformations.Pow
 
 # +
 """    Lsq
@@ -122,7 +123,7 @@ Example:
 
 See also [`(t::Pow)(m::Lsq)`](@ref)
 """
-struct Lsq <: AbstractProblem
+struct Lsq <: AbstractModel
     expr
     f
     coefficient
@@ -174,7 +175,7 @@ function (t::Pow)(m::Lsq)
     return m
 end
 
-struct AddConst <: Transformations.Transformation end
+struct AddConst <: ModelTools.Transformations.Transformation end
 
 """    (c::AddConst)(m::Lsq)
 

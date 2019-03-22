@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+# + {}
 module Transformations
+import Base: ∘, show, convert, promote, one, zero, inv, *, ^, -
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
-import Base: ∘, show, convert, promote, one, zero, inv, *, ^, -
-import SemanticModels.ModelTools: AbstractProblem, model
+import SemanticModels.ModelTools: model
 
-export Transformation, ConcatTransformation, Product, Pow, MonomialRegression
+export Transformation, ConcatTransformation, Product, Pow
 
 postwalk(f, x) = walk(x, x -> postwalk(f, x), f)
 
@@ -22,7 +25,7 @@ function ∘(f::ConcatTransformation, g::ConcatTransformation)
     return g
 end
 
-function (f::ConcatTransformation)(m::AbstractProblem)
+function (f::ConcatTransformation)(m::AbstractModel)
     return foldl((m, t)->t(m), [m; f.seq])
 end
 
@@ -66,15 +69,13 @@ function show(io::IO, p::Pow)
     write(io, "Pow($(p.inc))")
 end
 
-
 struct Product{T} <: Transformation
     dims::T
 end
 
-function (f::Product)(m::AbstractProblem)
+function (f::Product)(m::AbstractModel)
     return foldl((m, t)->t(m), [m; f.dims])
 end
-
 
 function show(io::IO, p::Product)
     write(io, "$(p.dims)")
@@ -87,59 +88,7 @@ promote(p::Product{T}, t::T) where T= (p, Product(t))
 # TODO make tests
 Product((Pow(1),Pow(2))) ∘ (Pow(1),Pow(2))
 
-struct MonomialRegression <: AbstractProblem
-    expr
-    f
-    coefficient
-    objective
-    interval
 end
+# -
 
-function funcarg(ex::Expr)
-    return ex.args[1].args[2]
-end
 
-isexpr(x) = isa(x, Expr)
-
-# eval(m::MonomialRegression) = eval(m.expr)
-
-function model(::Type{MonomialRegression}, ex::Expr)
-    if ex.head == :block
-        return model(MonomialRegression, ex.args[2])
-    end
-
-    objective = callsites(ex, :optimize)[end].args[2]
-    f = filter(isexpr, findfunc(ex, :f))[1]
-    interval = findassign(ex, :a₀)[1]
-    ldef = filter(isexpr, findfunc(ex, objective))
-    coeff = funcarg(ldef[1])
-    return MonomialRegression(ex,
-                              f,
-                              coeff,
-                              objective,
-                              interval)
-end
-
-function show(io::IO, m::MonomialRegression)
-    write(io, "MonomialRegression(\n  f=$(repr(m.f)),\n  objective=$(repr(m.objective)),\n  coefficient=$(repr(m.coefficient)),\n  interval=$(repr(m.interval)))")
-end
-
-function (t::Pow)(m::MonomialRegression)
-    x = m.f.args[1].args[3]
-    replacer(a::Any) = a
-    replacer(ex::Expr) = begin
-        if ex.head == :call && ex.args[1] == :(^)
-            # increment the power
-            try
-                ex.args[3]+=t.inc
-            catch
-                @warn "Possible invalid xform"
-                @show ex
-            end
-        end
-        return ex
-    end
-    m.f.args[2] = postwalk(replacer, m.f.args[2])
-end
-
-end
