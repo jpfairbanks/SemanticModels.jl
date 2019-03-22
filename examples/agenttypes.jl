@@ -18,9 +18,9 @@ See also: StateModel
 abstract type AgentModel end
 
 abstract type State end
-abstract type Susceptible <: State end
-abstract type Infected <: State end
-abstract type Recovered <: State end
+struct Susceptible <: State end
+struct Infected <: State end
+struct Recovered <: State end
 
 # -
 
@@ -119,40 +119,40 @@ end
 ρ = 0.5 + randn(Float64)/4 # chance of recovery
 μ = 0.5 # chance of immunity
 
-function transition(sm::StateModel, i::Int, s::Type{Susceptible}, args...)
+function transition(sm::StateModel, i::Int, s::Susceptible, args...)
     if rand(Float64) < stateload(sm, Infected)
-        return Infected
+        return Infected()
     else
-        return Susceptible
+        return Susceptible()
     end
 end
 
-function transition(sm::StateModel, i::Int, s::Type{Infected}, args...)
+function transition(sm::StateModel, i::Int, s::Infected, args...)
     if rand(Float64) < ρ
-        return Infected
+        return Infected()
     else
-        return Recovered
+        return Recovered()
     end
 end
 
-function transition(sm::StateModel, i::Int, s::Type{Recovered}, args...)
+function transition(sm::StateModel, i::Int, s::Recovered, args...)
     if rand(Float64) < μ
-        return Recovered
+        return Recovered()
     else
-        return Susceptible
+        return Susceptible()
     end
 end
 
 function main(nsteps)
     n = 20
-    @show Susceptible
-    a = Type[]
+    @show Susceptible()
+    a = Any[]
     @show a
     for i in 1:n
-        push!(a, Susceptible)
+        push!(a, Susceptible())
     end
     @show a
-    sam = StateModel(Any[Susceptible, Infected, Recovered], a, transition, zeros(Float64,3))
+    sam = StateModel(Any[Susceptible(), Infected(), Recovered()], a, transition, zeros(Float64,3))
     @show sam
     newsam = step!(deepcopy(sam), nsteps)
     @show newsam.agents
