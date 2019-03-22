@@ -9,12 +9,13 @@ module AgentModels
 import Base: count
 
 # +
-"""    AgentModel
+# """    AgentModel
 
-the root type for agent based models.
+# the root type for agent based models.
 
-See also: StateModel
-"""
+# See also: StateModel
+# """
+
 abstract type AgentModel end
 
 abstract type State end
@@ -24,14 +25,16 @@ struct Recovered <: State end
 
 # -
 
-"""     StateModel
+# """     StateModel
 
-holds the components of an agent based simulation using finite state machines.
+# holds the components of an agent based simulation using finite state machines.
 
-- states: a collection of distinct states an agent can occupy
-- agents: a collection of states `aᵢ = agents[i] ∈ states` indicating that agent `i` is in state `aᵢ`
-- transitions: the functions `f: states -> states`
-"""
+# - states: a collection of distinct states an agent can occupy
+# - agents: a collection of states `aᵢ = agents[i] ∈ states` indicating that agent `i` is in state `aᵢ`
+# - transitions: the functions `f: states -> states`
+# """
+
+
 mutable struct StateModel{U,A,T,L} <: AgentModel
     states::U
     agents::A
@@ -65,13 +68,13 @@ function tick!(sm::StateModel)
     sm.loads = map(s->stateload(sm, s), sm.states)
 end
 
-#     step!(sm::StateModel, n=1)
+#     step!(sm::StateModel, n)
 #
 # advance the simulation by `n` ticks of time.
 # This is an in-place operation that modifies the current state of the simulation.
 #
 
-function step!(sm::StateModel, n=1)
+function step!(sm::StateModel, n)
     for s in 1:n
       tick!(sm)
       for (i, a) in enumerate(sm.agents)
@@ -82,10 +85,11 @@ function step!(sm::StateModel, n=1)
     return sm
 end
 
-"""    describe(sm::StateModel)
+# """    describe(sm::StateModel)
 
-summarize the state of the simulation for presentation or analysis.
-"""
+# summarize the state of the simulation for presentation or analysis.
+# """
+
 function describe(sm::StateModel)
     counts = zeros(Int, size(sm.states))
     d = Dict{eltype(sm.states), Int}()
@@ -120,7 +124,7 @@ end
 μ = 0.5 # chance of immunity
 β = 2
 
-function transition(sm::StateModel, i::Int, s::Susceptible, args...)
+function transition(sm::StateModel, i::Int, s::Susceptible)
     p = β*sm.loads[2]
     if rand(Float64) < p
         return Infected()
@@ -129,7 +133,7 @@ function transition(sm::StateModel, i::Int, s::Susceptible, args...)
     end
 end
 
-function transition(sm::StateModel, i::Int, s::Infected, args...)
+function transition(sm::StateModel, i::Int, s::Infected)
     if rand(Float64) < ρ
         return Recovered()
     else
@@ -137,7 +141,7 @@ function transition(sm::StateModel, i::Int, s::Infected, args...)
     end
 end
 
-function transition(sm::StateModel, i::Int, s::Recovered, args...)
+function transition(sm::StateModel, i::Int, s::Recovered)
     if rand(Float64) < μ
         return Recovered()
     else
