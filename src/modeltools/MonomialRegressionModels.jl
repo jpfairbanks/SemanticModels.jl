@@ -6,7 +6,7 @@ import Base: show
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.Transformations
-import SemanticModels.ModelTools: model
+import SemanticModels.ModelTools: model, isexpr
 
 export MonomialRegressionModel, model
 

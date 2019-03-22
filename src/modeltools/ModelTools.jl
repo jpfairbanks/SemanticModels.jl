@@ -5,6 +5,9 @@ export model, callsites, structured, AbstractModel,
     pusharg!, setarg!, bodyblock, argslist, issome,
     head, isblock, isfunc, or, isexpr, funcarg
 
+# TODO Possible imports/exports: invoke
+
+isexpr(x) = isa(x, Expr)
 
 """    AbstractModel
 
@@ -85,7 +88,6 @@ clean up the lines of a function definition for presentation
 """
 function funclines(expr::Expr, s::Symbol)
     q = Expr(:block)
-    isexpr(x) = isa(x, Expr)
     q.args = (filter(isexpr, findfunc(expr, s))[end]
               |> bodyblock
               |> arr -> filter(x->!isa(x, LineNumberNode),arr))

@@ -356,7 +356,7 @@ P.results[end][2]
 # 1. TODO implement the composition monoid on ExpStateModels
 # 2. TODO use Product acting on Pipeline to represent Tuple.coordinates == Pipeline.steps
 
-Product = Transformations.Product
+# Product = ModelTools.Transformations.Product
 function (t::Product)(m::Pipelines.Pipeline)
     for (i, s) in enumerate(m.steps)
         t.dims[i](s)
@@ -526,8 +526,10 @@ for t in z
     println(join(t, "\t"))
 end
 
+@info "Loading Plots, this may take a while"
 using Plots
 
+@info "Making plots, this may take a while"
 p = scatter(first.(table), last.(table), label="obs")
 plot!(first.(z), last.(z), label="fit")
 println("β: ", P.results[end][2].β, "\n", string(poly(P.steps[2])))
