@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # + {}
 module Transformations
+import Base: ∘, show, convert, promote, one, zero, inv, *, ^, -
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
-import Base: ∘, show, convert, promote, one, zero, inv, *, ^, -
+import SemanticModels.ModelTools: model
 
 export Transformation, ConcatTransformation, Product, Pow
 

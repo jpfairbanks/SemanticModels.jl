@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # + {}
 module ExpODEModels
+import Base: show
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
-import Base: show
+import SemanticModels.ModelTools: model
 
 export ExpODEModel, model
 

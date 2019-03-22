@@ -111,16 +111,15 @@ end
 # ## Implementation Details
 # The following code is the implementation details for representing the models as an `AbstractProblem` and representing the transformations as `Product{Tuple{Pow{Int}, Pow{Int}}}` and applying the transformations onto the models.
 
-include("groups.jl")
+# include("groups.jl")
 using SemanticModels
 using SemanticModels.ModelTools
-using .Transformations
+using SemanticModels.ModelTools.Transformations
+# using .Transformations
 
 import SemanticModels.ModelTools: model, AbstractProblem
 import SemanticModels.Parsers: findfunc, findassign
 import Base: show
-
-isexpr = Transformations.isexpr
 
 """"    MultivariateLsq
 
@@ -131,7 +130,7 @@ Example:
 
 `f(X, β) = β[1]*X[:,1]^p + β[2]*X[:,2]^q`
 """
-struct MultivariateLsq <: AbstractProblem
+struct MultivariateLsq <: AbstractModel
     expr
     f
     coefficient

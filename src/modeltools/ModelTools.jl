@@ -3,14 +3,24 @@ using SemanticModels.Parsers
 
 export model, callsites, structured, AbstractModel,
     pusharg!, setarg!, bodyblock, argslist, issome,
-    head, isblock, isfunc, or, isexpr, funcarg
+    head, isblock, isfunc, or, and, isexpr, iscall,
+    isusing, isimport, funcarg, funcname,
+    Edge, Edges, typegraph
 
+# TODO Possible imports/exports: invoke
+
+isexpr(x) = isa(x, Expr)
 
 """    AbstractModel
 
 a placeholder struct to dispatch on how to parse the expression tree into a model.
 """
 abstract type AbstractModel end
+
+function model(::Type{T}, expr::Expr) where T<:AbstractModel
+    error("NotImplemented: model(::$T,::Expr")
+end
+
 
 function invoke(m::AbstractModel, args...)
     Mod = eval(m.expr)
@@ -80,7 +90,6 @@ clean up the lines of a function definition for presentation
 """
 function funclines(expr::Expr, s::Symbol)
     q = Expr(:block)
-    isexpr(x) = isa(x, Expr)
     q.args = (filter(isexpr, findfunc(expr, s))[end]
               |> bodyblock
               |> arr -> filter(x->!isa(x, LineNumberNode),arr))
@@ -127,18 +136,12 @@ function setarg!(ex::Expr, old, new)
     return ex
 end
 
-issome(x) = !ismissing(x) && !isa(x, Nothing)
-head(x::Expr) = x.head
-head(n::LineNumberNode) = nothing
-isblock(x) = head(x) == :block
-isfunc(x) = head(x) ==:function
-or(f::Function, g::Function) = x->(f(x) || g(x))
-isexpr(x) = isa(x, Expr)
-
 function funcarg(ex::Expr)
     return ex.args[1].args[2]
 end
 
+include("exprs.jl")
+include("typegraph.jl")
 include("Transformations.jl")
 include("SimpleModels.jl")
 include("ExpODEModels.jl")

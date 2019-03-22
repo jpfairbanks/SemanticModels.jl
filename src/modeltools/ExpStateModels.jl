@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # + {}
 module ExpStateModels
+import Base: show, getindex, setindex!, put!, replace!
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
-import Base: show, getindex, setindex!, put!, replace!
+import SemanticModels.ModelTools: model
 
 export ExpStateModel, ExpStateTransition, model
 

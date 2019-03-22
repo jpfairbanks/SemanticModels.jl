@@ -38,14 +38,14 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 # Agents progress from the susceptible state to infected and then recovered, and get become susceptible again after recovery. See the file `../examples/agentbased.jl` for a full description of this model
 
 expr = parsefile("agentbased.jl")
-m = model(ExpStateModel, expr.args[3])
+m = model(ExpStateModel, expr)
 #ModelTools.funclines(m.expr, :main)
 
 
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels(nsteps)
+    newsam, counts = AgentModels.main(nsteps)
     push!(finalcounts, (model=:basic, counts=counts))
 end
 
@@ -86,7 +86,7 @@ m[:I] = :((x...)->begin
 println("\nRunning SIRD model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels(nsteps)
+    newsam, counts = AgentModels.main(nsteps)
     push!(finalcounts, (model=:sird, counts=counts))
 end
 
@@ -117,7 +117,7 @@ println("------------------------")
 println("\nRunning growth model")
 AgentModels = eval(m.expr)
 for i in 1:samples
-    newsam, counts = AgentModels(nsteps)
+    newsam, counts = AgentModels.main(nsteps)
     push!(finalcounts, (model=:growth, counts=counts))
 end
 
@@ -160,3 +160,6 @@ for (g, v) in mean_healthy_frac
     x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
     println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
+# -
+
+
