@@ -1,7 +1,7 @@
 name = "SemanticModels"
 uuid = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"
 authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
