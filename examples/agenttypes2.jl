@@ -71,6 +71,7 @@ end
 # Now that we have extracted the relevant type information, we want to visualize these transformations in a knowledge graph.
 
 using MetaGraphs;
+using LightGraphs;
 # patch for https://github.com/JuliaGraphs/MetaGraphs.jl/pull/71/files
 function escapehtml(i::AbstractString)
     # Refer to http://stackoverflow.com/a/7382028/3822752 for spec. links
