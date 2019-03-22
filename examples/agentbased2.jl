@@ -70,7 +70,7 @@ function step!(sm::StateModel, n)
     for s in 1:n
       tick!(sm)
       for (i, a) in enumerate(sm.agents)
-          sm.agents[i] = sm.transitions[a](sm, i,a)
+          sm.agents[i] = sm.transitions(sm, i, a)
       end
         describe(sm)
     end
@@ -111,16 +111,38 @@ end
 #
 # This script has an entrypoint to call it so that you can include this file and run as many simulations as you want. The intended use case is to repeatedly call `main` and accumulate the return values into an array for later analysis.
 
+ρ = 0.5 + randn(Float64)/4 # chance of recovery
+μ = 0.5 # chance of immunity
+function transition(sm::StateModel, i::Int, s::Symbol)
+    r = rand(Float64)
+    if s == :S
+        if r < stateload(sm, :I)
+            return :I
+        else
+            return :S
+        end
+    elseif s == :I
+        if r < ρ
+            return :I
+        else
+            return :R
+        end
+    elseif s == :R
+        if r < μ
+            return :R
+        else
+            return :S
+        end
+    end
+    return s
+end
+
+
+
 function main(nsteps)
     n = 20
     a = fill(:S, n)
-    ρ = 0.5 + randn(Float64)/4 # chance of recovery
-    μ = 0.5 # chance of immunity
-    T = Dict(
-        :S=>(x...)->rand(Float64) < stateload(x[1], :I) ? :I : :S,
-        :I=>(x...)->rand(Float64) < ρ ? :I : :R,
-        :R=>(x...)->rand(Float64) < μ ? :R : :S,
-    )
+    T = transition
 
 
     sam = StateModel([:S, :I, :R], a, T, zeros(Float64,3))

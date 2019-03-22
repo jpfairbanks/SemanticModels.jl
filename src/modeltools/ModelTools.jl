@@ -4,7 +4,8 @@ using SemanticModels.Parsers
 export model, callsites, structured, AbstractModel,
     pusharg!, setarg!, bodyblock, argslist, issome,
     head, isblock, isfunc, or, and, isexpr, iscall,
-    isusing, isimport, funcarg, funcname
+    isusing, isimport, funcarg, funcname,
+    Edge, Edges, typegraph, @typegraph
 
 # TODO Possible imports/exports: invoke
 
@@ -140,6 +141,7 @@ function funcarg(ex::Expr)
 end
 
 include("exprs.jl")
+include("typegraphs.jl")
 include("Transformations.jl")
 include("SimpleModels.jl")
 include("ExpODEModels.jl")
