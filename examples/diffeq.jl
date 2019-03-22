@@ -12,7 +12,13 @@ try
 catch
     Pkg.add("DifferentialEquations")
 end
+try
+    using Test
+catch
+    Pkg.add("Test")
+end
 
+using Test
 using Polynomials
 using DifferentialEquations
 import DifferentialEquations: solve
@@ -129,3 +135,16 @@ end
 # γ in person/day
 
 # then use the number class to encode more information
+
+
+springmodel = SpringModel([1.0], (0,4π), [1.0, 0.0])
+solslow = solve(odeproblem(springmodel))
+@test abs(solslow(π/2)[1]) < 1e-6
+@test abs(solslow(3π/2)[1]) < 1e-4
+
+accelerate!(springmodel, 4.0)
+solfast = solve(odeproblem(springmodel), atol=1e-8)
+@test abs(solfast(π/2)[1]+1) < 1e-5
+@test_skip abs(solfast(3π/2)[1]+1) < 1e-4
+@test abs(solfast(π/4)[1]) < 1e-5
+@test abs(solfast(3π/4)[1]) < 1e-4
