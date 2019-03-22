@@ -10,7 +10,7 @@ end
 ex′ = postwalk(annotate, ex)
 ex2 = wrap(ex′)
 
-calls = eval(ex2)
+calls = Edges(eval(ex2))
 @test length(calls) == 2
 
 edgelist = @typegraph begin
@@ -40,4 +40,4 @@ end
 
 
 #TODO: figure out why unique(edgelist doesn't work, I think it is == of arrays of types or something.
-@test length(unique([(f.func, f.args, f.ret) for f in  edgelist])) == 5
+@test length(unique([(f.func, f.args, f.ret) for f in  Edges(edgelist)])) == 5

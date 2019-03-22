@@ -8,6 +8,7 @@ module AgentModels
 
 import Base: count
 
+# +
 # """    AgentModel
 
 # the root type for agent based models.
@@ -16,6 +17,13 @@ import Base: count
 # """
 
 abstract type AgentModel end
+
+abstract type State end
+struct Susceptible <: State end
+struct Infected <: State end
+struct Recovered <: State end
+
+# -
 
 # """     StateModel
 
@@ -26,11 +34,12 @@ abstract type AgentModel end
 # - transitions: the functions `f: states -> states`
 # """
 
-mutable struct StateModel <: AgentModel
-    states
-    agents
-    transitions
-    loads
+
+mutable struct StateModel{U,A,T,L} <: AgentModel
+    states::U
+    agents::A
+    transitions::T
+    loads::L
 end
 
 # +
@@ -47,8 +56,8 @@ end
 
 # stateload computes the fraction of agents in each state
 # it is used by tick! to update the statemodel for computing the probability of infection.
-function stateload(sm::StateModel, state::Symbol)
-    return (count(sm, state)+1)/(count(sm)+1)
+function stateload(sm::StateModel, state)
+    return (count(sm, state))/(count(sm))
 end
 
 #     tick!(sm::StateModel)
@@ -57,7 +66,6 @@ end
 
 function tick!(sm::StateModel)
     sm.loads = map(s->stateload(sm, s), sm.states)
-    return sm.loads
 end
 
 #     step!(sm::StateModel, n)
@@ -70,9 +78,9 @@ function step!(sm::StateModel, n)
     for s in 1:n
       tick!(sm)
       for (i, a) in enumerate(sm.agents)
-          sm.agents[i] = sm.transitions[a](sm, i,a)
+          sm.agents[i] = sm.transitions(sm, i, a)
       end
-        describe(sm)
+      @show describe(sm)
     end
     return sm
 end
@@ -111,28 +119,52 @@ end
 #
 # This script has an entrypoint to call it so that you can include this file and run as many simulations as you want. The intended use case is to repeatedly call `main` and accumulate the return values into an array for later analysis.
 
+
+ρ = 0.5 + randn(Float64)/16 # chance of recovery
+μ = 0.5 # chance of immunity
+β = 2
+
+function transition(sm::StateModel, i::Int, s::Susceptible)
+    p = β*sm.loads[2]
+    if rand(Float64) < p
+        return Infected()
+    else
+        return Susceptible()
+    end
+end
+
+function transition(sm::StateModel, i::Int, s::Infected)
+    if rand(Float64) < ρ
+        return Recovered()
+    else
+        return Infected()
+    end
+end
+
+function transition(sm::StateModel, i::Int, s::Recovered)
+    if rand(Float64) < μ
+        return Recovered()
+    else
+        return Susceptible()
+    end
+end
+
 function main(nsteps)
     n = 20
-    a = fill(:S, n)
-    ρ = 0.5 + randn(Float64)/4 # chance of recovery
-    μ = 0.5 # chance of immunity
-    T = Dict(
-        :S=>(x...)->rand(Float64) < stateload(x[1], :I) ? :I : :S,
-        :I=>(x...)->rand(Float64) < ρ ? :I : :R,
-        :R=>(x...)->rand(Float64) < μ ? :R : :S,
-    )
-
-
-    sam = StateModel([:S, :I, :R], a, T, zeros(Float64,3))
+    a = Any[]
+    for i in 1:n-1
+        push!(a, Susceptible())
+    end
+    push!(a, Infected())
+    sam = StateModel(Any[Susceptible(), Infected(), Recovered()], a, transition, zeros(Float64,3))
     newsam = step!(deepcopy(sam), nsteps)
-    @show newsam.agents
     counts = describe(newsam)
     return newsam, counts
 end
 
-# +
 # # An example of how to run this thing.
-# main(10)
-# -
+main(10)
 
 end
+
+

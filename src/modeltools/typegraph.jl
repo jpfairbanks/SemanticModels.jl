@@ -96,13 +96,28 @@ function wrap(expr::Expr)
     g = gensym("wrap_storage")
     insert!(b, 1, :(store(args) = begin push!($g, args) end ))
     insert!(b, 1, :($g = Any[]))
-    push!(b, :($g))
-    push!(b, :(Edges($g)))
+    push!(b, :(edgelist=$g))
+    # push!(b, :(Edges($g)))
     expr
 end
 
+"""    typegraph(expr::Expr)
+
+annotate a code expression so that when you eval it, you get the typegraph.
+used in the macro @typegraph.
+
+Note: Does not yet support docstrings, kwargs, or varargs.
+"""
+function typegraph(expr::Expr)
+    return wrap(postwalk(annotate, expr))
+end
+
+"""    @typegraph(expr::Expr)
+
+extract a typegraph from an expression by annotation and execution.
+
+Note: Does not yet support docstrings, kwargs, or varargs.
+"""
 macro typegraph(expr)
-    expr2 = postwalk(annotate, expr)
-    expr3 = wrap(expr2)
-    return expr3
+    return typegraph(expr)
 end
