@@ -271,3 +271,4 @@ doc/src/img/*.dot.png
 /.ipynb_checkpoints/*
 **/.ipynb_checkpoints
 /doc/build
+*__pycache__/
