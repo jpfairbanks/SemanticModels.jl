@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # + {}
 module MonomialRegressionModels
+import Base: show
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.Transformations
-import Base: show
+import SemanticModels.ModelTools: model
 
 export MonomialRegressionModel, model
 

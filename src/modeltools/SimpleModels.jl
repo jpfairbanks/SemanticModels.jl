@@ -2,6 +2,7 @@
 # + {}
 module SimpleModels
 using SemanticModels.ModelTools
+import SemanticModels.ModelTools: model
 
 export SimpleModel, model
 

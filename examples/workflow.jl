@@ -11,14 +11,12 @@
 #
 # An alternative approach is to design modeling frameworks for representing the models. The problem with this avenue becomes apparent when models are composed. The frameworks must be interoperable in order to make combined models. ModelTools avoids this problem by representing the models as code and manipulating the codes. The interoperation of two models is defined by user supplied functions in a fully featured programming language. 
 
-# +
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.ExpStateModels
 import Base: push!
+import SemanticModels.ModelTools: model, isexpr
 using Random
-
-isexpr(x) = isa(x, Expr)
-# -
 
 samples = 100
 nsteps = 25
@@ -36,11 +34,11 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 # <img src="https://docs.google.com/drawings/d/e/2PACX-1vSeA7mAQ-795lLVxCWXzbkFQaFOHMpwtB121psFV_2cSUyXPyKMtvDjssia82JvQRXS08p6FAMr1hj1/pub?w=1031&amp;h=309">
 
 expr = parsefile("../examples/agentbased.jl")
-m = model(ExpStateModel, expr.args[3].args[3])
+m = model(ExpStateModel, expr)
 
 
 function returns(block::Vector{Any})
-    filter(x->(isa(x, Expr) && x.head==:return), block)
+    filter(x->(head(x)==:return), block)
 end
 returntuples = (bodyblock(filter(x->isa(x, Expr), findfunc(m.expr, :main))[end]) 
     |> returns 
@@ -50,6 +48,7 @@ push!(returntuples[1], :((ρ=ρ, μ=μ, n=n)))
 magents = m
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
+@show AgentModels
 for i in 1:samples
     println(("======= . Simulation $i  ========"))
     newsam, counts, params = AgentModels.main(nsteps)
@@ -60,7 +59,7 @@ end
 @show length(finalcounts)
 finalcounts
 
-invoke(magents, 10)[2:end]
+ModelTools.invoke(magents, 10)[2:end]
 
 # ## Statistical Regression Model
 # The following expression defines a univariate polynomial regression model of degree 0, which just computes the average of target variable. This model can be augmented to an polynomial regression model using transformations
@@ -140,14 +139,11 @@ end
 #
 # See the `examples/polynomial_regression.jl` example for details of what this code does.
 
-# +
-include("groups.jl")
+using LinearAlgebra
 using SemanticModels
 using SemanticModels.ModelTools
-using .Transformations
-using LinearAlgebra
-
-import SemanticModels.ModelTools: model, AbstractProblem
+using SemanticModels.ModelTools.Transformations
+import SemanticModels.ModelTools: model, AbstractModel, isexpr
 import SemanticModels.Parsers: findfunc, findassign
 import Base: show
 
@@ -163,7 +159,7 @@ Example:
 
 See also [`(t::Pow)(m::MultivariateLsq)`](@ref)
 """
-struct Lsq <: AbstractProblem
+struct Lsq <: AbstractModel
     expr
     f
     coefficient
@@ -289,7 +285,7 @@ result′.r
 module Pipelines
 using SemanticModels.ModelTools
 using Random
-struct Pipeline <: AbstractProblem
+struct Pipeline <: AbstractModel
     steps
     connectors
     results
@@ -332,10 +328,13 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
                 end,
         (m, results...) -> begin
             data = connector(results...)
-            invoke(m, data...) end
+            Mod = eval(m.expr)
+            Base.invokelatest(Mod.main, data...) end
         ],
         Any[(10)]
         )    
+
+# Warning: Pipelines can only be run once. Recreate the pipeline and run it again if necessary.
 
 Pipelines.run!(P)
 
@@ -457,6 +456,7 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
             Random.seed!(42)
             results = Any[]
             Mod = eval(m.expr)
+            @show Mod
             for i in 1:samples
                 r = Base.invokelatest(Mod.main, args...)
                 push!(results, (model=:basic, counts=r[2],params=r[3]))
@@ -466,7 +466,9 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
                 end,
         (m, results...) -> begin
             data = connector(results..., 1, 4)
-            invoke(m, data...) end
+            Mod = eval(m.expr)
+            Base.invokelatest(Mod.main, data...) 
+        end
         ],
         Any[(10)]
         )
@@ -501,11 +503,11 @@ P.results[end][2]
 
 # Here is the data we observed when running the first stage of the pipeline, stage two fits a polynomial to these observations
 
+table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
 try 
     using Plots
 catch
     @warn "Plotting is not available, make a table"
-    table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
     for t in table
         println(join(t, "\t"))
     end
@@ -544,5 +546,3 @@ p
 # SemanticModels.jl also provides transformations on these models that are grounded in category theory and abstract algebra. The concepts of category theory such as Functors and Product Categories allow us to build a general framework fit for any modeling task. In the language of category theory, the Pipelining functor on models commutes with the Product functor on transformations.
 #
 # This examples shows that metamodeling is feasible with SemanticModels and that the algebras of model transformations can be preserved when acting on metamodel workflows.
-
-

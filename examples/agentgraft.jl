@@ -160,3 +160,6 @@ for (g, v) in mean_healthy_frac
     x = round(last(num_unhealthy[g]) / first(num_unhealthy[g]), sigdigits=5)
     println("$g\t   $(first(v))\t  $(rpad(x, 6))\t   $(μ′)")
 end
+# -
+
+

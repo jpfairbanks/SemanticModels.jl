@@ -12,6 +12,11 @@ a placeholder struct to dispatch on how to parse the expression tree into a mode
 """
 abstract type AbstractModel end
 
+function model(::Type{T}, expr::Expr) where T<:AbstractModel
+    error("NotImplemented: model(::$T,::Expr")
+end
+
+
 function invoke(m::AbstractModel, args...)
     Mod = eval(m.expr)
     Base.invokelatest(Mod.main, args...)
