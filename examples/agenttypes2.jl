@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 using SemanticModels
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
@@ -25,7 +26,7 @@ Mod.main(10)
 edgelist_symbol = Mod.edgelist
 
 E = unique((f.func, f.args, f.ret) for f in Edges(edgelist_symbol))
-E = unique(("\"$(f.func)\"", shorttype.(f.args), shorttype.(f.ret)) for f in Edges(edgelist_symbol))
+E = unique(("\"$(f.func)\"", tuple(shorttype.(f.args)...), shorttype.(f.ret)) for f in Edges(edgelist_symbol))
 @show E
 # -
 
@@ -41,7 +42,7 @@ Mod = eval(expr3)
 Mod.main(10)
 edgelist_typed = Mod.edgelist
 
-E_typed = unique(("\"$(f.func)\"", shorttype.(f.args), shorttype.(f.ret)) for f in Edges(edgelist_typed))
+E_typed = unique(("\"$(f.func)\"", tuple(shorttype.(f.args)...), shorttype.(f.ret)) for f in Edges(edgelist_typed))
 # -
 
 println("=============\nSymbols Graph\n============")
@@ -73,6 +74,7 @@ function escapehtml(i::AbstractString)
 end
 
 
+# +
 function buildgraph(E)
     g = MetaDiGraph();
     set_indexing_prop!(g,:label);
@@ -98,7 +100,37 @@ function buildgraph(E)
     end
     return g
 end
+
+# for e in edges(g)
+#     sn, dn = g[src(e),:label], g[dst(e), :label]
+#     # f = g[sn, :label, dn, :label]
+#     @show g.eprops[e][:label]
+#     println(sn, "--->", dn)
+# end
+function projectors(g, key=:label)
+    newedges = []
+for v in vertices(g)
+    args = g.vprops[v][key]
+    if isa(args, Tuple)
+        for (i, a) in enumerate(args)
+            push!(newedges, ("π$i", a, args))
+        end
+    end
+    end
+        return newedges
+end
+
+function add_projectors!(g, key=:label)
+    πs = projectors(g)
+    for e in πs
+        add_edge!(g,g[e[2],:label],g[e[3],:label],:label,e[1])
+    end
+    return g, πs
+end
+# -
+
 g = buildgraph(E)
+add_projectors!(g)
 savegraph("exampletypegraph.dot",g,DOTFormat());
 
 run(`dot -Tsvg -O exampletypegraph.dot`);
@@ -107,8 +139,10 @@ s = read("exampletypegraph.dot.svg",String);
 display("image/svg+xml",s)
 
 g = buildgraph(E_typed)
-savegraph("exampletypegraph_2.dot",g,DOTFormat());
+g, πs = add_projectors!(g);
+g
 
+savegraph("exampletypegraph_2.dot",g,DOTFormat());
 run(`dot -Tsvg -O exampletypegraph_2.dot`);
 
 s = read("exampletypegraph_2.dot.svg",String);
