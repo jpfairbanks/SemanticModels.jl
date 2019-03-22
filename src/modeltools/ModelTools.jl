@@ -132,18 +132,11 @@ function setarg!(ex::Expr, old, new)
     return ex
 end
 
-issome(x) = !ismissing(x) && !isa(x, Nothing)
-head(x::Expr) = x.head
-head(n::LineNumberNode) = nothing
-isblock(x) = head(x) == :block
-isfunc(x) = head(x) ==:function
-or(f::Function, g::Function) = x->(f(x) || g(x))
-isexpr(x) = isa(x, Expr)
-
 function funcarg(ex::Expr)
     return ex.args[1].args[2]
 end
 
+include("exprs.jl")
 include("Transformations.jl")
 include("SimpleModels.jl")
 include("ExpODEModels.jl")
