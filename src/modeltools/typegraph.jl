@@ -1,4 +1,11 @@
+using SemanticModels.Parsers
 import Base: ==
+
+mutable struct Edge{S,T,R}
+    func::S
+    args::T
+    ret::R
+end
 
 ==(e::Edge,E::Edge) = begin (@show e.func==E.func && @show e.args == E.args && @show e.ret == E.ret) end
 
@@ -17,11 +24,6 @@ mutable struct RetArg{S,T,U,V}
     val::V
 end
 
-mutable struct Edge{S,T,R}
-    func::S
-    args::T
-    ret::R
-end
 
 function Edges(snapshots)
     stack = Any[]
