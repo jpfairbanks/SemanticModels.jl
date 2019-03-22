@@ -116,11 +116,13 @@ end
 # This script has an entrypoint to call it so that you can include this file and run as many simulations as you want. The intended use case is to repeatedly call `main` and accumulate the return values into an array for later analysis.
 
 
-ρ = 0.5 + randn(Float64)/4 # chance of recovery
+ρ = 0.5 + randn(Float64)/16 # chance of recovery
 μ = 0.5 # chance of immunity
+β = 2
 
 function transition(sm::StateModel, i::Int, s::Susceptible, args...)
-    if rand(Float64) < stateload(sm, Infected)
+    p = β*sm.loads[2]
+    if rand(Float64) < p
         return Infected()
     else
         return Susceptible()
@@ -129,9 +131,9 @@ end
 
 function transition(sm::StateModel, i::Int, s::Infected, args...)
     if rand(Float64) < ρ
-        return Infected()
-    else
         return Recovered()
+    else
+        return Infected()
     end
 end
 
