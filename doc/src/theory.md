@@ -15,6 +15,10 @@ $$h^* = \min_{h\in {H}} \ell(h(x), y)$$ and the institutional process of discove
 $$\max_{{H}\in \mathcal{M}} expl(h^*)$$ where $expl$ is the explanatory power of a class of models $H$. The explanatory
 power is some combination of generalization, parsimony, and consistency with the fundamental principles of the field.
 
+This formulation is notional in the current state of the art, because models are not a well parameterized space.
+The goal of this project is to identify subspaces that can be parameterized using algebraic structures and represent
+those subspace symbolically so that computers can represent them and perform optimization.
+
 ## Analyzing scientific models as programs
 We can consider three different problems for semantic modeling
 
