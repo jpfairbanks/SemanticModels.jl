@@ -6,7 +6,7 @@ import SemanticModels.ModelTools: CallArg, RetArg, Edge, Edges, @typegraph, type
 using SemanticModels.Parsers
 import Base: ==
 
-expr = parsefile("agentbased.jl")
+expr = parsefile("agentbased2.jl")
 expr2 = ModelTools.typegraph(expr.args[end])
 # ModEx = Expr(:Module)
 expr3 = :(module Foo 
@@ -46,4 +46,6 @@ println("\n=============\nTypes Graph\n============")
 for e in E_typed
     println(join(e, ", "))
 end
+
+
 
