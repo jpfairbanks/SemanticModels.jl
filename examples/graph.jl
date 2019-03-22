@@ -1,4 +1,35 @@
-module Graphs
+# +
+using Pkg
+try
+    using DataFrames
+catch
+    Pkg.add("DataFrames")
+end
+try
+    using GraphDataFrameBridge
+catch
+    Pkg.add("GraphDataFrameBridge")
+end
+try
+    using MetaGraphs
+catch
+    Pkg.add("MetaGraphs")
+end
+try
+    using LightGraphs
+catch
+    Pkg.add("LightGraphs")
+end
+try
+    using CSV
+catch
+    Pkg.add("CSV")
+end
+try
+    using DataFramesMeta
+catch
+    Pkg.add("DataFramesMeta")
+end
 
 using DataFrames
 using GraphDataFrameBridge
@@ -7,15 +38,7 @@ using CSV
 using LightGraphs
 using Random
 using DataFramesMeta
-
-export load_graph_data,
-    gen_rand_vertex_name,
-    gen_vertex_hash,
-    generate_synthetic_vertices,
-    generate_synthetic_edges,
-    insert_vertices_from_jl,
-    copy_input_graph_to_new_graph,
-    insert_edges_from_jl
+# -
 
 """    load_graph_data(input_data::Array{Any,1})
 
@@ -46,6 +69,7 @@ function gen_vertex_hash(vertex_name::String, vertex_type::String)
     return hash(string(vertex_name, vertex_type))
 end
 
+# +
 """    generate_synthetic_vertices(vertex_type_defs::String, output_path::String)
 
 Generate synthetic test data. The synthetic vertices are returned as a dataframe
@@ -72,69 +96,70 @@ function generate_synthetic_vertices(vertex_type_defs::String, output_path::Stri
     return DataFrame(synth_vertices_df)
 
 end
+# -
 
+# """    generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)
+#
+# Generate synthetic test data. The synthetic edges are returned as a dataframe
+# that can be used for testing/debugging/developing the knowledge graph.
+#
+# see also: [`generate_synthetic_vertices`](@ref)
+# """
+# function generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)
+#
+#     edge_types = CSV.read(edge_type_defs)
+#
+#     synth_edges_df = []
+#
+#     for edge_row in eachrow(edge_types)
+#
+#         src_row = @linq synth_vertex_df |>
+#             where(:v_type .== edge_row.src_type) |>
+#             select(:v_hash, :v_name, :v_type)
+#
+#         dst_row = @linq synth_vertex_df |>
+#             where(:v_type .== edge_row.dst_type) |>
+#             select(:v_hash, :v_name, :v_type)
+#
+#         if size(src_row)[1] >=1 && size(dst_row)[1] >= 1
+#             src_vhash = src_row.v_hash[1]
+#             src_name = src_row.v_name[1]
+#             src_vtype = src_row.v_type[1]
+#
+#             dst_vhash = dst_row.v_hash[1]
+#             dst_name = dst_row.v_name[1]
+#             dst_vtype = dst_row.v_type[1]
+#
+#             if edge_row.value_field != "nothing"
+#                 edge_val = ("placeholder")
+#             else
+#                 edge_val = nothing
+#             end
+#
+#             synth_edge_attrs = (src_vhash="$src_vhash",
+#                                 src_name=src_name,
+#                                 src_vtype=src_vtype,
+#                                 dst_vhash="$dst_vhash",
+#                                 dst_name=dst_name,
+#                                 dst_vtype=dst_vtype,
+#                                 edge_relation=edge_row.edge_relation,
+#                                 edge_description=edge_row.description,
+#                                 value=edge_val),
+#             push!(synth_edges_df, synth_edge_attrs)
+#         else
+#             continue
+#         end
+#     end
+#
+#     open(output_path, "w") do io
+#         print(io, repr(load_graph_data(synth_edges_df)))
+#     end
+#     @info("Synthetic edge dataframe generated", file=output_path)
+#     return DataFrame(synth_edges_df)
+#
+# end
 
-"""    generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)
-
-Generate synthetic test data. The synthetic edges are returned as a dataframe
-that can be used for testing/debugging/developing the knowledge graph.
-
-see also: [`generate_synthetic_vertices`](@ref)
-"""
-function generate_synthetic_edges(edge_type_defs::String, synth_vertex_df::DataFrame, output_path::String)
-
-    edge_types = CSV.read(edge_type_defs)
-
-    synth_edges_df = []
-
-    for edge_row in eachrow(edge_types)
-
-        src_row = @linq synth_vertex_df |>
-            where(:v_type .== edge_row.src_type) |>
-            select(:v_hash, :v_name, :v_type)
-
-        dst_row = @linq synth_vertex_df |>
-            where(:v_type .== edge_row.dst_type) |>
-            select(:v_hash, :v_name, :v_type)
-
-        if size(src_row)[1] >=1 && size(dst_row)[1] >= 1
-            src_vhash = src_row.v_hash[1]
-            src_name = src_row.v_name[1]
-            src_vtype = src_row.v_type[1]
-
-            dst_vhash = dst_row.v_hash[1]
-            dst_name = dst_row.v_name[1]
-            dst_vtype = dst_row.v_type[1]
-
-            if edge_row.value_field != "nothing"
-                edge_val = ("placeholder")
-            else
-                edge_val = nothing
-            end
-
-            synth_edge_attrs = (src_vhash="$src_vhash",
-                                src_name=src_name,
-                                src_vtype=src_vtype,
-                                dst_vhash="$dst_vhash",
-                                dst_name=dst_name,
-                                dst_vtype=dst_vtype,
-                                edge_relation=edge_row.edge_relation,
-                                edge_description=edge_row.description,
-                                value=edge_val),
-            push!(synth_edges_df, synth_edge_attrs)
-        else
-            continue
-        end
-    end
-
-    open(output_path, "w") do io
-        print(io, repr(load_graph_data(synth_edges_df)))
-    end
-    @info("Synthetic edge dataframe generated", file=output_path)
-    return DataFrame(synth_edges_df)
-
-end
-
+# +
 """    insert_vertices_from_jl(vertices_file::String, input_graph::Nothing)
 
 Ingests and evaulates a Julia file containing vertex information; instantiates an empty knowledge graph and inserts each unique vertex into this graph.
@@ -165,6 +190,7 @@ function insert_vertices_from_jl(vertices_file::String, input_graph::Nothing)
     return G
 
 end
+# -
 
 """    insert_vertices_from_jl(vertices_file::String, input_graph::MetaDiGraph)
 
@@ -245,6 +271,7 @@ end
 
 
 
+# +
 """    insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
 
 Takes as input an existing graph and an edge file. Each edge in the file is
@@ -361,7 +388,8 @@ function insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
     return G
 
 end
-        
+
+# +
 """    insert_edges_from_jl(edges_file::String, input_graph::MetaDiGraph)
 
 Takes as input an existing graph and an edge file. Each edge in the file is
@@ -478,5 +506,24 @@ function insert_edges_from_jl(edges_file::DataFrame, input_graph::MetaDiGraph)
     return G
 
 end
-               
-end #module end
+
+# +
+function main(path_to_v_types="../examples/knowledge_graph/data/kg_vertex_types.csv", path_to_edge_types="../examples/knowledge_graph/data/kg_edge_types.csv")
+
+    @info "Generating dataframe of synthetic vertices (vertex types reflect our schema)"
+    synth_vdf = generate_synthetic_vertices(path_to_v_types,"../examples/knowledge_graph/data/synth_kg_vertices.jl")
+
+    @info "Generating dataframe of synthetic edges (edge types reflect our schema)"
+    synth_edf = generate_synthetic_edges(path_to_edge_types, synth_vdf, "../examples/knowledge_graph/data/synth_kg_edges.jl")
+
+    @info "Example of inserting vertices to instantiate a KG from scratch"
+    g1 = insert_vertices_from_jl("../examples/knowledge_graph/data/synth_kg_vertices.jl", nothing)
+
+    @info "Example of inserting vertices to an existing KG"
+    g2 = insert_vertices_from_jl("../examples/knowledge_graph/data/synth_kg_vertices.jl", g1)
+
+    @info "Example of inserting edges to an existing KG"
+    g3 = insert_edges_from_jl("../examples/knowledge_graph/data/synth_kg_edges.jl", g2)
+end
+
+main()

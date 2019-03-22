@@ -15,6 +15,8 @@
 #
 # In this case we are automating the implementation of model changes to free the scientist to think about *what augmentations to the model should I make?* instead of *how do I implement these augmentations?*
 
+using SemanticModels
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.ExpStateModels

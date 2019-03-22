@@ -1,10 +1,22 @@
+# -*- coding: utf-8 -*-
+# + {}
+using Pkg
+Pkg.activate("Algebra")
+try
+    using Polynomials
+catch
+    Pkg.add("Polynomials")
+end
+try
+    using DifferentialEquations
+catch
+    Pkg.add("DifferentialEquations")
+end
+
+using Polynomials
 using DifferentialEquations
 import DifferentialEquations: solve
-
-export parameters, domain, initial_conditions, flux, odeproblem, accelerate!,
-    SpringModel, SIRParams, SIRSimulation, solve, CombinedModel
-# using DiffEqBase
-# using Unitful
+# -
 
 # f = @ode_def LotkaVolterra begin
 #   dx = a*x - b*x*y
