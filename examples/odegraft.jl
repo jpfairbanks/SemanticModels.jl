@@ -6,15 +6,22 @@
 #
 # This notebook is an example based on the SEIR model and the ScalingModel examples in the epirecipes cookbook.
 
-# using DifferentialEquations
+using Pkg
+try
+    using DifferentialEquations
+catch
+    Pkg.add("DifferentialEquations")
+end
+using DifferentialEquations
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.ExpODEModels
 
 # ## Loading the original model
 # We use parsefile to load the model into an expression. The original model is an SEIR model which has 4 states suceptible, exposed, infected, and recovered. It has parameters $\beta, \gamma, \mu, \sigma$. 
 
 expr1 = parsefile("../examples/epicookbook/src/SEIRmodel.jl")
-model1 = model(ExpODEProblem, expr1)
+model1 = model(ExpODEModel, expr1)
 
 module1 = eval(model1.expr)
 
@@ -34,8 +41,8 @@ expr2 = parsefile("../examples/epicookbook/src/ScalingModel.jl")
 
 # Once the ASTs are processed into a structured representation we can manipulate with regular julia code, we are able to write manipulations of the models that operate on a higher level than textual changes to the code.
 
-model2 = model(ExpODEProblem, expr2)
-fluxes(x::ExpODEProblem) = x.variables[1].flux
+model2 = model(ExpODEModel, expr2)
+fluxes(x::ExpODEModel) = x.variables[1].flux
 
 # Find the expression we want to graft
 # vital dynamics S rate expression
