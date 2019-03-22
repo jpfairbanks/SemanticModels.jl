@@ -36,27 +36,28 @@ collections of open source software to learn the modeling frameworks from the co
 Install this package with
 
 ```julia
-Pkg.develop("git@github.com:jpfairbanks/SemanticModels.jl.git")
-Pkg.develop("Cassette")
+Pkg.add("SemanticModels")
 Pkg.test("SemanticModels")
+
 ```
 
-Note that loading this package for the first time can take a while because `DifferentialEquations` is a large library that
+Note that running the tests for the first time can take a while because `DifferentialEquations` is a large library that
 requires a long precompilation step. Various functions in the `SemanticModels.Dubstep` module can also have long
 precompile times, due to heavy use of generated functions.
 
 Then you can load it at the julia REPL with `using SemanticModels`
 
-There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
-package. 
+You should start exploring the notebooks in the examples folder. These notebooks are represented in jupytext format, 
+and are stored as julia programs you can run at the repl or in the notebook interface after installing the jupytext plugin for jupyter. 
 
-1. Model augmentation: an example script `bin/agentgraft.jl` shows how to augment an agent based simulation to add new
+1. Model augmentation: an example script `examples/agentgraft.jl` shows how to augment an agent based simulation to add new
    modeling components using an API for changing models at the semantic level.
 
-2. Model Representations: SemanticModels supports extracting knowledge graph representations of scripts.
-For example `julia --project bin/extract.jl
-examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl` will extract code based knowledge elements from
-the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl`.
+2. Model Representations: SemanticModels supports extracting knowledge graph representations of scripts. See the `examples/agenttypes2.jl` notebook for a demonstration. 
+
+
+There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
+package. For example `julia --project bin/extract.jl examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl` will extract code based knowledge elements from the julia source code file `examples/epicookbook/notebooks/SimpleDeterministicModels/SEIRmodel.jl`.
 
 See the tests and documentation for more example usage.
 
@@ -125,7 +126,7 @@ MetaGraphs.jl is used to model the relationships between models and concepts in 
 
 There are a few different forms of knowledge graphs that can be extracted from codes.
 
-1. The type graph: Vertices are types, edges are functions between types
+1. The type graph: Vertices are types, edges are functions between types see `examples/agenttypes2.jl`.
 
 2. Vertices are functions and variables, edges represent dataflow, function references variable or function calls function.
 
