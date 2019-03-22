@@ -18,11 +18,10 @@ using Polynomials
 #
 # He we will represent a model class *monomial regression* with a data structure `MonomialRegression` and define a set group of transformations that can act on models from this class.
 
-include("groups.jl")
-
 using SemanticModels
 using SemanticModels.ModelTools
-using .Transformations
+using SemanticModels.ModelTools.Transformations
+using SemanticModels.ModelTools.MonomialRegressionModels
 
 # ## Monomial Regression
 #
@@ -83,8 +82,6 @@ expr = quote
     end
 end;
 
-m.expr.head
-
 # ## Transforming the model 
 #
 # Valid transformations for this model include increasing and decreasing the power of the monomial by 1. And you can apply those transformations repeatedly.
@@ -93,7 +90,7 @@ m.expr.head
 #
 # Composition of `Pow{Int}` maps naturally to addition of the power to transform with. You can see how transformations are applied below.
 
-m = model(MonomialRegression, deepcopy(expr))
+m = model(MonomialRegressionModel, deepcopy(expr))
 @show bodyblock(m.f)
 
 
@@ -102,7 +99,7 @@ m = model(MonomialRegression, deepcopy(expr))
 eval(m.expr);
 â = Regression.ahat
 
-function(p::Poly)(m::MonomialRegression)
+function (p::Poly)(m::MonomialRegressionModel)
     if m.expr.head == :module
         # we need to add the using statement to get polyval defined
         pushfirst!(m.expr.args[3].args, :(using Polynomials))
@@ -118,7 +115,7 @@ â = Regression.ahat
 # ## Chosing the right polynomial
 # Given a fixed dataset, we want to loop over all the models in a class and fit the best coefficient, then we will decide which polynomial allows for the best fit to this data.
 
-m = model(MonomialRegression, deepcopy(expr))
+m = model(MonomialRegressionModel, deepcopy(expr))
 # println(m)
 # sol = eval(m.expr)
 # @show sol.ahat
@@ -127,7 +124,7 @@ results = Any[]
 for i in 0:1
     for j in 0:1
         for k in 0:2
-            m = model(MonomialRegression, deepcopy(expr))
+            m = model(MonomialRegressionModel, deepcopy(expr))
             (i*Poly([1]) + j*Poly([0, 1]) + k*Poly([0,0,1]))(m)
             @show m.f.args[2].args[2]
             sol = eval(m.expr)
