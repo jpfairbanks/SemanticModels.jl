@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Dubstep · SemanticModels</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>SemanticModels</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">SemanticModels.jl</a></li><li><a class="toctext" href="../usecases/">Intended Use Cases</a></li><li><a class="toctext" href="../news/">News</a></li><li><a class="toctext" href="../example/">Example</a></li><li class="current"><a class="toctext" href>Dubstep</a><ul class="internal"><li><a class="toctext" href="#TraceCtx-1">TraceCtx</a></li><li><a class="toctext" href="#LPCtx-1">LPCtx</a></li><li><a class="toctext" href="#Transformations-1">Transformations</a></li><li><a class="toctext" href="#Model-Grafting-1">Model Grafting</a></li><li><a class="toctext" href="#Reference-1">Reference</a></li></ul></li><li><a class="toctext" href="../graph/">Knowledge Graphs</a></li><li><a class="toctext" href="../extraction/">Knowledge Extraction</a></li><li><a class="toctext" href="../validation/">Validation</a></li><li><a class="toctext" href="../library/">Library Reference</a></li><li><a class="toctext" href="../theory/">Theory</a></li><li><a class="toctext" href="../approach/">Approaches</a></li><li><a class="toctext" href="../slides/">Slides</a></li><li><a class="toctext" href="../FluModel/">Flu Model</a></li><li><a class="toctext" href="../contributing/">Contributing</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Dubstep</a></li></ul><a class="edit-page" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/dubstep.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Dubstep</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Dubstep-1" href="#Dubstep-1">Dubstep</a></h1><p>This module uses <a href="https://www.github.com/jrevels/Cassette.jl">Cassette.jl</a> (<a href="https://zenodo.org/record/1806173">Zenodo</a>) to modify programs by overdubbing their executions in a context.  Overdubbing allows you to define a context that defines allows a program to control the execution behavior of programs that are passed to it. Cassette is a novel approach to software development and integrates deeply with the Julia compiler to provide high performance aspect oriented programming.</p><h2><a class="nav-anchor" id="TraceCtx-1" href="#TraceCtx-1">TraceCtx</a></h2><p>Builds hierarchical runtime value traces by running the program you pass it. You can change the metadata. You can change out the metadata that you pass in order to collect different information. The default is Any[].</p><h2><a class="nav-anchor" id="LPCtx-1" href="#LPCtx-1">LPCtx</a></h2><p>Replaces all calls to <code>norm(x,p)</code> with <code>norm(x,ctx.metadata[p])</code> so you can change the norms that a code uses to compute. </p><h3><a class="nav-anchor" id="Example-1" href="#Example-1">Example</a></h3><p>Here is an example of changing an internal component of a mathematical operation using cassette to rewrite the norm function:</p><p>First we define a function that uses <code>norm</code>, and another function that calls it: </p><pre><code class="language-julia">
+subg(x,y) = norm([x x x]/6 - [y y y]/2, 2)
+
+function g()
+    a = 5+7
+    b = 3+4
+    c = subg(a,b)
+    return c
+end</code></pre><p>We use the <code>Dubstep.LPCtx</code>, which is shown here:</p><pre><code class="language-julia">Cassette.@context LPCtx
+
+function Cassette.overdub(ctx::LPCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
+        newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
+        return Cassette.recurse(newctx, args...)
+    else
+        return Cassette.fallback(ctx, args...)
+    end
+end
+
+using LinearAlgebra
+function Cassette.overdub(ctx::LPCtx, f::typeof(norm), arg, power)
+    return f(arg, ctx.metadata[power])
+end</code></pre><p>Note the method definition of <code>Cassette.overdub</code> for LPCtx when called with the function <code>LinearAlgebra.norm</code>.</p><p>We then construct an instance of the context that configures how we want to do the substitution:</p><pre><code class="language-julia">@testset &quot;LP&quot; begin 
+@test 2.5980 &lt; g() &lt; 2.599
+ctx = Dubstep.LPCtx(metadata=Dict(1=&gt;2, 2=&gt;1, Inf=&gt;1))
+@test Cassette.recurse(ctx, g) == 4.5</code></pre><p>And just like that, we can control the execution of a program without rewriting it at the lexical level.</p><h2><a class="nav-anchor" id="Transformations-1" href="#Transformations-1">Transformations</a></h2><p>You can also transform a model by executing it in a context that changes the function calls. Eventually we will support writing compiler passes for modifying models at the expression level, but for now, function calls are a good entry point.</p><h3><a class="nav-anchor" id="Example:-Perturbations-1" href="#Example:-Perturbations-1">Example: Perturbations</a></h3><p>This example comes from the unit tests <code>test/transform/ode.jl</code>.</p><p>The first step is to define a context for solving models:</p><pre><code class="language-julia">module ODEXform
+using DifferentialEquations
+using Cassette
+using SemanticModels.Dubstep
+
+Cassette.@context SolverCtx
+function Cassette.overdub(ctx::SolverCtx, args...)
+    if Cassette.canrecurse(ctx, args...)
+        #newctx = Cassette.similarcontext(ctx, metadata = ctx.metadata)
+        return Cassette.recurse(ctx, args...)
+    else
+        return Cassette.fallback(ctx, args...)
+    end
+end
+
+function Cassette.overdub(ctx::SolverCtx, f::typeof(Base.vect), args...)
+    @info &quot;constructing a vector length $(length(args))&quot;
+    return Cassette.fallback(ctx, f, args...)
+end
+
+# We don&#39;t need to overdub basic math. this hopefully makes execution faster.
+# if these overloads don&#39;t actually make it faster, they can be deleted.
+function Cassette.overdub(ctx::SolverCtx, f::typeof(+), args...)
+    return Cassette.fallback(ctx, f, args...)
+end
+function Cassette.overdub(ctx::SolverCtx, f::typeof(-), args...)
+    return Cassette.fallback(ctx, f, args...)
+end
+function Cassette.overdub(ctx::SolverCtx, f::typeof(*), args...)
+    return Cassette.fallback(ctx, f, args...)
+end
+function Cassette.overdub(ctx::SolverCtx, f::typeof(/), args...)
+    return Cassette.fallback(ctx, f, args...)
+end
+end #module</code></pre><p>Then we define our RHS of the differential equation that is <code>du/dt = sir_ode(du, u, p, t)</code>. This function needs to be defined before we define the method for <code>Cassette.overdub</code> with the signature: <code>Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)</code>  because we need to have the function we want to overdub defined before we can specify how to overdub it.</p><pre><code class="language-julia">using LinearAlgebra
+using Test
+using Cassette
+using DifferentialEquations
+using SemanticModels.Dubstep
+
+&quot;&quot;&quot;   sir_ode(du,u,p,t)
+
+computes the du/dt array for the SIR system. parameters p is b,g = beta,gamma.
+&quot;&quot;&quot;
+sir_ode(du,u,p,t) = begin
+    S,I,R = u
+    b,g = p
+    du[1] = -b*S*I
+    du[2] = b*S*I-g*I
+    du[3] = g*I
+end</code></pre><p>This code implements the model <span>$\frac{dS}{dt} = -\beta S I$</span> <span>$\frac{dI}{dt} = \beta S I - \gamma I$</span> <span>$\frac{dR}{dt} = \gamma I$</span></p><p>A common modeling activity is for a scientist to consider counterfactual scenarios, what if the infection was a little bit stronger. In this model the strength of infection is a direct parameter of the model, but our approach works on aspects of the model that are not so easily accessible.</p><p>We want to add to the code a perturbation that allows us to examine these counterfactuals. Suppose the infection was a little stronger by a factor of <span>$\alpha$</span></p><div>\[\frac{dS}{dt} = \alpha (\beta S I - \gamma I)\]</div><p>Then we could modify the code at run time using a Cassette Context.</p><pre><code class="language-julia">function Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
+    y = Cassette.fallback(ctx, f, args...)
+    # add a lagniappe of infection
+    extra = args[1][1] * ctx.metadata.factor
+    push!(ctx.metadata.extras, extra)
+    args[1][1] += extra
+    args[1][2] -= extra
+    return y
+end</code></pre><p>The key thing is that we define the execute method by specifying that we want to execute <code>sir_ode</code> then compute the extra amount (the lagniappe) and add that extra amount to the <code>dS/dt</code>. The SIR model has an invariant that <code>dI/dt = -dS/dt + dR/dt</code> so we adjust the <code>dI/dt</code> accordingly.</p><p>The rest of this code runs the model in the context.</p><pre><code class="language-julia">function g()
+    parms = [0.1,0.05]
+    init = [0.99,0.01,0.0]
+    tspan = (0.0,200.0)
+    sir_prob = Dubstep.construct(ODEProblem,sir_ode,init,tspan,parms)
+    return sir_prob
+end
+
+function h()
+    prob = g()
+    return solve(prob, alg=Vern7())
+end
+
+#precompile
+@time sol1 = h()
+#timeit
+@time sol1 = h()</code></pre><p>We define a perturbation function that handles setting up the context and collecting the results. Note that we store the extras in the <code>context.metadata</code> using a modifying operator <code>push!</code>.</p><pre><code class="language-julia">&quot;&quot;&quot;    perturb(f, factor)
+
+run the function f with a perturbation specified by factor.
+&quot;&quot;&quot;
+function perturb(f, factor)
+    t = (factor=factor,extras=Float64[])
+    ctx = ODEXform.SolverCtx(metadata = t)
+    val = Cassette.recurse(ctx, f)
+    return val, t
+end</code></pre><p>The use of an execution context allows the programmer to capture state from the program in the context and reuse it across function calls. This solves one of the big problems  with reuse of modeling code. Scientific code is not written with extensibility in mind. There is often no way to pass information between function calls without modifying a large number of functions. Attempts to solve this with object oriented programming often lead to overly complex systems that are difficult for new scientists to use. The ability of the execution context to pass state between functions allows for redefining behavior of a complex software system without reengineering all the application programming interfaces (APIs).</p><p>We collect the traces <code>t</code> and solutions <code>s</code> in order to quantify the effect of our perturbation on the answer computed by <code>solve</code>. We test to make sure that the bigger the perturbation, the bigger the error.</p><pre><code class="language-julia">traces = Any[]
+solns = Any[]
+for f in [0.0, 0.01, 0.05, 0.10]
+    val, t = perturb(h, f)
+    push!(traces, t)
+    push!(solns, val)
+end
+
+for (i, s) in enumerate(solns)
+    @show s(100)
+    @show traces[i].factor
+    @show traces[i].extras[5]
+    @show sum(traces[i].extras)/length(traces[i].extras)
+end
+
+@testset &quot;ODE perturbation&quot;
+
+@test norm(sol1(100) .- solns[1](100),2) &lt; 1e-6
+@test norm(sol1(100) .- solns[2](100),2) &gt; 1e-6
+@test norm(solns[1](100) .- solns[2](100),2) &lt; norm(solns[1](100) .- solns[3](100),2)
+@test norm(solns[1](100) .- solns[2](100),2) &lt; norm(solns[1](100) .- solns[4](100),2)
+
+end</code></pre><p>This example illustrates how you can use a <code>Cassette.Context</code> to highjack the execution of a scientific model in order to change the execution in a meaningful way. We also see how the execution allows use to examine the sensitivity of the solution with respect to the derivative. This technique allows scientists to answer counterfactual questions about the execution of codes, such as &quot;what if the model had a slightly different RHS?&quot;</p><p>This illustrative example would be possible with a direct modification of the source code. We present this general framework for code analysis and modification because when the codes become sophisticated, complex models it is infeasible for scientists to just read the code and make the changes themselves. This is largly due to the fact that scientific models are not engineered to be extensible. The development resources are spent on innovative algorithms and mathematics and not on designing general purpose modeling frameworks that can be easily extended. When researchers do attempt to build general purpose software tools, they often lack the funding to design and maintain them at a level of utility that users expect. This leads to a cycle where scientists have bad experiences with general purpose software and thus invest fewer resources in its development in the future, perpetuating the preference for specialized use case specific software.</p><h2><a class="nav-anchor" id="Model-Grafting-1" href="#Model-Grafting-1">Model Grafting</a></h2><p>Once you have built a knowledge graph from other codes, you can reason over that knowledge graph to decide how to make modifications to the models. The Dubstep module provides the <code>GraftCtx</code> to facilitate these model modifications.</p><pre><code class="language-julia">using Cassette
+using DifferentialEquations
+using SemanticModels.Parsers
+using SemanticModels.Dubstep
+
+# source of original problem
+include(&quot;../examples/epicookbook/src/SEIRmodel.jl&quot;)
+
+#the functions we want to modify
+seir_ode = SEIRmodel.seir_ode</code></pre><p>Once you have identified the entry point to your model, you can identify pieces of another model that you want to graft onto it. This piece of the other model might take significant preparation in order to be ready to fit onto the base model. These transformations include changing variables, and other plumbing aspects. If you stick to taking whole functions and not expressions, this prep work is reduced.</p><pre><code class="language-julia"># source of the problem we want to take from
+expr = parsefile(&quot;examples/epicookbook/src/ScalingModel.jl&quot;)
+
+
+# Find the expression we want to graft
+#vital dynamics S rate expression
+vdsre = expr.args[3].args[5].args[2].args[4]
+@show popgrowth = vdsre.args[2].args[2]
+
+replacevar(expr, old, new) = begin
+    dump(expr)
+    expr.args[3].args[3].args[3] = new
+    return expr
+end
+
+popgrowth = replacevar(popgrowth, :K,:N)
+
+# generate the function newfunc
+# this eval happens at the top level so should only happen once
+newfunc = eval(:(fpopgrowth(r,S,N) = $popgrowth))
+
+# This is the new problem
+# notice the signature doesn&#39;t even match, we have added a new parameter
+function fprime(dY,Y,p,t, ϵ)
+    #Infected per-Capita Rate
+    β = p[1]
+    #Incubation Rate
+    σ = p[2]
+    #Recover per-capita rate
+    γ = p[3]
+    #Death Rate
+    μ = p[4]
+
+    #Susceptible Individual
+    S = Y[1]
+    #Exposed Individual
+    E = Y[2]
+    #Infected Individual
+    I = Y[3]
+    #Recovered Individual
+    #R = Y[4]
+
+    # here is the graft point
+    dY[1] = μ-β*S*I-μ*S + newfunc(ϵ, S, S+E+I)
+    dY[2] = β*S*I-(σ+μ)*E
+    dY[3] = σ*E - (γ+μ)*I
+end</code></pre><p>Define the overdub behavior; all the functions need to be defined at this point using run time values slows down overdub.</p><pre><code class="language-julia">function Cassette.overdub(ctx::Dubstep.GraftCtx, f::typeof(seir_ode), args...)
+    # this call matches the new signature
+    return Cassette.fallback(ctx, fprime, args..., ctx.metadata[:lambda])
+end</code></pre><p>The last step is to run the new model!</p><pre><code class="language-julia"># set up our modeling configuration
+function g()
+    #Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)
+    pram=[520/365,1/60,1/30,774835/(65640000*365)]
+    #Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)
+    init=[0.8,0.1,0.1]
+    tspan=(0.0,365.0)
+
+    seir_prob = ODEProblem(seir_ode,init,tspan,pram)
+
+    sol=solve(seir_prob);
+end
+
+# sweep over population growth rates
+function scalegrowth(λ=1.0)
+    # ctx.metadata holds our new parameter
+    ctx = Dubstep.GraftCtx(metadata=Dict(:lambda=&gt;λ))
+    return Cassette.overdub(ctx, g)
+end
+
+println(&quot;S\tI\tR&quot;)
+for λ in [1.0,1.1,1.2]
+    @time S,I,R = scalegrowth(λ)(365)
+    println(&quot;$S\t$I\t$R&quot;)
+end</code></pre><p>It works! We can see that increasing the population growth causes a larger infected and recovered population at the end of 1 year.</p><h2><a class="nav-anchor" id="Reference-1" href="#Reference-1">Reference</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.GraftCtx" href="#SemanticModels.Dubstep.GraftCtx"><code>SemanticModels.Dubstep.GraftCtx</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">GraftCtx</code></pre><p>grafts an expression from one simulation onto another</p><p>This context is useful for modifying simulations by changing out components to add features</p><p>see also: <a href="#SemanticModels.Dubstep.LPCtx"><code>Dubstep.LPCtx</code></a></p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L112-L120">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.LPCtx" href="#SemanticModels.Dubstep.LPCtx"><code>SemanticModels.Dubstep.LPCtx</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">LPCtx</code></pre><p>replaces all calls to <code>LinearAlgebra.norm</code> with a different <code>p</code>.</p><p>This context is useful for modifying statistical codes or machine learning regularizers.</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L78-L84">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.TraceCtx" href="#SemanticModels.Dubstep.TraceCtx"><code>SemanticModels.Dubstep.TraceCtx</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">TraceCtx</code></pre><p>builds dynamic analysis traces of a model for information extraction</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L15-L19">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.TracedRun" href="#SemanticModels.Dubstep.TracedRun"><code>SemanticModels.Dubstep.TracedRun</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">TracedRun{T,V}</code></pre><p>captures the dataflow of a code execution. We store the trace and the value.</p><p>see also <code>trace</code>.</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L53-L59">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.replacefunc-Tuple{Function,AbstractDict}" href="#SemanticModels.Dubstep.replacefunc-Tuple{Function,AbstractDict}"><code>SemanticModels.Dubstep.replacefunc</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-none">replacefunc(f::Function, d::AbstractDict)</code></pre><p>run f, but replace every call to f using the context GraftCtx. in order to change the behavior you overload overdub based on the context. Metadata used to influence the context is stored in d.</p><p>see also: <code>bin/graft.jl</code> for an example.</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L132-L140">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.replacenorm-Tuple{Function,AbstractDict}" href="#SemanticModels.Dubstep.replacenorm-Tuple{Function,AbstractDict}"><code>SemanticModels.Dubstep.replacenorm</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-none">replacenorm(f::Function, d::AbstractDict)</code></pre><p>run f, but replace every call to norm using the mapping in d.</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L100-L104">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.trace-Tuple{Function}" href="#SemanticModels.Dubstep.trace-Tuple{Function}"><code>SemanticModels.Dubstep.trace</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-none">trace(f)</code></pre><p>run the function f and return a TracedRun containing the trace and the output.</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L64-L68">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.FCollector" href="#SemanticModels.Dubstep.FCollector"><code>SemanticModels.Dubstep.FCollector</code></a> — <span class="docstring-category">Type</span>.</div><div><div><p>FCollector(depth::Int,frame::function,data::FCollector)</p><p>struct to collect all the &quot;frames&quot; called throughout a script</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L158-L163">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.FCollector-Tuple{Int64,Any}" href="#SemanticModels.Dubstep.FCollector-Tuple{Int64,Any}"><code>SemanticModels.Dubstep.FCollector</code></a> — <span class="docstring-category">Method</span>.</div><div><div><p>FCollector(depth::Int,frame::Frame)</p><p>this is an initialization funtion for the FCollector</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L171-L176">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.Frame" href="#SemanticModels.Dubstep.Frame"><code>SemanticModels.Dubstep.Frame</code></a> — <span class="docstring-category">Type</span>.</div><div><div><p>Frame(func, args, ret, subtrace)</p><p>a structure to hold metadata for recursive type information for each function call Every frame can be thought of as a single stack frame when a function is called</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L180-L186">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.TypeCtx" href="#SemanticModels.Dubstep.TypeCtx"><code>SemanticModels.Dubstep.TypeCtx</code></a> — <span class="docstring-category">Type</span>.</div><div><div><p>TypeCtx</p><p>creates a MetaDiGraph tracking the types of args and ret values throughout a script</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L149-L154">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.buildgraph-Tuple{Any,Any}" href="#SemanticModels.Dubstep.buildgraph-Tuple{Any,Any}"><code>SemanticModels.Dubstep.buildgraph</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-none">buildgraph</code></pre><p>internal function used in the typegraphfrompath takes the collector object and returns a metagraph</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L211-L217">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="SemanticModels.Dubstep.typegraph" href="#SemanticModels.Dubstep.typegraph"><code>SemanticModels.Dubstep.typegraph</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">typegraph(path::AbstractString,maxdepth::Int)</code></pre><p>This is a function that takes in an array of script and produces a MetaDiGraph descibing the system. takes in optional parameter of recursion depth on the stacktrace defaulted to 3</p></div></div><a class="source-link" target="_blank" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/3660d78417ae255aca495769350c302c9702c5d5/src/cassette.jl#L239-L245">source</a></section><footer><hr/><a class="previous" href="../example/"><span class="direction">Previous</span><span class="title">Example</span></a><a class="next" href="../graph/"><span class="direction">Next</span><span class="title">Knowledge Graphs</span></a></footer></article></body></html>
