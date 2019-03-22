@@ -95,3 +95,57 @@ We can represent an SIR model as an olog as shown below.
 Another category theory representation without the human readable names used in an olog shows a simpler representation.
 
 ![SIR Category](img/category_sir.dot.png)
+
+## Models in the Category of Types
+
+All programs in a strongly typed language have a set of types and functions that map values between those types.
+For example the Julia program
+
+```julia
+a = 5.0
+b = 1
+c = 2*a
+d = b + c
+```
+Has the types `Int, Float` and functions `*, +` which are both binary functions. These types and functions can be
+represented as a category, where the objects are the types and the morphisms are the functions. We refer to the input
+type of a function as the domain and the output type as the codomain of the function. Multi-argument functions are
+represented with tuple types representing their argument. For example `+(a::Int,b::Int)::Int` is a function $+:
+Int\times Int -> Int$. These type categories are well studied in the field of Functional Programming. We apply these
+categories to the study of mathematical models. 
+
+One can use a combination of static and dynamic analysis to extract this category representation from a program and use
+it to represent the model implemented by the code.
+
+The most salient consequence of programming language theory is that the more information that a programmer can encode in
+the type system, the more helpful the programming language can be for improving performance, quality, and correctness.
+
+We want to leverage the type system to verify the semantic integrity of a model. This is critical when pursuing
+automatic model modification. Model developers use any number of conventions to encode semantic constraints into their
+code for example, prefacing all variables that refer to time with a `t`, such as `t_start, s_end`. This semantic
+constraint that all variables named `t_` are temporal variables is not encoded in the type system because all those
+variables are still floats. Another example is that vectors of different lengths are incompatible. In a compartment
+model, the number of initial conditions must match the number of compartments, and the number of parameters may be
+different. For example in an SIR model there are 3 initial conditions, $S,I,R$ and there are 2 parameters $\beta,
+\gamma$. These vectors are incompatible, you cannot perform arithmetic or comparisons on them directly. Most
+computational systems employed by scientists will use a runtime check on dimensions to prevent a program from crashing
+on malformed linear algebra. Scientists rely on this limited from of semantic integrity checking provided by the
+language. 
+
+Our goal is to extract and encode the maximum amount of information from scientific codes into the type system. The type
+system is analyzable as a category. Thus we can look at the category of types and analyze the integrety of the programs.
+For example if there are two types $S,T$ and two functions $f,g: S\arrow T$ such that $Codom(f) = Codom(g)$ but
+$Range(f) \cap Range(g)$, then we say that the type system is ambiguous in that there are two functions that use
+disjoint subsets of their common codomain. In order to more fully encode program semantics into the type system, the
+programmer (or an automated system) should introduce new types to the program to represent these disjoint subsets.
+![Ambiguous types in the SIR Model](img/types_sir.dot.png)
+Returning to the SIR model example, the `.param` and `.initial` functions both map `Problem` to `Vector{Float}` but have
+disjoint ranges. From our mathematical understanding of the model, we know that parameters and initial conditions are
+incompatible types of vectors, for one thing the output of `.param` is length 2 and the output of `.initial` is
+length 3. Any program analysis of the model will be hampered by the ambiguity introduced by using the same type to
+represent two different concepts. On the other hand, `.first` and `.second` have overlapping ranges and are comparable
+as times.
+
+![Unambiguous types in the SIR Model](img/types_sir_unambig.dot.png)
+
+This is an example of how PL theory ideas can improve the analysis of computational models.

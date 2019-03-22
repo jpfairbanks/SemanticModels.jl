@@ -43,9 +43,16 @@
 # epicookbook/src/ScalingModel.jl, "βs"
 # epicookbook/src/ScalingModel.jl, "sir_prob"
 # epicookbook/src/ScalingModel.jl, "i"
-import Pkg;
-Pkg.add("SemanticModels")
+try
+    using SemanticModels
+catch
+
+    import Pkg;
+    Pkg.add("SemanticModels")
+end
+
 using SemanticModels.Parsers
+import SemanticModels.Parsers.walk
 
 """    findassigns(expr::Expr)
 
@@ -90,10 +97,13 @@ end
 
 if length(ARGS) > 0
     for file in ARGS
-        matches = findvars(file)
-        for k in keys(matches)
-            println("$file, \"$k\"")
+        try
+            matches = findvars(file)
+            for k in keys(matches)
+                println("$file,\"$k\"")
+            end
+        catch
+            @warn "Processing failed" file=file
         end
     end
-
 end

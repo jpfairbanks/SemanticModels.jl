@@ -25,6 +25,7 @@ function micro_1(du, u, parms, time)
     # α disease induced mortality rate
 
     β, r, μ, K, α = parms
+    S, I = u
     dS = r*(1-S/K)*S - β*S*I
     dI = β*S*I-(μ+α)*I
     du = [dS,dI]

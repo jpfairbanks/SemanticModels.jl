@@ -150,7 +150,24 @@ sir_ode(du,u,p,t) = begin
     du[2] = b*S*I-g*I
     du[3] = g*I
 end
+```
+This code implements the model
+$\frac{dS}{dt} = -\beta S I$
+$\frac{dI}{dt} = \beta S I - \gamma I$
+$\frac{dR}{dt} = \gamma I$
 
+A common modeling activity is for a scientist to consider counterfactual scenarios, what if the infection was a little
+bit stronger. In this model the strength of infection is a direct parameter of the model, but our approach works on
+aspects of the model that are not so easily accessible.
+
+We want to add to the code a perturbation that allows us to examine these counterfactuals.
+Suppose the infection was a little stronger by a factor of $\alpha$
+
+$\frac{dS}{dt} = \alpha (\beta S I - \gamma I)$
+
+Then we could modify the code at run time using a Cassette Context.
+
+```julia
 function Cassette.overdub(ctx::ODEXform.SolverCtx, f::typeof(sir_ode), args...)
     y = Cassette.fallback(ctx, f, args...)
     # add a lagniappe of infection
@@ -209,6 +226,14 @@ function perturb(f, factor)
     return val, t
 end
 ```
+The use of an execution context allows the programmer to capture state from the program
+in the context and reuse it across function calls. This solves one of the big problems 
+with reuse of modeling code. Scientific code is not written with extensibility in mind.
+There is often no way to pass information between function calls without modifying a large
+number of functions. Attempts to solve this with object oriented programming often lead to
+overly complex systems that are difficult for new scientists to use. The ability of the execution
+context to pass state between functions allows for redefining behavior of a complex software
+system without reengineering all the application programming interfaces (APIs).
 
 We collect the traces `t` and solutions `s` in
 order to quantify the effect of our perturbation
@@ -252,6 +277,16 @@ technique allows scientists to answer
 counterfactual questions about the execution of
 codes, such as "what if the model had a slightly
 different RHS?"
+
+This illustrative example would be possible with a direct modification of the source code. We present this general
+framework for code analysis and modification because when the codes become sophisticated, complex models it is
+infeasible for scientists to just read the code and make the changes themselves. This is largly due to the fact that
+scientific models are not engineered to be extensible. The development resources are spent on innovative algorithms and
+mathematics and not on designing general purpose modeling frameworks that can be easily extended. When researchers do
+attempt to build general purpose software tools, they often lack the funding to design and maintain them at a level of
+utility that users expect. This leads to a cycle where scientists have bad experiences with general purpose software and
+thus invest fewer resources in its development in the future, perpetuating the preference for specialized use case
+specific software.
 
 ## Model Grafting
 
