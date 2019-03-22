@@ -13,7 +13,7 @@ end
 
 
 function descr_data(dat::Array)
-    alphabet = [union(unique.(collect.(dat))...)...];
+    alphabet = [unique(union.(collect.(dat))...)...];
     stop = Char(maximum(float.(alphabet))+1)
     push!(alphabet, stop)
     N = length(alphabet)
