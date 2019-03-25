@@ -1,0 +1,1 @@
+Basic microparasite model Description A basic microparasite model of susceptibles and infecteds with the force of infection density dependent. Beta_textmin is the minimum value of the transmission rate Beta such that the disease will spread. Equations

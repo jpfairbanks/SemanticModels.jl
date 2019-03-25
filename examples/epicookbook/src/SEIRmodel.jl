@@ -41,23 +41,26 @@ function seir_ode(dY,Y,p,t)
     dY[3] = σ*E - (γ+μ)*I
 end
 
-#Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)
-pram=[520/365,1/60,1/30,774835/(65640000*365)]
-#Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)
-init=[0.8,0.1,0.1]
-tspan=(0.0,365.0)
+function main()
+    #Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)
+    pram=[520/365,1/60,1/30,774835/(65640000*365)]
+    #Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)
+    init=[0.8,0.1,0.1]
+    tspan=(0.0,365.0)
 
-seir_prob = ODEProblem(seir_ode,init,tspan,pram)
+    seir_prob = ODEProblem(seir_ode,init,tspan,pram)
 
-sol=solve(seir_prob);
+    sol=solve(seir_prob);
+    return sol
+end
 
-using Plots
+# using Plots
 
-va = VectorOfArray(sol.u)
-y = convert(Array,va)
-R = ones(size(sol.t))' - sum(y,dims=1);
+# va = VectorOfArray(sol.u)
+# y = convert(Array,va)
+# R = ones(size(sol.t))' - sum(y,dims=1);
 
-plot(sol.t,[y',R'],xlabel="Time",ylabel="Proportion")
+# plot(sol.t,[y',R'],xlabel="Time",ylabel="Proportion")
 
 
 

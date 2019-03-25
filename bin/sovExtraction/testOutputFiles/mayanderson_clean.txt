@@ -1,0 +1,1 @@
+Macroparasite model from May and Anderson This section implements model F described in equations from [May and Anderson ()](https://doi.org/./). This is a basic model of macroparasite-host interaction based on the assumption that the number of parasites per host follows a Negative-Binomial distribution with aggregation parameter k.

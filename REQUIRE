@@ -1,10 +1,16 @@
-Test
-Unitful
-DiffEqBase
-DifferentialEquations
+julia 1.0.3
 CSV
-DataFrames
-DataFramesMeta
+Cassette
+Colors
+Distributions
+Documenter
 LightGraphs
 MetaGraphs
-MetaGraphDataFrameBridge
+DataFrames
+DataFramesMeta
+GraphDataFrameBridge
+GLM
+JSON
+Latexify
+Unitful
+Plots
