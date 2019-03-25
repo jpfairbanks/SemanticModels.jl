@@ -12,15 +12,17 @@ import pandas as pd
 
 #
 # one-hot encode text
-# 
+#
 
 with open("all_funcs.csv", "r") as f: 
     funcs = f.read()
 
 funcs = funcs.split(".jl\n")
 funcs = funcs[:-1] # remove trailing empty item
-funcs = pd.DataFrame([x.rsplit("\t",1) for x in funcs])
-funcs = funcs[funcs.code.apply(lambda x: len(x)<=500)]
+fdf = pd.DataFrame([x.rsplit("\t",1) for x in funcs], columns=["code", "path"])
+fdf
+
+fdf = fdf[fdf.code.apply(lambda x: len(x)<=500)]
 
 def chars_to_indices(data, tok=None, max_len=None):
     if max_len is None:
@@ -63,7 +65,7 @@ def get_cl_embedding_layer(tok, input_shape):
 
 def ae_models(maxlen, latent_dim, N, use_gpu=False):
 
-    inputs = Input((,maxlen,N))
+    inputs = Input((latent_dim,maxlen,N))
 
     if use_gpu:
         encoded = CuDNNLSTM(latent_dim)(inputs)
@@ -85,6 +87,7 @@ def ae_models(maxlen, latent_dim, N, use_gpu=False):
 
 
 # funcs = pd.read_csv("/u1/all_funcs.csv").iloc[:,0]
+funcs = fdf
 seqs, tok = chars_to_indices(funcs.iloc[:,0])
 N = len(np.unique(seqs))
 
@@ -93,8 +96,9 @@ max_len = seqs.shape[1]
 X_train, X_test = train_test_split(seqs, test_size=1/4)
 X_train = to_categorical(X_train, N, dtype='int16')
 X_test = to_categorical(X_test, N, dtype='int16')
+X_test
 
-autoencoder, enc = ae_models(max_len, 64, N, use_gpu=True)
+autoencoder, enc = ae_models(max_len, 64, N, use_gpu=False)
 autoencoder.compile(loss='mse',
                     optimizer='adam',
                     metrics=['accuracy'])
@@ -113,3 +117,5 @@ autoencoder.fit(X_train,
                 validation_data=(X_test, X_test),
                 callbacks=[early_stop],
                 shuffle=True)
+
+
