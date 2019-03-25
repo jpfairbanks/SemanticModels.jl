@@ -1,0 +1,1 @@
+SIRS disease dynamics in a population of households This section implements the model of Ross et al. which considers SIRS (susceptible-infectious-recovered-susceptible) infection dynamics in a very large (assumed infinite) population of households, with the simplifying assumption that each household is of the same size.

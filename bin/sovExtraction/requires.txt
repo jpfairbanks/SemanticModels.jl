@@ -1,0 +1,6 @@
+en_core_web_sm
+spacy (pip install)
+python 3.3+
+
+en_core models can be set up from here:
+https://pypi.org/project/spacy/
