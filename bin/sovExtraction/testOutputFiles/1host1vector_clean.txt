@@ -1,0 +1,1 @@
+One host SEIR, one vector SEI model fraction striking infectious hosts (I_H/N_H) The state equations are:

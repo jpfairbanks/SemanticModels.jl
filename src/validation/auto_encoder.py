@@ -12,7 +12,7 @@ import pandas as pd
 
 #
 # one-hot encode text
-# 
+#
 
 with open("all_funcs.csv", "r") as f: 
     funcs = f.read()
@@ -42,26 +42,6 @@ def chars_to_indices(data, tok=None, max_len=None):
 
     return sequences, tok
 
-# def get_cl_embedding_layer(tok, input_shape):
-#     vocab_size = len(tok.word_index)
-
-#     embedding_weights = []
-#     embedding_weights.append(np.zeros(vocab_size))
-
-#     for _, i in tok.word_index.items():
-#         o_i = np.zeros(vocab_size)
-#         o_i[i - 1] = 1
-#         embedding_weights.append(o_i)
-
-#     embedding_weights = np.array(embedding_weights)
-#     # embedding_layer = Embedding(vocab_size + 1,
-#     #                             vocab_size,
-#     #                             input_length=input_shape,
-#     #                             weights=[embedding_weights])
-
-#     return embedding_layer
-
-
 def ae_models(maxlen, latent_dim, N, use_gpu=False):
     inputs = Input((maxlen,N,))
 
@@ -85,6 +65,7 @@ def ae_models(maxlen, latent_dim, N, use_gpu=False):
 
 
 # funcs = pd.read_csv("/u1/all_funcs.csv").iloc[:,0]
+funcs = fdf
 seqs, tok = chars_to_indices(funcs.iloc[:,0])
 N = len(np.unique(seqs))
 
@@ -93,9 +74,12 @@ max_len = seqs.shape[1]
 X_train, X_test = train_test_split(seqs, test_size=1/4)
 X_train = to_categorical(X_train, N, dtype='int16')
 X_test = to_categorical(X_test, N, dtype='int16')
+X_test
 
 opt = Adam(lr=0.0001, amsgrad=True)
-autoencoder, enc = ae_models(max_len, 64, N, use_gpu=True)
+# autoencoder, enc = ae_models(max_len, 64, N, use_gpu=True)
+autoencoder, enc = ae_models(max_len, 64, N, use_gpu=False)
+
 autoencoder.compile(loss='mse',
                     optimizer=opt,
                     metrics=['accuracy'])
@@ -118,14 +102,4 @@ autoencoder.fit(X_train,
 
 autoencoder.save("autoencoder.h5")
 enc.save("encoder.h5")
-
-
-
-
-
-
-
-
-
-
 
