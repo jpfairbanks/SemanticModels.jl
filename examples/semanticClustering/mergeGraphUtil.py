@@ -7,6 +7,7 @@ Created on Thu Mar 21 23:01:25 2019
 """
 import pandas as pd
 import numpy as np
+import re
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 logging.getLogger().setLevel(logging.INFO)
@@ -87,13 +88,25 @@ def addVariableEdges(newSvoDataFrame, averageSimArray, threshold, assignmentMap,
     for i in range(len(variables)):
         if averageSimArray[i] > threshold:
             newSvoDataFrame.loc[count] = [variables[i], "implements", allCenterNodes[clusters[i]]]
-            count += 1   
+            count += 1  
+
+    newSvoDataFrame = cleanDataFrame(newSvoDataFrame) 
     newSvoDataFrame.to_csv("mergedSVO.csv")
     logging.info("mergedSVO.csv Created")
 
             
 
-    
+def cleanDataFrame(df):
+    for index, values in df.iterrows():
+        df.at[index,'subject'] = re.sub(r'[\W_]+', ' ', values["subject"])
+        df.at[index,'object'] = re.sub(r'[\W_]+', ' ', values["object"])
+        df.at[index,'verb'] = re.sub(r'[\W_]+', ' ', values["verb"])
+
+    return df
+
+
+
+
 
 def createFinalGraph(ClusterThreshold, VariableThreshold, averageSimArray):
     data = pd.read_csv("clusteringLabels.csv")
