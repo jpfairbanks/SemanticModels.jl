@@ -1268,3 +1268,954 @@ subject,verb,object
 you,translate,this code
 you,using,a language
 which,supports,recursion
+subject,verb,object
+the SIR model,extend,The susceptible model
+an exposed infectious class,include,the SIR model
+proportions of ,consider,The implementation in this section
+infection,associate,additional mortality
+subject,verb,object
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+Date,@sdwfrost,Simon Frost
+interest in the total number of people,be,there
+( chapters sir  intro ),use,simulations
+[ epicookbook chapters  intro ) ),use,simulations
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+Z _  _,be,the state of our model
+one infection event,have,we
+a recovery event,have,we
+( Z _ Z _ ),transition,the system
+the probability of all paths,calculate,one
+the state,lead,all paths
+Z Z,!transition,the system
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of  model passage times
+that model times,using,the method of ( Cox )
+subject,verb,object
+subject,verb,object
+SIRS dynamics,implements,the model of
+This section,implements,the model of
+which,considers,SIRS ( susceptible ) infection dynamics in a infinite population of households
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,infected individuals
+different rates,die,infected individuals
+different rates,die,SEIRD model 
+I_d infectious,survive,who
+R recovered D,die,who
+D,recover,R
+birth of in this model,!be,There
+Beta rate of rate,be,Parameters
+( ie inverse of mean incubation period,appear,symptoms
+rate immunity,apply,rate case fatality ratio ( proportion rate (
+E,apply,rate case fatality ratio ( proportion rate (
+subject,verb,object
+This section,implements,model
+the number of parasites per host,follows,a Binomial distribution with k
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+Lloyd Jansen,describe,https:doiorgjmbs  ) 
+matrix Beta,control,Cross - coupling between patches
+matrix Beta,control,Equations Cross - coupling
+the effective contact rates,describe,matrix Beta
+cross - coupling,switch,we
+patches,switch,we
+outflow of each patch,denote,the elements on 
+the flow from patch,describe,Element C_ij
+I,describe,Element C_ij
+all elements of C,set,all elements on the row
+zero,set,all elements on the row
+migration between patches,switch,we
+many SEIR models,consist,Model description
+many SEIR models,consist,This model
+between patch contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,susceptibles in patches
+patches,recover,R_n
+j flow from patch,neq,i
+Sigma rate of breakdown,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+Beta_textmin,is,the minimum value of the transmission rate Beta
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of 
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,parametric models
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of in,use,which
+a stochastic process for the transmission rate,define,We
+the form S,have,These models
+the number of susceptible individuals,be,St
+time,be,St
+alternative forms for the process,show,I R We
+Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+log(beta(t,consider,We
+dependent drift :,include,a model
+downward drift on the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+you,using,a language
+which,supports,recursion
+subject,verb,object
+the SIR model,extend,The susceptible model
+an exposed infectious class,include,the SIR model
+proportions of ,consider,The implementation in this section
+infection,associate,additional mortality
+subject,verb,object
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+Date,@sdwfrost,Simon Frost
+interest in the total number of people,be,there
+( chapters sir  intro ),use,simulations
+[ epicookbook chapters  intro ) ),use,simulations
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+Z _  _,be,the state of our model
+one infection event,have,we
+a recovery event,have,we
+( Z _ Z _ ),transition,the system
+the probability of all paths,calculate,one
+the state,lead,all paths
+Z Z,!transition,the system
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of  model passage times
+that model times,using,the method of ( Cox )
+subject,verb,object
+subject,verb,object
+SIRS dynamics,implements,the model of
+This section,implements,the model of
+which,considers,SIRS ( susceptible ) infection dynamics in a infinite population of households
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,infected individuals
+different rates,die,infected individuals
+different rates,die,SEIRD model 
+I_d infectious,survive,who
+R recovered D,die,who
+D,recover,R
+birth of in this model,!be,There
+Beta rate of rate,be,Parameters
+( ie inverse of mean incubation period,appear,symptoms
+rate immunity,apply,rate case fatality ratio ( proportion rate (
+E,apply,rate case fatality ratio ( proportion rate (
+subject,verb,object
+This section,implements,model
+the number of parasites per host,follows,a Binomial distribution with k
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+Lloyd Jansen,describe,https:doiorgjmbs  ) 
+matrix Beta,control,Cross - coupling between patches
+matrix Beta,control,Equations Cross - coupling
+the effective contact rates,describe,matrix Beta
+cross - coupling,switch,we
+patches,switch,we
+outflow of each patch,denote,the elements on 
+the flow from patch,describe,Element C_ij
+I,describe,Element C_ij
+all elements of C,set,all elements on the row
+zero,set,all elements on the row
+migration between patches,switch,we
+many SEIR models,consist,Model description
+many SEIR models,consist,This model
+between patch contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,susceptibles in patches
+patches,recover,R_n
+j flow from patch,neq,i
+Sigma rate of breakdown,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+Beta_textmin,is,the minimum value of the transmission rate Beta
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of 
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,parametric models
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of in,use,which
+a stochastic process for the transmission rate,define,We
+the form S,have,These models
+the number of susceptible individuals,be,St
+time,be,St
+alternative forms for the process,show,I R We
+Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+log(beta(t,consider,We
+dependent drift :,include,a model
+downward drift on the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+you,using,a language
+which,supports,recursion
+subject,verb,object
+the SIR model,extend,The susceptible model
+an exposed infectious class,include,the SIR model
+proportions of ,consider,The implementation in this section
+infection,associate,additional mortality
+subject,verb,object
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+Date,@sdwfrost,Simon Frost
+interest in the total number of people,be,there
+( chapters sir  intro ),use,simulations
+[ epicookbook chapters  intro ) ),use,simulations
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+Z _  _,be,the state of our model
+one infection event,have,we
+a recovery event,have,we
+( Z _ Z _ ),transition,the system
+the probability of all paths,calculate,one
+the state,lead,all paths
+Z Z,!transition,the system
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of  model passage times
+that model times,using,the method of ( Cox )
+subject,verb,object
+subject,verb,object
+SIRS dynamics,implements,the model of
+This section,implements,the model of
+which,considers,SIRS ( susceptible ) infection dynamics in a infinite population of households
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,infected individuals
+different rates,die,infected individuals
+different rates,die,SEIRD model 
+I_d infectious,survive,who
+R recovered D,die,who
+D,recover,R
+birth of in this model,!be,There
+Beta rate of rate,be,Parameters
+( ie inverse of mean incubation period,appear,symptoms
+rate immunity,apply,rate case fatality ratio ( proportion rate (
+E,apply,rate case fatality ratio ( proportion rate (
+subject,verb,object
+This section,implements,model
+the number of parasites per host,follows,a Binomial distribution with k
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+Lloyd Jansen,describe,https:doiorgjmbs  ) 
+matrix Beta,control,Cross - coupling between patches
+matrix Beta,control,Equations Cross - coupling
+the effective contact rates,describe,matrix Beta
+cross - coupling,switch,we
+patches,switch,we
+outflow of each patch,denote,the elements on 
+the flow from patch,describe,Element C_ij
+I,describe,Element C_ij
+all elements of C,set,all elements on the row
+zero,set,all elements on the row
+migration between patches,switch,we
+many SEIR models,consist,Model description
+many SEIR models,consist,This model
+between patch contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,susceptibles in patches
+patches,recover,R_n
+j flow from patch,neq,i
+Sigma rate of breakdown,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+Beta_textmin,is,the minimum value of the transmission rate Beta
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+infected individuals,infect,Susceptible individuals
+a capita rate beta I,infect,Susceptible individuals
+infected individuals,infect,S
+a capita rate beta I,infect,S
+a capita rate Gamma,recover,individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of 
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,parametric models
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of in,use,which
+a stochastic process for the transmission rate,define,We
+the form S,have,These models
+the number of susceptible individuals,be,St
+time,be,St
+alternative forms for the process,show,I R We
+Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+log(beta(t,consider,We
+dependent drift :,include,a model
+downward drift on the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+you,using,a language
+which,supports,recursion
+subject,verb,object
+the SIR model,include,The susceptible model
+an exposed class,include,The susceptible model
+proportions of  individuals,consider,The implementation in this section
+infection (,associate,additional mortality
+subject,verb,object
+SEIR type model ,used,data from
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+interest in the total number of people,be,there
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+[ Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+( Z _  _ ),be,the state of our model
+one infection event,have,we
+a single recovery event,have,we
+Z _ Z _,transition,the system
+the probability of all paths,calculate,one
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of Erlang models
+subject,verb,object
+vector SEI model fraction,striking,infectious hosts N_H
+subject,verb,object
+SIRS disease dynamics in a population of households,implements,the model of
+This section,implements,the model of
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,individuals
+different rates,die,individuals
+immunity,survive,individuals
+immunity,die,individuals
+different rates,die,SEIRD model 
+immunity,die,SEIRD model 
+I_d,survive,who
+infectious,survive,who
+R D,die,who
+birth of in this model,!be,There
+Beta rate of infection Delta rate,be,Parameters
+( ie inverse of ),appear,symptoms
+rate immunity,apply,Epsilon import rate of (
+subject,verb,object
+the number of parasites per host,follows,a Binomial distribution with aggregation parameter
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+matrix Beta,control,Cross - coupling between
+the flow from patch,describe,Element C_ij
+J,patch,I
+each row,patch,I
+all elements of C,set,the sum elements
+zero,set,the sum elements
+migration between patches,switch,we
+many SEIR models,consist,This model
+between contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,E_n
+Beta_ij effective contact rate of infected individuals of patch susceptible individuals of C_ii outflow of patch,recover,R_n
+patches,recover,R_n
+Sigma rate of breakdown,patch,I
+active (,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of SDEs,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of the Ebola epidemic in,use,models
+a stochastic process for the transmission rate,define,We
+the form : frac{d}{dt S -beta(t ),have,These models
+the number of through time,be,St
+alternative forms for the process,show,We
+Betat Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+dependent drift : log(beta(t ),include,a model
+log(beta(t,dt,-alpha I(t )
+downward drift,generate,the effect of
+the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+the essential things,implement,the Kingman coalescent
+the essential things,implement,functions
+you,using,a language
+a language,supports,recursion
+subject,verb,object
+the SIR model,include,The susceptible model
+an exposed class,include,The susceptible model
+proportions of  individuals,consider,The implementation in this section
+infection (,associate,additional mortality
+subject,verb,object
+SEIR type model ,used,data from
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+interest in the total number of people,be,there
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+[ Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+( Z _  _ ),be,the state of our model
+one infection event,have,we
+a single recovery event,have,we
+Z _ Z _,transition,the system
+the probability of all paths,calculate,one
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of Erlang models
+subject,verb,object
+vector SEI model fraction,striking,infectious hosts N_H
+subject,verb,object
+SIRS disease dynamics in a population of households,implements,the model of
+This section,implements,the model of
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,individuals
+different rates,die,individuals
+immunity,survive,individuals
+immunity,die,individuals
+different rates,die,SEIRD model 
+immunity,die,SEIRD model 
+I_d,survive,who
+infectious,survive,who
+R D,die,who
+birth of in this model,!be,There
+Beta rate of infection Delta rate,be,Parameters
+( ie inverse of ),appear,symptoms
+rate immunity,apply,Epsilon import rate of (
+subject,verb,object
+the number of parasites per host,follows,a Binomial distribution with aggregation parameter
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+matrix Beta,control,Cross - coupling between
+the flow from patch,describe,Element C_ij
+J,patch,I
+each row,patch,I
+all elements of C,set,the sum elements
+zero,set,the sum elements
+migration between patches,switch,we
+many SEIR models,consist,This model
+between contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,E_n
+Beta_ij effective contact rate of infected individuals of patch susceptible individuals of C_ii outflow of patch,recover,R_n
+patches,recover,R_n
+Sigma rate of breakdown,patch,I
+active (,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of SDEs,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of the Ebola epidemic in,use,models
+a stochastic process for the transmission rate,define,We
+the form : frac{d}{dt S -beta(t ),have,These models
+the number of through time,be,St
+alternative forms for the process,show,We
+Betat Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+dependent drift : log(beta(t ),include,a model
+log(beta(t,dt,-alpha I(t )
+downward drift,generate,the effect of
+the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+the essential things,implement,the Kingman coalescent
+the essential things,implement,functions
+you,using,a language
+a language,supports,recursion
+subject,verb,object
+the SIR model,include,The susceptible model
+an exposed class,include,The susceptible model
+proportions of  individuals,consider,The implementation in this section
+infection (,associate,additional mortality
+subject,verb,object
+SEIR type model ,used,data from
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+interest in the total number of people,be,there
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+[ Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+( Z _  _ ),be,the state of our model
+one infection event,have,we
+a single recovery event,have,we
+Z _ Z _,transition,the system
+the probability of all paths,calculate,one
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of Erlang models
+subject,verb,object
+vector SEI model fraction,striking,infectious hosts N_H
+subject,verb,object
+SIRS disease dynamics in a population of households,implements,the model of
+This section,implements,the model of
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,individuals
+different rates,die,individuals
+immunity,survive,individuals
+immunity,die,individuals
+different rates,die,SEIRD model 
+immunity,die,SEIRD model 
+I_d,survive,who
+infectious,survive,who
+R D,die,who
+birth of in this model,!be,There
+Beta rate of infection Delta rate,be,Parameters
+( ie inverse of ),appear,symptoms
+rate immunity,apply,Epsilon import rate of (
+subject,verb,object
+the number of parasites per host,follows,a Binomial distribution with aggregation parameter
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+matrix Beta,control,Cross - coupling between
+the flow from patch,describe,Element C_ij
+J,patch,I
+each row,patch,I
+all elements of C,set,the sum elements
+zero,set,the sum elements
+migration between patches,switch,we
+many SEIR models,consist,This model
+between contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,E_n
+Beta_ij effective contact rate of infected individuals of patch susceptible individuals of C_ii outflow of patch,recover,R_n
+patches,recover,R_n
+Sigma rate of breakdown,patch,I
+active (,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of SDEs,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of the Ebola epidemic in,use,models
+a stochastic process for the transmission rate,define,We
+the form : frac{d}{dt S -beta(t ),have,These models
+the number of through time,be,St
+alternative forms for the process,show,We
+Betat Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+dependent drift : log(beta(t ),include,a model
+log(beta(t,dt,-alpha I(t )
+downward drift,generate,the effect of
+the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+the essential things,implement,the Kingman coalescent
+the essential things,implement,functions
+you,using,a language
+a language,supports,recursion
+subject,verb,object
+the SIR model,include,The susceptible model
+an exposed class,include,The susceptible model
+proportions of  individuals,consider,The implementation in this section
+infection (,associate,additional mortality
+subject,verb,object
+SEIR type model ,used,data from
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+interest in the total number of people,be,there
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+[ Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+( Z _  _ ),be,the state of our model
+one infection event,have,we
+a single recovery event,have,we
+Z _ Z _,transition,the system
+the probability of all paths,calculate,one
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of Erlang models
+subject,verb,object
+vector SEI model fraction,striking,infectious hosts N_H
+subject,verb,object
+SIRS disease dynamics in a population of households,implements,the model of
+This section,implements,the model of
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,individuals
+different rates,die,individuals
+immunity,survive,individuals
+immunity,die,individuals
+different rates,die,SEIRD model 
+immunity,die,SEIRD model 
+I_d,survive,who
+infectious,survive,who
+R D,die,who
+birth of in this model,!be,There
+Beta rate of infection Delta rate,be,Parameters
+( ie inverse of ),appear,symptoms
+rate immunity,apply,Epsilon import rate of (
+subject,verb,object
+the number of parasites per host,follows,a Binomial distribution with aggregation parameter
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+matrix Beta,control,Cross - coupling between
+the flow from patch,describe,Element C_ij
+J,patch,I
+each row,patch,I
+all elements of C,set,the sum elements
+zero,set,the sum elements
+migration between patches,switch,we
+many SEIR models,consist,This model
+between contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,E_n
+Beta_ij effective contact rate of infected individuals of patch susceptible individuals of C_ii outflow of patch,recover,R_n
+patches,recover,R_n
+Sigma rate of breakdown,patch,I
+active (,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of SDEs,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of the Ebola epidemic in,use,models
+a stochastic process for the transmission rate,define,We
+the form : frac{d}{dt S -beta(t ),have,These models
+the number of through time,be,St
+alternative forms for the process,show,We
+Betat Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+dependent drift : log(beta(t ),include,a model
+log(beta(t,dt,-alpha I(t )
+downward drift,generate,the effect of
+the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+the essential things,implement,the Kingman coalescent
+the essential things,implement,functions
+you,using,a language
+a language,supports,recursion
+subject,verb,object
+the SIR model,include,The susceptible model
+an exposed class,include,The susceptible model
+proportions of  individuals,consider,The implementation in this section
+infection (,associate,additional mortality
+subject,verb,object
+SEIR type model ,used,data from
+a flow diagram,depicting,the dynamics of the Ebola virus
+subject,verb,object
+interest in the total number of people,be,there
+efficient methods for,be,there
+the final sizeof,compute,efficient methods for
+a simple SIR model,compute,efficient methods for
+other models,generalise,the method
+[ Black,be,The details
+a record of the number of infection,keep,we
+Z _,be,the number of infection events
+Z_t,be,the number of recovery events
+( Z _  _ ),be,the state of our model
+one infection event,have,we
+a single recovery event,have,we
+Z _ Z _,transition,the system
+the probability of all paths,calculate,one
+the states,calculate,The probabilities
+subject,verb,object
+( https:doiorg  ),formulate,deterministic  time analogues of Erlang models
+subject,verb,object
+vector SEI model fraction,striking,infectious hosts N_H
+subject,verb,object
+SIRS disease dynamics in a population of households,implements,the model of
+This section,implements,the model of
+subject,verb,object
+SEIRD model ,be,The model
+different rates,survive,individuals
+different rates,die,individuals
+immunity,survive,individuals
+immunity,die,individuals
+different rates,die,SEIRD model 
+immunity,die,SEIRD model 
+I_d,survive,who
+infectious,survive,who
+R D,die,who
+birth of in this model,!be,There
+Beta rate of infection Delta rate,be,Parameters
+( ie inverse of ),appear,symptoms
+rate immunity,apply,Epsilon import rate of (
+subject,verb,object
+the number of parasites per host,follows,a Binomial distribution with aggregation parameter
+subject,verb,object
+two metapopulation SEIR models,combine,This code
+matrix Beta,control,Cross - coupling between
+the flow from patch,describe,Element C_ij
+J,patch,I
+each row,patch,I
+all elements of C,set,the sum elements
+zero,set,the sum elements
+migration between patches,switch,we
+many SEIR models,consist,This model
+between contact,connect,many SEIR models
+a constant total population size ,have,The model
+each time step,correspond,births
+each time step,correspond,deaths
+patches,expose,E_n
+Beta_ij effective contact rate of infected individuals of patch susceptible individuals of C_ii outflow of patch,recover,R_n
+patches,recover,R_n
+Sigma rate of breakdown,patch,I
+active (,patch,I
+subject,verb,object
+Kermack,propose,The model in a closed population
+a special case of a general model,propose,The model in a closed population
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+subject,verb,object
+one of the simplest models,be,The susceptible ( SIS ) model
+an endemic equilibrium,have,the simplest models
+individuals,infect,S
+a rate beta I,infect,S
+a per rate Gamma,recover,infected individuals
+subject,verb,object
+the efficacy of interventions,evaluate,the network model of
+pneumococcal transmission,control,interventions
+pneumococcal transmission,control,interventions
+several features : age,assign,Individuals
+the rate of transmission between individuals in the population,influence,These features
+subject,verb,object
+compartmental models,build,Flexibility
+time,vary,parameters as transmission rates
+this,do,One way
+a stochastic process for these parameters,specify,One way
+state variables with a system of SDEs,be,they
+values,fit,these models
+time,change,these parameters
+models,relate,The models
+forecasting of the Ebola epidemic in,use,models
+a stochastic process for the transmission rate,define,We
+the form : frac{d}{dt S -beta(t ),have,These models
+the number of through time,be,St
+alternative forms for the process,show,We
+Betat Brownian motion,govern,the process
+this process,truncate,we
+a model,consider,We
+dependent drift : log(beta(t ),include,a model
+log(beta(t,dt,-alpha I(t )
+downward drift,generate,the effect of
+the transmission rate,generate,the effect of
+large numbers of,be,there
+subject,verb,object
+you,translate,this code
+the essential things,implement,the Kingman coalescent
+the essential things,implement,functions
+you,using,a language
+a language,supports,recursion

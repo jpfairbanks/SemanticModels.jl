@@ -55,9 +55,9 @@ def determineCenterNode(indices, clusteredNodes, clusteredRatios):
         centerNodes.append(nodeTemp)
     
     return centerNodes
+
         
-        
-        
+
 def createNodeMap(centerNodes, clusteredNodes, indices):
     assignmentMap = dict()    
     for i in range(len(indices)):
@@ -77,7 +77,7 @@ def mergeNodes(assignmentMap):
             svoData.at[index,'object'] = assignmentMap[values["object"]]
     
     return svoData
-    
+
 def addVariableEdges(newSvoDataFrame, averageSimArray, threshold, assignmentMap, allCenterNodes):
     kMeansPredictedData = pd.read_csv("ExperimentData/KMeansPredicted.csv")
     variables = list(kMeansPredictedData["variable"])
@@ -90,11 +90,11 @@ def addVariableEdges(newSvoDataFrame, averageSimArray, threshold, assignmentMap,
             count += 1   
     newSvoDataFrame.to_csv("mergedSVO.csv")
     logging.info("mergedSVO.csv Created")
+
             
-            
-        
+
     
-    
+
 def createFinalGraph(ClusterThreshold, VariableThreshold, averageSimArray):
     data = pd.read_csv("clusteringLabels.csv")
 

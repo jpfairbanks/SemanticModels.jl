@@ -31,13 +31,13 @@ def createWord2Vec(data):
         tokenList.append(token.vector)
         
     return np.asarray(tokenList)
-    
+
     
 
     
-    
 
-    
+
+
 def useUMAP(tokenList):
 
     db = DBSCAN(eps=0.3, min_samples=2).fit(np.asarray(tokenList))
@@ -51,9 +51,9 @@ def useUMAP(tokenList):
     return np.asarray(db.labels_), np.asarray(db_umap.labels_)
 
 
+
         
-        
-    
+
 
 def writeUMAP_DBSCAN_CSV(subj_array, labels, umapLabels, labelsSimArray, \
              uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray):
@@ -73,10 +73,10 @@ def writeUMAP_DBSCAN_CSV(subj_array, labels, umapLabels, labelsSimArray, \
     with open(CLUSTER_LABEL_CSV_PATH, 'w') as filetowrite:
         filetowrite.write(outputString)
         filetowrite.close()
-        
 
-        
-        
+
+
+
 def generatePairs(labels, umapLabels, data):
 
     nlp = spacy.load('en_core_web_md')  
@@ -131,7 +131,7 @@ def generatePairs(labels, umapLabels, data):
         
     
     return labelsSimArray, uMapLabelsSimArray, OutSampleLabelsSimArray, OutSampleUMAPSimArray
-                
+
                     
 
 def createCluster(svoFile):
@@ -189,6 +189,7 @@ def containsGreek(inputString):
 
 
 def useKmeans(trainTokenList, K_size, variableTokenList):
+    print(type(trainTokenList), type(K_size), type(variableTokenList))
     umapModel = umap.UMAP(random_state=42).fit(np.asarray(trainTokenList))
     trainEmbedding = umapModel.transform(trainTokenList)
     predictEmbedding = umapModel.transform(variableTokenList)
@@ -198,7 +199,7 @@ def useKmeans(trainTokenList, K_size, variableTokenList):
     
     
     return kmeans.labels_, kmeans.predict(predictEmbedding)
-    
+
 def writeCSV(variable_array, predictedLabels, fileName):
     logging.info("generating CSV " + fileName)
     outputString = "variable,cluster\n"
@@ -238,7 +239,7 @@ def groupNodesByKMeansCluster(kMeansData):
         clusteredNodes.append(temp_bin)
     
     return clusteredNodes
-    
+
 
 def getSimilarityLabels(clusteredNodes, variable_array):
     labels = []
@@ -280,7 +281,7 @@ def calculateKMeansAccuracy():
             count += 1
     
     logging.info("KMeans Accuracy is : " + str(float(count/len(predicted))))
-    
+
 
 def calculateSimAccuracy():
     labeledData = pd.read_csv(JULIA_VARIABLE_CSV_PATH)
@@ -296,7 +297,7 @@ def calculateSimAccuracy():
     
     logging.info("Similar Cluster Assignment Accuracy is : " + str(float(count/len(predicted))))
 
-                
+
 def runKMeansExp():
     variableData = pd.read_csv(JULIA_VARIABLE_CSV_PATH)
     umapData = pd.read_csv(CLUSTER_LABEL_CSV_PATH)
@@ -308,6 +309,7 @@ def runKMeansExp():
     
     variableTokenList = createWord2Vec(variable_array)
     trainTokenList = createWord2Vec(kmeansTrainData)
+    print(len(trainTokenList))
     K_size = max(list(umapData["umapLabels"]))
 
     
@@ -316,9 +318,9 @@ def runKMeansExp():
     writeCSV(variable_array, predictedLabels, KMEANS_PREDICTED_CSV_PATH)
     
     calculateKMeansAccuracy()
-    
 
-        
+
+
 
 def runUMapSimilarityExp():
     variableData = pd.read_csv(JULIA_VARIABLE_CSV_PATH)
@@ -333,7 +335,7 @@ def runUMapSimilarityExp():
     writeCSV(variable_array, labels, PREDICTED_UMAP_CSV_PATH)
     
     calculateSimAccuracy()
-    
+
 def getAverageSimilarity(variable_array, clusteredNodes, predictedLabels):
     nlp = spacy.load('en_core_web_md')  
     averageSimArray = []
@@ -347,10 +349,10 @@ def getAverageSimilarity(variable_array, clusteredNodes, predictedLabels):
         averageSimArray.append(float(averageSim/ len(clusteredNodes[predictedLabels[i]])))
     
     return averageSimArray
-        
+
             
-    
-    
+
+
 def runCombinationExp():
     variableData = pd.read_csv(JULIA_VARIABLE_CSV_PATH)
     umapData = pd.read_csv(CLUSTER_LABEL_CSV_PATH)
@@ -378,7 +380,7 @@ def runCombinationExp():
     graphCombinationExp(averageSimArray)
     
     return averageSimArray
-    
+
 def graphCombinationExp(averageSimArray):
      
     labeledData = pd.read_csv(JULIA_VARIABLE_CSV_PATH)
@@ -425,5 +427,5 @@ def graphCombinationExp(averageSimArray):
     plt.xticks(np.arange(0, 1, step=0.1))
     plt.xlabel("Similarity Threshold")
     plt.ylabel("Number of Cluster Assignments")
-        
+
         
