@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 using Cassette
 using DifferentialEquations
 using SemanticModels.Parsers
