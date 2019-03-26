@@ -11,6 +11,11 @@
 #
 # An alternative approach is to design modeling frameworks for representing the models. The problem with this avenue becomes apparent when models are composed. The frameworks must be interoperable in order to make combined models. ModelTools avoids this problem by representing the models as code and manipulating the codes. The interoperation of two models is defined by user supplied functions in a fully featured programming language. 
 
+# Let $m_1,m_2$ be models, and $t_1,t_2$ be tranformations and define $M_i = t_i(m_i)$. If we denote the creation of pipelines with the function composition symbol $g\circ f$ then we want to implement everything such that the following diagram commutes.
+# <p><img src="../doc/build/img/commutative_pipeline.dot.svg" alt="A diagram showing how pipelining commutes with tranforming models"></p>
+#
+# This example shows how you can use a pipeline to represent the combination of models and then apply combinations of transformations to that pipeline. Transforming models and composing them into pipelines are two operations that commute, you can transform then compose or compose and then transform.
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.ExpStateModels
