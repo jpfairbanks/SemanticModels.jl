@@ -149,3 +149,35 @@ as times.
 ![Unambiguous types in the SIR Model](img/types_sir_unambig.dot.png)
 
 This is an example of how PL theory ideas can improve the analysis of computational models.
+
+## Model Augmentation
+
+Yeah these are good perspectives. I also think that we can summarize the benefits as 
+
+### Abstraction
+
+Modeling operations have similarities across domains and we can build general model augmentations that let scientists translate operations from one domain to another. The code that defines transformations is also "general modeling code" so our abstraction is closed.
+
+### Symbolification
+
+The geometric perspective is really great for proving things about shapes, but developing algorithms requires adopting a symbolic perspectrive like algebra. Our example of polynomial regression connects here because we are able to write algorithms for model selection that leverage the symbolic nature of the transformations. In fact we can give examples of model selection in terms of [ideals](https://en.wikipedia.org/wiki/Ideal_(ring_theory)). The algebra of the transformation space is a place for algorithms on the model space. 
+
+- Open question: Can we lift the greatest common divisor of polynomials to be the "greatest common submodel" for least squares regression? If so, does the euclidean algorithm for GCD give a model selection algorithm? 
+
+### Metaprogramming for Science
+
+Scientific models are so diverse that we need the full flexibility of code as input for our modeling framework. This is somewhat inherent to the scientific process. Scientists who are pushing the field in modeling are often inventing or applying new algorithms that are capable of solving those models. Also the first formulation of a new model is not the most elegant and so we need to be able to operate on ad-hoc models before we understand the class of models well enough for an elegant formulation to get added to the modeling framework. 
+
+Metaprogramming is about writing programs that write programs, so it makes sense that metamodeling is about writing models that write models. In order to write models that can generate models, there needs to be a compact and parsimonious representation of the model for algorithms to manipulate. As we have seen in writing our post-hoc modeling framework, scientific models diverse and hard to summarize, however the transformations that can be applied to a model while preserving its validity within the class of models is often much more structured than the models themselves. This is why we think that metamodels will work on these transformations instead of on the models directly.
+
+Again we look to our polynomial regression problem, with only two transformations you can generate the entire class of polynomial regression problems from a model that computes linear regression. Algorithms that work on the polynomial regression models directly would have to manage a lot of complexity around arguments, data flow, conditional logic, I/O. But in the transformation state there is just `f(x) -> xf(x)` and `f(x) -> f(x) + 1` which are simple transformations. 
+
+By representing complex models as transformations of a base model, under an algebra of transformations, we are able to make metaprogramming for science much easier.
+
+### Model Synthesis
+
+One goal of the program is to get to the point where we can automatically infer how to combine models based on what they compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and are typically written with either a declarative DAG language or an imperative DAG building library.
+
+We think that the category theory approach where you have a category of diagrams that can be combined with sum aka disjoint union, and product aka function composition is the write approach. This approach leads to diagrams with precise semantics and a general purpose computation network. These networks will be specified with code that combines the sum and product operation in a hierarchical expression just like regular code. Thus the code that makes the diagrams is a model that we can augment with our current ModelTools techniques.
+
+These "model circuits"  can thus be built out of code resulting from transformations on code that builds a base circuit. Which establishes tools for creating high level transformations on circuits. We can then define the input and output wires as the modeling concepts we know and want to know and then build algorithms for solving for the circuit that gets from the inputs to the outputs. We suspect a dynamic programming approach to recursively bring the inputs and outputs closer together will solve this problem. The nature of "closer together" must mean something in the semantic space informed by the text in expository materials about the models.
