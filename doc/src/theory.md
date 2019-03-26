@@ -166,9 +166,29 @@ as times.
 
 This is an example of how PL theory ideas can improve the analysis of computational models.
 
+Teaching the type system about agent based modeling. In the example notebook `/examples/agenttypes2.jl` you can see how
+to embed model structure into the julia type system. That example uses two versions of the same agent based model of
+disease. In the first implementation, the agents have states represented by the julia type `:Symbol` with values `:S,
+:I, :R`, and in the second, more refined implementation, the agent's states are represented by the singleton types
+`Susceptible, Infected, Recovered` with values, `Susceptible(), Infected(), Recovered()`. The model is the same, but the
+type system contains more information about the execution of the model. For example the julia type system knows what the
+possible state transitions are based in the second implementation, while the first model has a black box of `:Symbol`s
+that are not distinguishable in program analysis. 
+
+The original type graph shows how the model works.
+![Using Symbol values to represent states](img/exampletypegraph.dot.svg)
+We can establish a graph morphism between the typegraph of the refined implementation and the original implementation.
+![Using Symbol values to represent states](img/typegraphmorphism.dot.svg)
+Within this typegraph we have a subgraph that contains the state transitions for the agents. In this way the compiler
+has been taught to understand the semantics of the model.
+![The typegraph understand the transition graph of the agents](img/type_DFA.dot.svg)
+
+The embedding of model semantics into the type system enables programs to reason over the behavior of the models.
+
 ## Model Augmentation
 
-Yeah these are good perspectives. I also think that we can summarize the benefits as 
+Scientists build novel models from old models and the approach provided by SemanticModels has several benefits. We think
+that 
 
 ### Abstraction
 
