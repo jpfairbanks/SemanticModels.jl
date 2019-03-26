@@ -21,13 +21,13 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [extras]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["DiffEqBase", "DifferentialEquations", "LsqFit"]
+test = ["DiffEqBase", "DifferentialEquations", "LsqFit", "Test"]
