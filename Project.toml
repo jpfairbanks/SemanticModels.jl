@@ -27,6 +27,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [extras]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
 
 [targets]
-test = ["DiffEqBase", "DifferentialEquations"]
+test = ["DiffEqBase", "DifferentialEquations", "LsqFit"]
