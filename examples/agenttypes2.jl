@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # # @typegraph example
 #
 # In this notebook, we will be going through a tutorial on how to use the `typegraph` functionality to extract the relationships between types and functions within programs.
@@ -138,29 +139,107 @@ function add_projectors!(g, key=:label)
     end
     return g, πs
 end
+
+# +
+function draw(g, filename)
+    savegraph(filename, g, DOTFormat())
+    try
+        run(`dot -Tsvg -O $filename`)
+    catch ex
+        @warn "Problem running dot" error=ex
+        try
+            run(`dot --version`)
+        catch
+            @warn "Dot is not installed"
+        end
+    end
+    display("image/svg+xml", read("$filename.svg", String))
+end
+
+using Colors
+cm = Colors.colormap("RdBu", 2nv(h))
 # -
 
 g = buildgraph(E)
 add_projectors!(g)
-savegraph("exampletypegraph.dot",g,DOTFormat());
 
-run(`dot -Tsvg -O exampletypegraph.dot`);
+# We will draw the graph of types in initial model that uses symbols to represent the agent states. Remember that Symbol is type that represents "things that are like variable names" and in this case we are using the Symbol type to represent the agent states of :Susceptible, :Infected, and :Recovered. 
+#
+# In this drawing each vertex has its own color. These colors will be used again when drawing the next graph.
 
-s = read("exampletypegraph.dot.svg",String);
-display("image/svg+xml",s)
+color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
+for v in vertices(g)
+    g.vprops[v][:color] = color(v)
+    g.vprops[v][:style] = "filled"
+end
+draw(g, "exampletypegraph.dot")
 
+# We then onstruct the typegraph for the program 2, which uses singleton types to represent the state of the agents. One of the central tennants of this project is that the more information you inject into the julia type system, the more the compiler can help you. Here we will see that they type system knows about the structure of the agents behavior now that the we have encoded their states as types.
+
+h = deepcopy(g)
 g = buildgraph(E_typed)
 g, πs = add_projectors!(g);
 g
 
-savegraph("exampletypegraph_2.dot",g,DOTFormat());
-run(`dot -Tsvg -O exampletypegraph_2.dot`);
+# now we draw the new, bigger type graph with the same color scheme as before. We define a graph homomorphism $\phi$ that maps every type to one of the vertices of the original graph show above. This homomorphism from $\phi: G \mapsto H$ shows how the semantics of the first program is embedded in the semantics of the second program. 
 
-s = read("exampletypegraph_2.dot.svg",String);
-display("image/svg+xml",s)
+# +
+color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
+ϕ(t) = begin
+    d=Dict{Symbol,Symbol}(:Susceptible=>:Symbol,
+        :Infected=>:Symbol,
+        :Recovered=>:Symbol,
+    )
+    val = get(d, t, t)
+    return val
+end
 
-# ## comparing programs
+for v in vertices(g)
+    vname = ϕ.(g[v,:label])
+    try
+        vh = h[vname, :label]
+        g.vprops[v][:fillcolor]=color(vh)
+        g.vprops[v][:style]="filled"
+    catch ex
+        @warn ex
+    end
+end
+
+# -
+
+draw(g, "typegraphmorphism.dot")
+
+# Note that the type Symbol does not appear in the second program at all, but instead the types Susceptible, Infected, and Recovered play the role of the Symbol vertex in this new graph. The graph is bigger and harder to visualize, but it contains the same structure. You can chack that for every edge in the $g$ there is an edge in $h$ that has the same color vertices as endpoints.
 #
-# From the knowledge graphs, we can see how the two programs are difference from each other. 
+# In this new model the structure of the agents states is readily apparant in the type system.
+
+tedges = filter((p) -> p[2][:label]=="\"transition\"", g.eprops)
+tv = src.(keys(tedges)) ∪ dst.(keys(tedges))
+DFA = g[tv]
+draw(DFA, "type_DFA.dot")
+
+# By contracting the edges labeled $\pi_3$ you identify a minor of 
+# the typegraph isomorphic to the discrete finite automata or 
+# finite state machine representation of the agents in our agent based simulation.
+#
+#
+# Since the typegraph contains this information, we can say that the julia compiler "understands" 
+# a semantic feature of the model. We can introduce compile time logic based on these properties of
+# the model. ANy changes to the underlying code that changed the state space of the agents, or the 
+# possible transitions they undergo would affect the type graph of the model.
+#
+# For the model version that used :Symbols, or categorical states, the julia type system is blissfully 
+# ignorant of the relationships between the states. However once we introduce types to the model, the 
+# compiler is able to represent the structure of the model. Any changes to the model will either preserve 
+# or disrupt this type graph and we will be able to identify and quantify that change to the structure of the model.  
+#
+# This example is an instance of a large phenomenon that we hope to advance in modeling.
+# Programs that implement models can get more out of the compiler if they add more information.
+# In this case we declared the states of our agents as types and the compiler was able to infer
+# the state transition graph from the our code.
+
+# ## Conclusions
+#
+# We can see from the examples presented here that similar models produce similar type graphs. In this case we have two programs that impement the same model and have homomorphic type graphs. This homomorphism is natural in the sense that every vertex that appears in both graphs satisfies $\phi(v) = v$. Adding information to the type system in the julia program allows the type graph of the model to understand more of the program semantics. This powerful insight can teach the machines to reason about the behaviour of computational models.
 
 
