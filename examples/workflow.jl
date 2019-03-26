@@ -523,10 +523,14 @@ end
 #
 # The regression model that we have trained based on the simulated data from the SIRD model with population growth can be presented as a polynomial sampled over the domain. We construct this table to show the nonlinear dependence of the model on the recovery parameter $\rho$. The best fitting polynomial is shown below.
 
+using Printf
 eval(:(f(x,β) = $(poly(P.steps[2]))))
 xdomain = (0.0:0.05:1.0)
 println("ρ\tf(ρ,β)\n==============")
-z = collect(map(x-> round.(x, digits=3), zip(xdomain, f(xdomain, P.results[end][2].β))))
+xŷ = zip(xdomain, f(xdomain, P.results[end][2].β))
+z = collect(map(x->(@sprintf("%0.2f", x[1]),
+                    @sprintf("%7.3f", x[2])),
+        xŷ))
 for t in z
     println(join(t, "\t"))
 end
@@ -536,7 +540,9 @@ using Plots
 
 @info "Making plots, this may take a while"
 p = scatter(first.(table), last.(table), label="obs")
-plot!(first.(z), last.(z), label="fit")
+plot!(first.(xŷ), last.(xŷ), label="fit")
+xlabel!(p, "Probability of Recovery")
+ylabel!(p, "Deaths")
 println("β: ", P.results[end][2].β, "\n", string(poly(P.steps[2])))
 p
 
