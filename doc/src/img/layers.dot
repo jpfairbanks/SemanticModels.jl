@@ -1,0 +1,43 @@
+digraph G {
+  node[shape=rectangle]
+  rankdir=LR
+  subgraph cluster_naught {
+
+	subgraph cluster_0 {
+		node [style=filled,color=white];
+		style=filled;
+		d0 -> d2 [label="programmer"]
+		d2 -> d3 [label="compiler"];
+		d0[label="Conceptual",color="#59a27a"]
+		//b1[label="???",color="#5DADE2"]
+		d2[label="Code", color=orchid3]
+		d3[label="Executable",color=brown3]
+		label = "";
+		color=lightgrey;
+    label="Standard Paradigm"
+  }
+	
+	
+	subgraph cluster_2 {
+		node [style=filled, color=white];
+		c0 -> c2 [label=programmer]
+		c2 -> c1 [label="Model(Expr)\n\n\n\n\n"]
+		c1 -> c2 [label="\n\n\n\neval(Model)"]
+		c1:left->c1:left[label="transform"]
+		c2 -> c3 [label="compiler"]
+		{rank = same  c2, c1};
+		c0[label="Chalk",color="#59a27a"]
+		c1[label="SemanticModels.jl",color="#5DADE2"]
+		c2[label="Julia", color=orchid3]
+		c3[label="x86",color=brown3]
+		label = "";
+		style=filled;
+		color=white;
+		
+	}
+  
+
+  label = "SemanticModels.jl"	
+}
+
+}

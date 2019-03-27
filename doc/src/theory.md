@@ -1,4 +1,3 @@
-
 # Semantic Modeling Theory
 
 ## What is Science?
@@ -70,8 +69,8 @@ semantic enrichment of dataflow graphs")
 
 ## Categories for Science
 
-Dan Spivak wrote a wonderful book on category theory for scientists based on his lectures at MIT
-http://math.mit.edu/~dspivak/CT4S.pdf.
+Dan Spivak wrote a wonderful book, [CT4S](http://math.mit.edu/~dspivak/CT4S.pdf),
+on category theory for scientists based on his lectures at MIT.
 
 > Data gathering is ubiquitous in science. Giant databases are currently being mined for unknown
 > patterns, but in fact there are many (many) known patterns that simply have not been catalogued.
@@ -94,15 +93,12 @@ want to push that to expanding.
 ### Ologs
 
 Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used
-to precisely specify what a scientist is talking about. Spivak, D.I., Kent, R.E. (2012) “Ologs: A
-Categorical Framework for Knowledge Representation.” PLoS ONE 7(1): e24274.
-doi:10.1371/journal.pone.0024274.
+to precisely specify what a scientist is talking about (see [Spivak Kent 2012]("Ologs: A Categorical Framework for Knowledge Representation.")). 
 
 An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the
 name of the aspect. An aspect is valid if it is a function (1-many relation). 
 
 ![Birthday olog](img/olog_birthday.png)
-
 
 We can represent an SIR model as an olog as shown below.
 
@@ -175,12 +171,16 @@ type system contains more information about the execution of the model. For exam
 possible state transitions are based in the second implementation, while the first model has a black box of `:Symbol`s
 that are not distinguishable in program analysis. 
 
-The original type graph shows how the model works.
+The original type graph $g$ shows how the model works.
 ![Using Symbol values to represent states](img/exampletypegraph.dot.svg)
-We can establish a graph morphism between the typegraph of the refined implementation and the original implementation.
+
+The refined model has a typegraph $G$, which includes the new singleton types as well as different tuple types.
+
+We can establish a graph homomorphism $\phi: G \to g$ such that $\phi(v) = v$ for all $v$ in $V(g) \cap V(G)$.
+The following figure shows this homomorphism by drawing vertices $v\in G$ with the same color as $\phi(v)\in g$.
 ![Using Symbol values to represent states](img/typegraphmorphism.dot.svg)
-Within this typegraph we have a subgraph that contains the state transitions for the agents. In this way the compiler
-has been taught to understand the semantics of the model.
+Within this typegraph we have a subgraph that contains the state transitions for the agents. We can draw this subgraph
+separately to show how the compiler has been taught to understand the semantics of the model.
 ![The typegraph understand the transition graph of the agents](img/type_DFA.dot.svg)
 
 The embedding of model semantics into the type system enables programs to reason over the behavior of the models.
@@ -188,32 +188,72 @@ The embedding of model semantics into the type system enables programs to reason
 ## Model Augmentation
 
 Scientists build novel models from old models and the approach provided by SemanticModels has several benefits. We think
-that 
+that
 
 ### Abstraction
 
-Modeling operations have similarities across domains and we can build general model augmentations that let scientists translate operations from one domain to another. The code that defines transformations is also "general modeling code" so our abstraction is closed.
+Modeling operations have similarities across domains and we can build general model augmentations that let scientists
+translate operations from one domain to another. The code that defines transformations is also "general modeling code"
+so our abstraction is closed.
 
 ### Symbolification
 
-The geometric perspective is really great for proving things about shapes, but developing algorithms requires adopting a symbolic perspectrive like algebra. Our example of polynomial regression connects here because we are able to write algorithms for model selection that leverage the symbolic nature of the transformations. In fact we can give examples of model selection in terms of [ideals](https://en.wikipedia.org/wiki/Ideal_(ring_theory)). The algebra of the transformation space is a place for algorithms on the model space. 
+The geometric perspective is really great for proving things about shapes, but developing algorithms requires adopting a
+symbolic perspectrive like algebra. Our example of polynomial regression connects here because we are able to write
+algorithms for model selection that leverage the symbolic nature of the transformations. In fact we can give examples of
+model selection in terms of [ideals](https://en.wikipedia.org/wiki/Ideal_(ring_theory)). The algebra of the
+transformation space is a place for algorithms on the model space.
 
-- Open question: Can we lift the greatest common divisor of polynomials to be the "greatest common submodel" for least squares regression? If so, does the euclidean algorithm for GCD give a model selection algorithm? 
+- Open question: Can we lift the greatest common divisor of polynomials to be the "greatest common submodel" for least
+  squares regression? If so, does the euclidean algorithm for GCD give a model selection algorithm?
 
 ### Metaprogramming for Science
 
-Scientific models are so diverse that we need the full flexibility of code as input for our modeling framework. This is somewhat inherent to the scientific process. Scientists who are pushing the field in modeling are often inventing or applying new algorithms that are capable of solving those models. Also the first formulation of a new model is not the most elegant and so we need to be able to operate on ad-hoc models before we understand the class of models well enough for an elegant formulation to get added to the modeling framework. 
+Scientific models are so diverse that we need the full flexibility of code as input for our modeling framework. This is
+somewhat inherent to the scientific process. Scientists who are pushing the field in modeling are often inventing or
+applying new algorithms that are capable of solving those models. Also the first formulation of a new model is not the
+most elegant and so we need to be able to operate on ad-hoc models before we understand the class of models well enough
+for an elegant formulation to get added to the modeling framework.
 
-Metaprogramming is about writing programs that write programs, so it makes sense that metamodeling is about writing models that write models. In order to write models that can generate models, there needs to be a compact and parsimonious representation of the model for algorithms to manipulate. As we have seen in writing our post-hoc modeling framework, scientific models diverse and hard to summarize, however the transformations that can be applied to a model while preserving its validity within the class of models is often much more structured than the models themselves. This is why we think that metamodels will work on these transformations instead of on the models directly.
+Metaprogramming is about writing programs that write programs, so it makes sense that metamodeling is about writing
+models that write models. In order to write models that can generate models, there needs to be a compact and
+parsimonious representation of the model for algorithms to manipulate. As we have seen in writing our post-hoc modeling
+framework, scientific models diverse and hard to summarize, however the transformations that can be applied to a model
+while preserving its validity within the class of models is often much more structured than the models themselves. This
+is why we think that metamodels will work on these transformations instead of on the models directly.
 
-Again we look to our polynomial regression problem, with only two transformations you can generate the entire class of polynomial regression problems from a model that computes linear regression. Algorithms that work on the polynomial regression models directly would have to manage a lot of complexity around arguments, data flow, conditional logic, I/O. But in the transformation state there is just `f(x) -> xf(x)` and `f(x) -> f(x) + 1` which are simple transformations. 
+Again we look to our polynomial regression problem, with only two transformations you can generate the entire class of
+polynomial regression problems from a model that computes linear regression. Algorithms that work on the polynomial
+regression models directly would have to manage a lot of complexity around arguments, data flow, conditional logic, I/O.
+But in the transformation state there is just `f(x) -> xf(x)` and `f(x) -> f(x) + 1` which are simple transformations.
 
-By representing complex models as transformations of a base model, under an algebra of transformations, we are able to make metaprogramming for science much easier.
+By representing complex models as transformations of a base model, under an algebra of transformations, we are able to
+make metaprogramming for science much easier.
 
 ### Model Synthesis
 
-One goal of the program is to get to the point where we can automatically infer how to combine models based on what they compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and are typically written with either a declarative DAG language or an imperative DAG building library.
+One goal of the program is to get to the point where we can automatically infer how to combine models based on what they
+compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models
+with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and
+are typically written with either a declarative DAG language or an imperative DAG building library.
 
-We think that the category theory approach where you have a category of diagrams that can be combined with sum aka disjoint union, and product aka function composition is the write approach. This approach leads to diagrams with precise semantics and a general purpose computation network. These networks will be specified with code that combines the sum and product operation in a hierarchical expression just like regular code. Thus the code that makes the diagrams is a model that we can augment with our current ModelTools techniques.
+[Fong and Spivak 2018](http://math.mit.edu/~dspivak/teaching/sp18/7Sketches.pdf) shows how to express signal processing
+and controls problems in a graphical language based on categories of products and permutations category or _props_.
 
-These "model circuits"  can thus be built out of code resulting from transformations on code that builds a base circuit. Which establishes tools for creating high level transformations on circuits. We can then define the input and output wires as the modeling concepts we know and want to know and then build algorithms for solving for the circuit that gets from the inputs to the outputs. We suspect a dynamic programming approach to recursively bring the inputs and outputs closer together will solve this problem. The nature of "closer together" must mean something in the semantic space informed by the text in expository materials about the models.
+In this category, computations can be specified with diagrams. The following figure shows a diagram representing a
+classical controls problem. These diagrams are shown to have the same functorial semantics as matrices.
+![Diagram for computing PID control](img/controls_signal_graph.png)
+
+We think that the category theory approach of props is the right approach. This approach leads to diagrams with precise
+semantics for representing general purpose computation networks. These networks will be specified with code that
+combines the sum and product operation in a hierarchical expression just like regular code. Thus the code that makes the
+diagrams is a model that we can augment with our current ModelTools techniques.
+
+These "model circuits" can thus be built out of code resulting from transformations on code that builds a base circuit.
+Which establishes tools for creating high level transformations on circuits. We can then define the input and output
+wires as the modeling concepts we know and want to know and then build algorithms for solving for the circuit that gets
+from the inputs to the outputs. We suspect a dynamic programming approach to recursively bring the inputs and outputs
+closer together will solve this problem. 
+
+Algorithms that do model synthesis will need to account for the conceptual knowledge that is captured in the text and
+documentation of scientific software. 
