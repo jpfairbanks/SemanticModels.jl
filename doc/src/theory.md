@@ -1,6 +1,6 @@
 # Semantic Modeling Theory
 
-## What is Science?
+## What is a model?
 
 The goal of science is to build models of natural phenomena that explain how they work.
 Scientists build these models by conducting data gathering phenomena and using math to represent these experiments.
@@ -257,3 +257,31 @@ closer together will solve this problem.
 
 Algorithms that do model synthesis will need to account for the conceptual knowledge that is captured in the text and
 documentation of scientific software. 
+
+Once we have a mathematically sound way to represent combinations of models, we must address the practical aspects of
+model synthesis. We are endeavoring to augment and automate scientific workflows by meaningfully pruning the set of
+possible metamodels. When scientists design models, they must confront:
+
+1) known unknowns: parameters or components they are aware of, but about which there may be uncertainty regarding
+values or best practices
+
+2) unknown unknowns: parameters or components the scientist does not yet know about, or deems unnecessary for the
+current modeling task
+
+In a broader/more abstract sense, our potential contributions to "AI for Science" are related to [uncertainty
+quantification](https://en.wikipedia.org/wiki/Uncertainty_quantification), and we endeavor to help scientists assess and
+reduce both aleatoric and epistemic uncertainty. By working within a specific domain and comparing known existing
+models, we can help a scientist make progress on (1). By integrating across domains at semantically meaningful
+endpoints, we can help a scientist make progress on (2).
+
+Some tasks that can be automated require understanding both the existing scientific software ecosystem and what the
+scientist it trying to compute. For example, scientific productivity can be enhanced by answering questions like, "If
+I know X and Y but want to know Z, what software tools can solve this for me, and how do I use them?" This is a task
+that _de novo_ modeling frameworks cannot answer, because the existing literature was not developed with the new
+framework.
+
+## Up Next
+
+The ideas of representing models as categories and functors that preserve different aspects of the structures we have is
+compelling. We believe this is the best theoretical foundation for the model augmentation and model synthesis components
+of SemanticModels.
