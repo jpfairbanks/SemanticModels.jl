@@ -5,8 +5,8 @@ digraph G {
     //rankdir=LR
     subgraph cluster_1{
       label="SemanticModeling"
-    code1 [label="c₁", color="royalblue3", fillcolor="royalblue1"]
-    code2 [label="c₂", color="brown3", fillcolor="indianred"]
+    code1 [label="c₁ ", color="royalblue3", fillcolor="royalblue1"]
+    code2 [label="c₂ ", color="brown3", fillcolor="indianred"]
     m1 -> m2 [label="  T"]
     code1 -> m1 [label="Model(Expr)"]
     m2->code2 [label="Expr(Model)"]

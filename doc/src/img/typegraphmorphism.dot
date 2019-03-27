@@ -1,0 +1,65 @@
+digraph G {
+  node[shape="box", style="filled"]
+3 [ fillcolor="#FFB0A0",label="(StateModel,)"];
+11 [ fillcolor="#FFD7CD",label="Array"];
+14 [ fillcolor="#B3DBF6",label="StateModel"];
+15 [ fillcolor="#82BDEC",label="Tuple"];
+17 [ color="#C9E7F9",label="(StateModel, Int64)"];
+17 -> 14 [ label="step!", ]
+17 -> 14 [ label=π1, dir=back, style=dashed]
+17 -> 2 [ label=π2, dir=back, style=dashed]
+subgraph cluster_0 {
+  label="transitions"
+  7 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Susceptible)"];
+  8 [ fillcolor="#DFF1FC",label="Susceptible"];
+  9 [ fillcolor="#DFF1FC",label="Infected"];
+  10 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Infected)"];
+  12 [ fillcolor="#DFF1FC",label="Recovered"];
+  13 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Recovered)"];
+
+  7 -> 8 [ label="transition", ]
+  7 -> 9 [ label="transition", ]
+  10 -> 9 [ label="transition", ]
+  10 -> 12 [ label="transition", ]
+  12 -> 13 [ label=π3, dir=back, style=dashed]
+  13 -> 8 [ label="transition", ]
+  13 -> 12 [ label="transition", ]
+}
+
+subgraph cluster_1 {
+  label="distributions"
+  1 [ fillcolor="#FD806E",label="(StateModel, Susceptible)"];
+  2 [ fillcolor="#FF9987",label="Int64"];
+  4 [ fillcolor="#FFC5B7",label="Float64"];
+  5 [ fillcolor="#FD806E",label="(StateModel, Infected)"];
+  6 [ fillcolor="#FD806E",label="(StateModel, Recovered)"];
+  1 -> 2 [ label="count", ]
+  1 -> 4 [ label="stateload", ]
+  3 -> 2 [ label="count", ]
+  5 -> 2 [ label="count", ]
+  5 -> 4 [ label="stateload", ]
+  6 -> 2 [ label="count", ]
+  6 -> 4 [ label="stateload", ]
+}
+2 -> 7 [ label=π2, dir=back, style=dashed]
+2 -> 10 [ label=π2, dir=back, style=dashed]
+2 -> 13 [ label=π2, dir=back, style=dashed]
+// 3 -> 11 [ label="describe", ]
+3 -> 14 [ label="tick!", ]
+3 -> 11 [ label="tick!", ]
+8 -> 1 [ label=π2, dir=back, style=dashed]
+8 -> 7 [ label=π3, dir=back, style=dashed]
+9 -> 5 [ label=π2, dir=back, style=dashed]
+9 -> 10 [ label=π3, dir=back, style=dashed]
+12 -> 6 [ label=π2, dir=back, style=dashed]
+14 -> 1 [ label=π1, dir=back, style=dashed]
+14 -> 3 [ label=π1, dir=back, style=dashed]
+14 -> 5 [ label=π1, dir=back, style=dashed]
+14 -> 6 [ label=π1, dir=back, style=dashed]
+14 -> 7 [ label=π1, dir=back, style=dashed]
+14 -> 10 [ label=π1, dir=back, style=dashed]
+14 -> 13 [ label=π1, dir=back, style=dashed]
+16 [ color="#9BCDF2",label="(Int64,)"];
+2 -> 16 [ label=π1, dir=back, style=dashed]
+16 -> 15 [ label="main", ]
+}

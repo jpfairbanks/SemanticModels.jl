@@ -42,13 +42,14 @@ Pages = [
      "index.md",
      "usecases.md",
      "news.md",
+     "modeltools.md",
      "example.md",
+     "theory.md",
      "dubstep.md",
      "graph.md",
      "extraction.md",
      "validation.md",
      "library.md",
-     "theory.md",
      "kgtypes.md",
      "approach.md",
      "slides.md",
@@ -56,5 +57,6 @@ Pages = [
      "contributing.md"]
 Depth = 3
 ```
+
 
 This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008.
