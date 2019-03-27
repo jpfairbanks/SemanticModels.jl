@@ -11,11 +11,6 @@
 #
 # An alternative approach is to design modeling frameworks for representing the models. The problem with this avenue becomes apparent when models are composed. The frameworks must be interoperable in order to make combined models. ModelTools avoids this problem by representing the models as code and manipulating the codes. The interoperation of two models is defined by user supplied functions in a fully featured programming language. 
 
-# Let $m_1,m_2$ be models, and $t_1,t_2$ be tranformations and define $M_i = t_i(m_i)$. If we denote the creation of pipelines with the function composition symbol $g\circ f$ then we want to implement everything such that the following diagram commutes.
-# <p><img src="../doc/build/img/commutative_pipeline.dot.svg" alt="A diagram showing how pipelining commutes with tranforming models"></p>
-#
-# This example shows how you can use a pipeline to represent the combination of models and then apply combinations of transformations to that pipeline. Transforming models and composing them into pipelines are two operations that commute, you can transform then compose or compose and then transform.
-
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.ExpStateModels
@@ -523,14 +518,10 @@ end
 #
 # The regression model that we have trained based on the simulated data from the SIRD model with population growth can be presented as a polynomial sampled over the domain. We construct this table to show the nonlinear dependence of the model on the recovery parameter $\rho$. The best fitting polynomial is shown below.
 
-using Printf
 eval(:(f(x,β) = $(poly(P.steps[2]))))
 xdomain = (0.0:0.05:1.0)
 println("ρ\tf(ρ,β)\n==============")
-xŷ = zip(xdomain, f(xdomain, P.results[end][2].β))
-z = collect(map(x->(@sprintf("%0.2f", x[1]),
-                    @sprintf("%7.3f", x[2])),
-        xŷ))
+z = collect(map(x-> round.(x, digits=3), zip(xdomain, f(xdomain, P.results[end][2].β))))
 for t in z
     println(join(t, "\t"))
 end
@@ -540,9 +531,7 @@ using Plots
 
 @info "Making plots, this may take a while"
 p = scatter(first.(table), last.(table), label="obs")
-plot!(first.(xŷ), last.(xŷ), label="fit")
-xlabel!(p, "Probability of Recovery")
-ylabel!(p, "Deaths")
+plot!(first.(z), last.(z), label="fit")
 println("β: ", P.results[end][2].β, "\n", string(poly(P.steps[2])))
 p
 
