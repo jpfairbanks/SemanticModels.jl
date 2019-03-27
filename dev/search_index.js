@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "SemanticModels.jl",
     "title": "Table of Contents",
     "category": "section",
-    "text": "Pages = [\n     \"index.md\",\n     \"usecases.md\",\n     \"news.md\",\n     \"example.md\",\n     \"dubstep.md\",\n     \"graph.md\",\n     \"extraction.md\",\n     \"validation.md\",\n     \"library.md\",\n     \"theory.md\",\n     \"kgtypes.md\",\n     \"approach.md\",\n     \"slides.md\",\n     \"FluModel.md\",\n     \"contributing.md\"]\nDepth = 3This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008."
+    "text": "Pages = [\n     \"index.md\",\n     \"usecases.md\",\n     \"news.md\",\n     \"modeltools.md\",\n     \"example.md\",\n     \"theory.md\",\n     \"dubstep.md\",\n     \"graph.md\",\n     \"extraction.md\",\n     \"validation.md\",\n     \"library.md\",\n     \"kgtypes.md\",\n     \"approach.md\",\n     \"slides.md\",\n     \"FluModel.md\",\n     \"contributing.md\"]\nDepth = 3This material is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Agreement No. HR00111990008."
 },
 
 {
@@ -121,6 +121,318 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modeltools/#",
+    "page": "ModelTools",
+    "title": "ModelTools",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modeltools/#ModelTools-1",
+    "page": "ModelTools",
+    "title": "ModelTools",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "modeltools/#Using-ModelTools-1",
+    "page": "ModelTools",
+    "title": "Using ModelTools",
+    "category": "section",
+    "text": "(Image: ModelTools)ModelTools provides the functionality for model augmentation. It is named after the great metaprogramming package MacroTools.jl. With ModelTools, you treat models as code and metaprogram on them like Lisp programs. This part of SemanticModels really shows how Julia could have been named HPC Lisp.Introduce a new class of models to analyze by writing a struct to represent models from class mathcalC along with a constructor model(::C, ex::Expr).\nDefine a set of transformations (T<:ModelTools.Transformation) that are valid on that class of models\nUse SemanticModels functions to implement the constructor and transforms.\nWrite programs that take models (as ASTs) and returns novel models (<:ModelTools.AbstractModel)\nAnalyze compositions of transformations and compare new models with old models (Metamodeling)Under this workflow SemanticModels is more of a framework than a library, but it is extensible and can be used to take real world modeling code and build a modeling framework around it, rather than building a modeling framework and then porting the models into the framework.See the examples folder for usage of how to build model types and use transformations for common metamodeling tasks. A complete ModelTools Library Reference can be found below."
+},
+
+{
+    "location": "modeltools/#Pre-hoc-vs-post-hoc-frameworks-1",
+    "page": "ModelTools",
+    "title": "Pre hoc vs post hoc frameworks",
+    "category": "section",
+    "text": "A normal modeling framework, is a software package that defines a set of modeling constructs for representing problems and a set of algorithms that solve those problem.A typical modeling framework is developed when: A library author (LA) decides to write a library for solving models of a specific class mathcalC\nLA develops a DSL for representing models in mathcalC\nLA develops solvers for models in mathcalC\nScientist (S) uses LA\'s macros to write new models and pass them to the solvers\nS publishes many great papers with the awesome frameworkModelingToolkit.jl is a framework for building DSLs for expressing mathematical models of scientific phenomena. And so you could think of it as a meta-DSL a language for describing languages that describe models. Their workflow is:A library author (LA) decides to write a library for solving models of a specific class mathcalC\nLA develops a DSL for representing models in mathcalC using ModelingToolkit (MT).\nLA develops solvers for models in mathcalC using the intermediate representations provided by MT. \nScientist (S) uses LA\'s macros to write new models and pass them to the solvers\nS publishes many great papers with the awesome frameworkThis is a great idea and I hope it succeeds because it will revolutionize how people develop scientific software and really benefit many communities.One of the assumptions of the SemanticModels is that we can\'t make scientists use a modeling language. This is reasonable because the really interesting models are pushing the boundaries of the solvers and the libraries, so if you have to change the modeling language every time you add a novel model, what is the modeling language getting you?Another key idea inspiring ModelTools is that every software library introduces a miniature DSL for using that library. You have to set up the problem in some way, pass the parameters and options to to the solver, and then interpret the solution. These miniDSLs form through idiomatic usage instead of through an explicit representation like ModelingToolkit provides.SemanticModels actually can address this as the inverse problem of ModelingToolkit. We are saying, given a corpus of usage for a given library, what is the implicit DSL that users have developed?Our workflow is:Identify a widely used library\nGather code samples that use that library\nProcess the corpus to build a representation of how that library \"should\" be used\nBuild a DSL for that class of problems\nNew researchers and AI scientists can use the new DSL for representing the novel models\nGenerate new models in the DSL using transformations that are valid in the DSL.In this line of inquiry the DSL plays the role of the \"structured semantic representation\" of the model. We could use ModelingToolkit DSLs as the backend."
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.AbstractModel",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.AbstractModel",
+    "category": "type",
+    "text": "AbstractModel\n\na placeholder struct to dispatch on how to parse the expression tree into a model.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.and-Tuple{Function,Function}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.and",
+    "category": "method",
+    "text": "and(f,g) = x->f(x) && g(x)\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.argslist-Tuple{Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.argslist",
+    "category": "method",
+    "text": "argslist(expr::Expr)\n\nget the array of args representing the arguments of a defined function. the first element of this list is the function name\n\nSee also bodyblock, pusharg!,\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.bodyblock-Tuple{Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.bodyblock",
+    "category": "method",
+    "text": "bodyblock(expr::Expr)\n\nget the array of args representing the body of a function definition.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.callsites-Tuple{Expr,Symbol}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.callsites",
+    "category": "method",
+    "text": "callsites(expr::Expr, name::Symbol)\n\nextract the location where the function name is called in expr.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.funcname-Tuple{Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.funcname",
+    "category": "method",
+    "text": "funcname(ex::Expr)\n\nget the function name from an expression object return :nothing for non function expressions.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.head-Tuple{Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.head",
+    "category": "method",
+    "text": "head(x)\n\ngets the head of an Expr or nothing for LineNumberNodes\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.isblock-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.isblock",
+    "category": "method",
+    "text": "isblock(x)\n\npredicate for an expression being a block node. Exists to make filter(x->head(x)==:block) shorter.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.iscall-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.iscall",
+    "category": "method",
+    "text": "iscall(x)\n\npredicate for an expression being a function call. Exists to make filter(x->head(x)==:call) shorter.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.isfunc-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.isfunc",
+    "category": "method",
+    "text": "isfunc(x)\n\npredicate for an expression being a function definition. Exists to make filter(x->head(x)==:function) shorter.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.isimport-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.isimport",
+    "category": "method",
+    "text": "isimport(x)\n\npredicate for an expression being an import statement. Exists to make filter(x->head(x)==:import) shorter.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.issome-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.issome",
+    "category": "method",
+    "text": "issome(x)\n\npredicate for being neither missing or nothing\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.isusing-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.isusing",
+    "category": "method",
+    "text": "isusing(x)\n\npredicate for an expression being a using statement. Exists to make filter(x->head(x)==:using) shorter.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.or-Tuple{Function,Function}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.or",
+    "category": "method",
+    "text": "or(f,g) = x->f(x) || g(x)\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.pusharg!-Tuple{Expr,Symbol}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.pusharg!",
+    "category": "method",
+    "text": "pusharg!(expr::Expr, s::Symbol)\n\npush a new argument onto the definition of a function.\n\nSee also argslist, setarg!\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.setarg!-Tuple{Expr,Any,Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.setarg!",
+    "category": "method",
+    "text": "setarg!(expr::Expr, s::Symbol)\n\nreplace the argument in a function call.\n\nSee also argslist, pusharg!\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.structured",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.structured",
+    "category": "function",
+    "text": "structured(func, var::Symbol, assign=true)\n\nextract the expressions that use structuring/destructuring assignment to name the components of var\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.typegraph-Tuple{Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.typegraph",
+    "category": "method",
+    "text": "typegraph(expr::Expr)\n\nannotate a code expression so that when you eval it, you get the typegraph. used in the macro @typegraph.\n\nNote: Does not yet support docstrings, kwargs, or varargs.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.@typegraph-Tuple{Any}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.@typegraph",
+    "category": "macro",
+    "text": "@typegraph(expr::Expr)\n\nextract a typegraph from an expression by annotation and execution.\n\nNote: Does not yet support docstrings, kwargs, or varargs.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.funclines-Tuple{Expr,Symbol}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.funclines",
+    "category": "method",
+    "text": "funclines(expr::Expr, s::Symbol)\n\nclean up the lines of a function definition for presentation\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#ModelTools-Library-Reference-1",
+    "page": "ModelTools",
+    "title": "ModelTools Library Reference",
+    "category": "section",
+    "text": "Modules = [SemanticModels.ModelTools]"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.Transformations.Pow",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.Transformations.Pow",
+    "category": "type",
+    "text": "Pow{T}\n\nPow{T} represents raising terms in an equation to a power. The type Pow{Int} forms a group that is isomorphic to the Integers (Z, +, 0). The group operation is ∘ to match the notation that they are compositions of functions that act on models.\n\nThis is an example of encoding meaning into the type system. We are saying \"treat this number inc as a function on models, but also remember that instances of this type form a group isomorphic to the integers.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Base.:^-Tuple{SemanticModels.ModelTools.Transformations.Transformation,Int64}",
+    "page": "ModelTools",
+    "title": "Base.:^",
+    "category": "method",
+    "text": "^(p::Transformation, n::Int)\n\nthe universal definition of ^ as repeated application of ∘.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Transformations-1",
+    "page": "ModelTools",
+    "title": "Transformations",
+    "category": "section",
+    "text": "The following transformations ship with ModelTools, you can use them as templates for defining your own model classes.Modules = [SemanticModels.ModelTools.Transformations]"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.SimpleModels.SimpleModel",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.SimpleModels.SimpleModel",
+    "category": "type",
+    "text": "SimpleModel <: AbstractModel\n\nrepresents a generic scientific model, where there are blocks of code that get run in order some of which are function definitions. This type assumes a minimal structure on code. Namely,\n\nThere are imports/usingf expressions at the top of the expression\nCode is broken into chunks with either function defintions or begin/end pairs\nThere is a single entrypoint function that \"runs the model\" This defaults to main().\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.ExpStateModels.ExpStateModel",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.ExpStateModels.ExpStateModel",
+    "category": "type",
+    "text": "ExpStateModel\n\nrepresents an agent based model symbolically, with a collection of stats, agents, and transitions. The agents are a collection of states and the transitions map from state to state. This structure allows you to represent an agent based model at the semantic level and apply transformations to that model.\n\nThe common transformations for an agent based model are adding, removing, or replacing, states, agents, or transitions. See model, put!, setindex, getindex, put!, replace!.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.ExpStateModels.ExpStateTransition",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.ExpStateModels.ExpStateTransition",
+    "category": "type",
+    "text": "ExpStateTransiton\n\nrepresents a state-transition function for an agent based model. ExpStateTransition(s,x) represents the transition from state s to any other states. The expression x should define a function that takes any number of arguments and returns a value representing the new state.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Base.getindex-Tuple{SemanticModels.ModelTools.ExpStateModels.ExpStateModel,Symbol}",
+    "page": "ModelTools",
+    "title": "Base.getindex",
+    "category": "method",
+    "text": "getindex(m::ExpStateModel, sym::Symbol) Returns the transition function for state sym in ExpStateModel m. A getindex on a state that doesn\'t exist in m throws an Exception.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Base.put!-Tuple{SemanticModels.ModelTools.ExpStateModels.ExpStateModel,SemanticModels.ModelTools.ExpStateModels.ExpStateTransition}",
+    "page": "ModelTools",
+    "title": "Base.put!",
+    "category": "method",
+    "text": "put!(m::ExpStateModel, transition::ExpStateTransition)\n\nStore an ExpStateTransition transition into an ExpStateModel m. A put! on an already set state throws an Exception.\n\nReturns the transition function inserted into m.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Base.replace!-Tuple{SemanticModels.ModelTools.ExpStateModels.ExpStateModel,SemanticModels.ModelTools.ExpStateModels.ExpStateTransition}",
+    "page": "ModelTools",
+    "title": "Base.replace!",
+    "category": "method",
+    "text": "replace!(m::ExpStateModel, transition::ExpStateTransition)\n\nStore an ExpStateTransition transition into an [ExpStateModel(@ref) m. A replace! on an already set state will replace the current transition function.\n\nReturns the transition function inserted into m.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Base.setindex!-Tuple{SemanticModels.ModelTools.ExpStateModels.ExpStateModel,Expr,Symbol}",
+    "page": "ModelTools",
+    "title": "Base.setindex!",
+    "category": "method",
+    "text": "setindex!(m::ExpStateModel, expr::Expr, sym::Symbol)\n\nStore an Expr expr as the transition function for state sym in ExpStateModel m. A setindex! on an already set state will replace the current transition function.\n\nReturns the transition function inserted into m.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.ExpODEModels.ExpODEModel",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.ExpODEModels.ExpODEModel",
+    "category": "type",
+    "text": "ExpODEModel\n\ntells the model function to parse an expression as the definition of an ODE model. Used for dispatch.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#SemanticModels.ModelTools.model-Tuple{Type{SemanticModels.ModelTools.ExpODEModels.ExpODEModel},Expr}",
+    "page": "ModelTools",
+    "title": "SemanticModels.ModelTools.model",
+    "category": "method",
+    "text": "model(::AbstractModel, expr::Expr)\n\ndig into the expression that describes a model and break it down into components. This allows you to construct a structured representation of the modeling problem at the expression level. Just like how julia modeling frameworks build structured representations of the problems in data structures. This version builds them at the expression level.\n\nThe first argument is the type you want to construct, the second argument is the expression that you want to analyze. For example\n\nmodel(ExpODEModel, expr)::ExpODEModel\n\n\n\n\n\n"
+},
+
+{
+    "location": "modeltools/#Model-Classes-1",
+    "page": "ModelTools",
+    "title": "Model Classes",
+    "category": "section",
+    "text": "The following model class ship with ModelTools, you can use them as templates for defining your own model classes.Modules = [SemanticModels.ModelTools.SimpleModels,\nSemanticModels.ModelTools.ExpStateModels, SemanticModels.ModelTools.ExpODEModels]"
+},
+
+{
+    "location": "modeltools/#Index-1",
+    "page": "ModelTools",
+    "title": "Index",
+    "category": "section",
+    "text": ""
+},
+
+{
     "location": "example/#",
     "page": "Example",
     "title": "Example",
@@ -158,6 +470,110 @@ var documenterSearchIndex = {"docs": [
     "title": "Generation",
     "category": "section",
     "text": "Once reasoning is complete the graft.jl program will run over the extracted knowledge graph, and generate a new model. In this case we want to take the birth rate dynamics from the ScalingModel and add them to the SEIR model to create an SEIR+birth_rate model.Here is the code that does the grafting.using Cassette\nusing DifferentialEquations\nusing SemanticModels.Parsers\nusing SemanticModels.Dubstep\n\n# source of original problem\ninclude(\"../examples/epicookbook/src/SEIRmodel.jl\")\n\n#the functions we want to modify\nseir_ode = SEIRmodel.seir_ode\n\n# source of the problem we want to take from\nexpr = parsefile(\"../examples/epicookbook/src/ScalingModel.jl\")Once you have identified the entry point to your model, you can identify pieces of another model that you want to graft onto it. This piece of the other model might take significant preparation in order to be ready to fit onto the base model. These transformations include changing variables, and other plumbing aspects. If you stick to taking whole functions and not expressions, this prep work is reduced.# Find the expression we want to graft\n#vital dynamics S rate expression\nvdsre = expr.args[3].args[5].args[2].args[4]\n@show popgrowth = vdsre.args[2].args[2]\nreplacevar(expr, old, new) = begin\n    dump(expr)\n    expr.args[3].args[3].args[3] = new\n    return expr\nend\npopgrowth = replacevar(popgrowth, :K,:N)\n\n# generate the function newfunc\n# this eval happens at the top level so should only happen once\nnewfunc = eval(:(fpopgrowth(r,S,N) = $popgrowth))\n\n# This is the new problem\n# notice the signature doesn\'t even match, we have added a new parameter\nfunction fprime(dY,Y,p,t, ϵ)\n    #Infected per-Capita Rate\n    β = p[1]\n    #Incubation Rate\n    σ = p[2]\n    #Recover per-capita rate\n    γ = p[3]\n    #Death Rate\n    μ = p[4]\n\n    #Susceptible Individual\n    S = Y[1]\n    #Exposed Individual\n    E = Y[2]\n    #Infected Individual\n    I = Y[3]\n    #Recovered Individual\n    #R = Y[4]\n\n    # here is the graft point\n    dY[1] = μ-β*S*I-μ*S + newfunc(ϵ, S, S+E+I)\n    dY[2] = β*S*I-(σ+μ)*E\n    dY[3] = σ*E - (γ+μ)*I\nendDefine the overdub behavior, all the fucntions needed to be defined at this point using run time values slows down overdub.function Cassette.overdub(ctx::Dubstep.GraftCtx, f::typeof(seir_ode), args...)\n    # this call matches the new signature\n    return Cassette.fallback(ctx, fprime, args..., ctx.metadata[:lambda])\nendThe last step is to run the new model!#set up our modeling configuration\nfunction g()\n    #Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)\n    pram=[520/365,1/60,1/30,774835/(65640000*365)]\n    #Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)\n    init=[0.8,0.1,0.1]\n    tspan=(0.0,365.0)\n\n    seir_prob = ODEProblem(seir_ode,init,tspan,pram)\n\n    sol=solve(seir_prob);\nend\n\n# sweep over population growth rates\nfunction scalegrowth(λ=1.0)\n    # ctx.metadata holds our new parameter\n    ctx = Dubstep.GraftCtx(metadata=Dict(:lambda=>λ))\n    return Cassette.overdub(ctx, g)\nend\n\nprintln(\"S\\tI\\tR\")\nfor λ in [1.0,1.1,1.2]\n    @time S,I,R = scalegrowth(λ)(365)\n    println(\"$S\\t$I\\t$R\")\nend\n#it works!julia> include(\"graft.jl\")\ns = \"# -*- coding: utf-8 -*-\\n# ---\\n# jupyter:\\n#   jupytext:\\n#     text_representation:\\n#       extension: .jl\\n#       format_name: light\\n#       format_version: \'1.3\'\\n#       jupytext_version: 0.8.6\\n#   kernelspec:\\n#     display_name: Julia 1.0.3\\n#     language: julia\\n#     name: julia-1.0\\n# ---\\n\\nmodule ScalingModel\\nusing DifferentialEquations\\n\\nfunction micro_1(du, u, parms, time)\\n    # PARAMETER DEFS\\n    # β transmition rate\\n    # r net population growth rate\\n    # μ hosts\' natural mortality rate\\n    # Κ population size\\n    # α disease induced mortality rate\\n\\n    β, r, μ, K, α = parms\\n    dS = r*(1-S/K)*S - β*S*I\\n    dI = β*S*I-(μ+α)*I\\n    du = [dS,dI]\\nend\\n\\n# +\\n# PARAMETER DEFS\\n# w and m are used to define the other parameters allometrically\\n\\nw = 1;\\nm = 10;\\nβ = 0.0247*m*w^0.44;\\nr = 0.6*w^-0.27;\\nμ = 0.4*w^-0.26;\\nK = 16.2*w^-0.7;\\nα = (m-1)*μ;\\n# -\\n\\nparms = [β,r,μ,K,α];\\ninit = [K,1.];\\ntspan = (0.0,10.0);\\n\\nsir_prob = ODEProblem(micro_1,init,tspan,parms)\\n\\nsir_sol = solve(sir_prob);\\n\\nusing Plots\\n\\nplot(sir_sol,xlabel=\\\"Time\\\",ylabel=\\\"Number\\\")\\n\\nm = [5,10,20,40]\\nws = 10 .^collect(range(-3,length = 601,3))\\nβs = zeros(601,4)\\nfor i = 1:4\\n    βs[:,i] = 0.0247*m[i]*ws.^0.44\\nend\\nplot(ws,βs,xlabel=\\\"Weight\\\",ylabel=\\\"\\\\\\\\beta_min\\\", xscale=:log10,yscale=:log10, label=[\\\"m = 5\\\" \\\"m = 10\\\" \\\"m = 20\\\" \\\"m = 40\\\"],lw=3)\\n\\nend\\n\"\npopgrowth = (vdsre.args[2]).args[2] = :(r * (1 - S / K) * S)\nExpr\n  head: Symbol call\n  args: Array{Any}((4,))\n    1: Symbol *\n    2: Symbol r\n    3: Expr\n      head: Symbol call\n      args: Array{Any}((3,))\n        1: Symbol -\n        2: Int64 1\n        3: Expr\n          head: Symbol call\n          args: Array{Any}((3,))\n            1: Symbol /\n            2: Symbol S\n            3: Symbol K\n    4: Symbol S\nS	I	R\n 67.554431 seconds (125.80 M allocations: 6.555 GiB, 7.52% gc time)\n4.139701895048853e-5	1.512940651164174	1.2314284234326383\n  4.132043 seconds (1.85 M allocations: 33.602 MiB, 0.37% gc time)\n3.319429471438334e-5	1.7926581454821442	1.4394890708586585\n  4.294201 seconds (1.99 M allocations: 36.084 MiB, 0.54% gc time)\n2.7307348723966148e-5	2.096234030610046	1.6601782657100044S I R\n4.139701895048853e-5 1.512940651164174 1.2314284234326383\n3.319429471438334e-5 1.7926581454821442 1.4394890708586585\n2.7307348723966148e-5 2.096234030610046 1.6601782657100044We can see from the model output that as the birth rate of the population increases, the size of the SEIR epidemic increases. This example illustrates how we can add capabilities  to models in a way that can augment the ability of scientists to conduct in silico experiments. This augmentation will ultimately enable a faster development of scientific ideas informed by data and simulation.Hopefully, this example has shown you the goals and scope of this software, the remaining documentation details the various components essential to the creation of this demonstration."
+},
+
+{
+    "location": "theory/#",
+    "page": "Theory",
+    "title": "Theory",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "theory/#Semantic-Modeling-Theory-1",
+    "page": "Theory",
+    "title": "Semantic Modeling Theory",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "theory/#What-is-a-model?-1",
+    "page": "Theory",
+    "title": "What is a model?",
+    "category": "section",
+    "text": "The goal of science is to build models of natural phenomena that explain how they work. Scientists build these models by conducting data gathering phenomena and using math to represent these experiments. This sets up a balancing act between the two traits that make for a good scientific model,  it must first match the data collected and also be able to explain the phenomena.We can think of fitting the data as a regression problem:h^* = min_hin H ell(h(x) y)and the institutional process of discovery asmax_Hin mathcalM expl(h^*)where expl is the explanatory power of a class of models H. The explanatory power is some combination of generalization, parsimony, and consistency with the fundamental principles of the field.This formulation is notional in the current state of the art, because models are not a well parameterized space. The goal of this project is to identify subspaces that can be parameterized using algebraic structures and represent those subspace symbolically so that computers can represent them and perform optimization."
+},
+
+{
+    "location": "theory/#Analyzing-scientific-models-as-programs-1",
+    "page": "Theory",
+    "title": "Analyzing scientific models as programs",
+    "category": "section",
+    "text": "We can consider three different problems for semantic modelingModel Modification: Given a model M and a transformation T construct a new model T(M).\nMetamodel construction: Given a set of a possible component models mathcalM, known independent variables mathcalI, and a set of desired dependent variables V, and a set of rules for combining models Rconstruct a combination of models minmathcalR(M) that takes as input mathcalI and evaluates the dependent variables V.\nModel Validation: Given a model M and a set of properties P and input x, determine if the model satisfies all properties P when evaluated on xA model M=(DRf) is a tuple containing a set D, called the domain, and a set R, called the co-domain with a function fDmapsto R. If D is the cross product of sets D_1 times D_2 cdots D_k then the and f = f(x_1dots x_k) where x are the independent variables of M. If R=R_1times R_2cdots r_d then R_i are the dependent variables of M. A Modeling framework (UMR)is a universe of sets U, class of models mathcalM, and a set of rules R. Such that the domains and co-domains of all models in mathcalM are elements of mathcalU, and the class of models is closed under composition when the rules are satisfied. If R(M_1 dots M_n) then circleft(M_1dots M_nright)in mathcalM. Composition of models is defined as circ(M_1 dots M_n)=(D_1timesdotstimes D_n-1 R_1timesdotstimes R_n-1 circ (f_1(x_1)dots f_n_1(x_n-1))In order to build a useful DAG, a class of models should contain models such as constants, identity, projections, boolean logic, arithmetic, and elementary functions.We also need to handle the case of model identification. There are certain models within a framework that are essentially equivalent. For example if D_1 and D_2 are sets with homomorphism gD_2mapsto D_1, then M_1 = (D_1 R f) = (D_2 R f circ g) are equivalent as models. In fact (D_2 D_1 g) should be included in the class of models in a modeling framework.We need a good theoretical foundation for proving theorems about manipulating models and combining them. Categories for Science may be that foundation.The work of Evan Patterson on building semantic representations of data science programs is particularly relevant to these modeling questions SRDSP. Patterson 2018 "
+},
+
+{
+    "location": "theory/#Categories-for-Science-1",
+    "page": "Theory",
+    "title": "Categories for Science",
+    "category": "section",
+    "text": "Dan Spivak wrote a wonderful book, CT4S, on category theory for scientists based on his lectures at MIT.Data gathering is ubiquitous in science. Giant databases are currently being mined for unknown patterns, but in fact there are many (many) known patterns that simply have not been catalogued. Consider the well-known case of medical records. A patient’s medical history is often known by various individual doctor-offices but quite inadequately shared between them. Sharing medical records often means faxing a hand-written note or a filled-in house-created form between offices.Similarly, in science there exists substantial expertise making brilliant connections between concepts, but it is being conveyed in silos of English prose known as journal articles. Every scientific journal article has a methods section, but it is almost impossible to read a methods section and subsequently repeat the experiment—the English language is inadequate to precisely and concisely convey what is being doneThis is the point of our project, to mine the code and docs for the information necessary to repeat and expand scientific knowledge. Reproducible research is focused on getting the code/data to be shared and runnable with VMs/Docker etc are doing the first step. Can I repeat your analysis? We want to push that to expanding."
+},
+
+{
+    "location": "theory/#Ologs-1",
+    "page": "Theory",
+    "title": "Ologs",
+    "category": "section",
+    "text": "Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used to precisely specify what a scientist is talking about (see Spivak Kent 2012). An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the name of the aspect. An aspect is valid if it is a function (1-many relation). (Image: Birthday olog)We can represent an SIR model as an olog as shown below.(Image: SIR olog)Another category theory representation without the human readable names used in an olog shows a simpler representation.(Image: SIR Category)"
+},
+
+{
+    "location": "theory/#Models-in-the-Category-of-Types-1",
+    "page": "Theory",
+    "title": "Models in the Category of Types",
+    "category": "section",
+    "text": "All programs in a strongly typed language have a set of types and functions that map values between those types. For example the Julia programa = 5.0\nb = 1\nc = 2*a\nd = b + cHas the types Int, Float and functions *, + which are both binary functions. These types and functions can be represented as a category, where the objects are the types and the morphisms are the functions. We refer to the input type of a function as the domain and the output type as the codomain of the function. Multi-argument functions are represented with tuple types representing their argument. For example +(a::Int,b::Int)::Int is a function + Inttimes Int - Int. These type categories are well studied in the field of Functional Programming. We apply these categories to the study of mathematical models. One can use a combination of static and dynamic analysis to extract this category representation from a program and use it to represent the model implemented by the code.The most salient consequence of programming language theory is that the more information that a programmer can encode in the type system, the more helpful the programming language can be for improving performance, quality, and correctness.We want to leverage the type system to verify the semantic integrity of a model. This is critical when pursuing automatic model modification. Model developers use any number of conventions to encode semantic constraints into their code for example, prefacing all variables that refer to time with a t, such as t_start, s_end. This semantic constraint that all variables named t_ are temporal variables is not encoded in the type system because all those variables are still floats. Another example is that vectors of different lengths are incompatible. In a compartment model, the number of initial conditions must match the number of compartments, and the number of parameters may be different. For example in an SIR model there are 3 initial conditions, SIR and there are 2 parameters beta gamma. These vectors are incompatible, you cannot perform arithmetic or comparisons on them directly. Most computational systems employed by scientists will use a runtime check on dimensions to prevent a program from crashing on malformed linear algebra. Scientists rely on this limited from of semantic integrity checking provided by the language. Our goal is to extract and encode the maximum amount of information from scientific codes into the type system. The type system is analyzable as a category. Thus we can look at the category of types and analyze the integrety of the programs. For example if there are two types ST and two functions fg Sarrow T such that Codom(f) = Codom(g) but Range(f) cap Range(g), then we say that the type system is ambiguous in that there are two functions that use disjoint subsets of their common codomain. In order to more fully encode program semantics into the type system, the programmer (or an automated system) should introduce new types to the program to represent these disjoint subsets. (Image: Ambiguous types in the SIR Model) Returning to the SIR model example, the .param and .initial functions both map Problem to Vector{Float} but have disjoint ranges. From our mathematical understanding of the model, we know that parameters and initial conditions are incompatible types of vectors, for one thing the output of .param is length 2 and the output of .initial is length 3. Any program analysis of the model will be hampered by the ambiguity introduced by using the same type to represent two different concepts. On the other hand, .first and .second have overlapping ranges and are comparable as times.(Image: Unambiguous types in the SIR Model)This is an example of how PL theory ideas can improve the analysis of computational models.Teaching the type system about agent based modeling. In the example notebook /examples/agenttypes2.jl you can see how to embed model structure into the julia type system. That example uses two versions of the same agent based model of disease. In the first implementation, the agents have states represented by the julia type :Symbol with values :S, :I, :R, and in the second, more refined implementation, the agent\'s states are represented by the singleton types Susceptible, Infected, Recovered with values, Susceptible(), Infected(), Recovered(). The model is the same, but the type system contains more information about the execution of the model. For example the julia type system knows what the possible state transitions are based in the second implementation, while the first model has a black box of :Symbols that are not distinguishable in program analysis. The original type graph g shows how the model works. (Image: Using Symbol values to represent states)The refined model has a typegraph G, which includes the new singleton types as well as different tuple types.We can establish a graph homomorphism phi G to g such that phi(v) = v for all v in V(g) cap V(G). The following figure shows this homomorphism by drawing vertices vin G with the same color as phi(v)in g. (Image: Using Symbol values to represent states) Within this typegraph we have a subgraph that contains the state transitions for the agents. We can draw this subgraph separately to show how the compiler has been taught to understand the semantics of the model. (Image: The typegraph understand the transition graph of the agents)The embedding of model semantics into the type system enables programs to reason over the behavior of the models."
+},
+
+{
+    "location": "theory/#Model-Augmentation-1",
+    "page": "Theory",
+    "title": "Model Augmentation",
+    "category": "section",
+    "text": "Scientists build novel models from old models and the approach provided by SemanticModels has several benefits. We think that"
+},
+
+{
+    "location": "theory/#Abstraction-1",
+    "page": "Theory",
+    "title": "Abstraction",
+    "category": "section",
+    "text": "Modeling operations have similarities across domains and we can build general model augmentations that let scientists translate operations from one domain to another. The code that defines transformations is also \"general modeling code\" so our abstraction is closed."
+},
+
+{
+    "location": "theory/#Symbolification-1",
+    "page": "Theory",
+    "title": "Symbolification",
+    "category": "section",
+    "text": "The geometric perspective is really great for proving things about shapes, but developing algorithms requires adopting a symbolic perspectrive like algebra. Our example of polynomial regression connects here because we are able to write algorithms for model selection that leverage the symbolic nature of the transformations. In fact we can give examples of model selection in terms of ideals. The algebra of the transformation space is a place for algorithms on the model space.Open question: Can we lift the greatest common divisor of polynomials to be the \"greatest common submodel\" for least squares regression? If so, does the euclidean algorithm for GCD give a model selection algorithm?"
+},
+
+{
+    "location": "theory/#Metaprogramming-for-Science-1",
+    "page": "Theory",
+    "title": "Metaprogramming for Science",
+    "category": "section",
+    "text": "Scientific models are so diverse that we need the full flexibility of code as input for our modeling framework. This is somewhat inherent to the scientific process. Scientists who are pushing the field in modeling are often inventing or applying new algorithms that are capable of solving those models. Also the first formulation of a new model is not the most elegant and so we need to be able to operate on ad-hoc models before we understand the class of models well enough for an elegant formulation to get added to the modeling framework.Metaprogramming is about writing programs that write programs, so it makes sense that metamodeling is about writing models that write models. In order to write models that can generate models, there needs to be a compact and parsimonious representation of the model for algorithms to manipulate. As we have seen in writing our post-hoc modeling framework, scientific models diverse and hard to summarize, however the transformations that can be applied to a model while preserving its validity within the class of models is often much more structured than the models themselves. This is why we think that metamodels will work on these transformations instead of on the models directly.Again we look to our polynomial regression problem, with only two transformations you can generate the entire class of polynomial regression problems from a model that computes linear regression. Algorithms that work on the polynomial regression models directly would have to manage a lot of complexity around arguments, data flow, conditional logic, I/O. But in the transformation state there is just f(x) -> xf(x) and f(x) -> f(x) + 1 which are simple transformations.By representing complex models as transformations of a base model, under an algebra of transformations, we are able to make metaprogramming for science much easier."
+},
+
+{
+    "location": "theory/#Model-Synthesis-1",
+    "page": "Theory",
+    "title": "Model Synthesis",
+    "category": "section",
+    "text": "One goal of the program is to get to the point where we can automatically infer how to combine models based on what they compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and are typically written with either a declarative DAG language or an imperative DAG building library.Fong and Spivak 2018 shows how to express signal processing and controls problems in a graphical language based on categories of products and permutations category or props.In this category, computations can be specified with diagrams. The following figure shows a diagram representing a classical controls problem. These diagrams are shown to have the same functorial semantics as matrices. (Image: Diagram for computing PID control)We think that the category theory approach of props is the right approach. This approach leads to diagrams with precise semantics for representing general purpose computation networks. These networks will be specified with code that combines the sum and product operation in a hierarchical expression just like regular code. Thus the code that makes the diagrams is a model that we can augment with our current ModelTools techniques.These \"model circuits\" can thus be built out of code resulting from transformations on code that builds a base circuit. Which establishes tools for creating high level transformations on circuits. We can then define the input and output wires as the modeling concepts we know and want to know and then build algorithms for solving for the circuit that gets from the inputs to the outputs. We suspect a dynamic programming approach to recursively bring the inputs and outputs closer together will solve this problem. Algorithms that do model synthesis will need to account for the conceptual knowledge that is captured in the text and documentation of scientific software. Once we have a mathematically sound way to represent combinations of models, we must address the practical aspects of model synthesis. We are endeavoring to augment and automate scientific workflows by meaningfully pruning the set of possible metamodels. When scientists design models, they must confront:known unknowns: parameters or components they are aware of, but about which there may be uncertainty regardingvalues or best practicesunknown unknowns: parameters or components the scientist does not yet know about, or deems unnecessary for thecurrent modeling taskIn a broader/more abstract sense, our potential contributions to \"AI for Science\" are related to uncertainty quantification, and we endeavor to help scientists assess and reduce both aleatoric and epistemic uncertainty. By working within a specific domain and comparing known existing models, we can help a scientist make progress on (1). By integrating across domains at semantically meaningful endpoints, we can help a scientist make progress on (2).Some tasks that can be automated require understanding both the existing scientific software ecosystem and what the scientist it trying to compute. For example, scientific productivity can be enhanced by answering questions like, \"If I know X and Y but want to know Z, what software tools can solve this for me, and how do I use them?\" This is a task that de novo modeling frameworks cannot answer, because the existing literature was not developed with the new framework."
+},
+
+{
+    "location": "theory/#Up-Next-1",
+    "page": "Theory",
+    "title": "Up Next",
+    "category": "section",
+    "text": "The ideas of representing models as categories and functors that preserve different aspects of the structures we have is compelling. We believe this is the best theoretical foundation for the model augmentation and model synthesis components of SemanticModels."
 },
 
 {
@@ -662,46 +1078,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Index",
     "category": "section",
     "text": ""
-},
-
-{
-    "location": "theory/#",
-    "page": "Theory",
-    "title": "Theory",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "theory/#Semantic-Modeling-Theory-1",
-    "page": "Theory",
-    "title": "Semantic Modeling Theory",
-    "category": "section",
-    "text": "We can consider three different problems for semantic modelingModel Modification: Given a model M and a transformation T construct a new model T(M).\nMetamodel construction: Given a set of a possible component models mathcalM, known independent variables mathcalI, and a set of desired dependent variables V, and a set of rules for combining models Rconstruct a combination of models minmathcalR(M) that takes as input mathcalI and evaluates the dependent variables V.\nModel Validation: Given a model M and a set of properties P and input x, determine if the model satisfies all properties P when evaluated on xA model M=(DRf) is a tuple containing a set D, called the domain, and a set R, called the co-domain with a function fDmapto R. If D is the cross product of sets D_1 times D_2 cdots D_k then the and f = f(x_1dots x_k) where x are the independent variables of M. If R=R_1times R_2cdots r_d then R_i are the dependent variables of M. A Modeling framework (UMR)is a universe of sets U, class of models mathcalM, and a set of rules R. Such that the domains and co-domains of all models in mathcalM are elements of mathcalU, and the class of models is closed under composition when the rules are satisfied. If R(M_1 dots M_n) then odotleft(M_1dotsM_nright)in mathcalM. Composition of models is defined as $\\odot(M1, \\dots, \\Mn)=(D1\\times\\dots\\times D{n-1},                            R1\\times\\dots\\times R{n-1},                              fn(x1,\\dots x{n-1})(f1(x1),\\dots f{n1}(x{n-1})) $ In order to build a useful DAG, a class of models should contain models such as constants, identity, projections, boolean logic, arithmetic, and elementary functions.We also need to handle the case of model identification. There are certain models within a framework that are essentially equivalent. For example if D_1 and D_2 are sets with homomorphism gD_2mapsto D_1, then M_1 = (D_1 R f) = (D_2 R f odot g) are equivalent as models. In fact (D_2 D_1 g) should be included in the class of models in a modeling framework.We need a good theoretical foundation for proving theorems about manipulating models and combining them. Categories for Science may be that foundation.The work of Evan Patterson on building semantic representations of data science programs is particularly relevant to these modeling questions SRDSP. Patterson 2018 "
-},
-
-{
-    "location": "theory/#Categories-for-Science-1",
-    "page": "Theory",
-    "title": "Categories for Science",
-    "category": "section",
-    "text": "Dan Spivak wrote a wonderful book on category theory for scientists based on his lectures at MIT http://math.mit.edu/~dspivak/CT4S.pdf.Data gathering is ubiquitous in science. Giant databases are currently being mined for unknown patterns, but in fact there are many (many) known patterns that simply have not been catalogued. Consider the well-known case of medical records. A patient’s medical history is often known by various individual doctor-offices but quite inadequately shared between them. Sharing medical records often means faxing a hand-written note or a filled-in house-created form between offices.Similarly, in science there exists substantial expertise making brilliant connections between concepts, but it is being conveyed in silos of English prose known as journal articles. Every scientific journal article has a methods section, but it is almost impossible to read a methods section and subsequently repeat the experiment—the English language is inadequate to precisely and concisely convey what is being doneThis is the point of our project, to mine the code and docs for the information necessary to repeat and expand scientific knowledge. Reproducible research is focused on getting the code/data to be shared and runnable with VMs/Docker etc are doing the first step. Can I repeat your analysis? We want to push that to expanding."
-},
-
-{
-    "location": "theory/#Ologs-1",
-    "page": "Theory",
-    "title": "Ologs",
-    "category": "section",
-    "text": "Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used to precisely specify what a scientist is talking about. Spivak, D.I., Kent, R.E. (2012) “Ologs: A Categorical Framework for Knowledge Representation.” PLoS ONE 7(1): e24274. doi:10.1371/journal.pone.0024274.An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the name of the aspect. An aspect is valid if it is a function (1-many relation). (Image: Birthday olog)We can represent an SIR model as an olog as shown below.(Image: SIR olog)Another category theory representation without the human readable names used in an olog shows a simpler representation.(Image: SIR Category)"
-},
-
-{
-    "location": "theory/#Models-in-the-Category-of-Types-1",
-    "page": "Theory",
-    "title": "Models in the Category of Types",
-    "category": "section",
-    "text": "All programs in a strongly typed language have a set of types and functions that map values between those types. For example the Julia programa = 5.0\nb = 1\nc = 2*a\nd = b + cHas the types Int, Float and functions *, + which are both binary functions. These types and functions can be represented as a category, where the objects are the types and the morphisms are the functions. We refer to the input type of a function as the domain and the output type as the codomain of the function. Multi-argument functions are represented with tuple types representing their argument. For example +(a::Int,b::Int)::Int is a function + Inttimes Int - Int. These type categories are well studied in the field of Functional Programming. We apply these categories to the study of mathematical models. One can use a combination of static and dynamic analysis to extract this category representation from a program and use it to represent the model implemented by the code.The most salient consequence of programming language theory is that the more information that a programmer can encode in the type system, the more helpful the programming language can be for improving performance, quality, and correctness.We want to leverage the type system to verify the semantic integrity of a model. This is critical when pursuing automatic model modification. Model developers use any number of conventions to encode semantic constraints into their code for example, prefacing all variables that refer to time with a t, such as t_start, s_end. This semantic constraint that all variables named t_ are temporal variables is not encoded in the type system because all those variables are still floats. Another example is that vectors of different lengths are incompatible. In a compartment model, the number of initial conditions must match the number of compartments, and the number of parameters may be different. For example in an SIR model there are 3 initial conditions, SIR and there are 2 parameters beta gamma. These vectors are incompatible, you cannot perform arithmetic or comparisons on them directly. Most computational systems employed by scientists will use a runtime check on dimensions to prevent a program from crashing on malformed linear algebra. Scientists rely on this limited from of semantic integrity checking provided by the language. Our goal is to extract and encode the maximum amount of information from scientific codes into the type system. The type system is analyzable as a category. Thus we can look at the category of types and analyze the integrety of the programs. For example if there are two types ST and two functions fg Sarrow T such that Codom(f) = Codom(g) but Range(f) cap Range(g), then we say that the type system is ambiguous in that there are two functions that use disjoint subsets of their common codomain. In order to more fully encode program semantics into the type system, the programmer (or an automated system) should introduce new types to the program to represent these disjoint subsets. (Image: Ambiguous types in the SIR Model) Returning to the SIR model example, the .param and .initial functions both map Problem to Vector{Float} but have disjoint ranges. From our mathematical understanding of the model, we know that parameters and initial conditions are incompatible types of vectors, for one thing the output of .param is length 2 and the output of .initial is length 3. Any program analysis of the model will be hampered by the ambiguity introduced by using the same type to represent two different concepts. On the other hand, .first and .second have overlapping ranges and are comparable as times.(Image: Unambiguous types in the SIR Model)This is an example of how PL theory ideas can improve the analysis of computational models."
 },
 
 {
