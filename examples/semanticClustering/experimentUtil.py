@@ -410,22 +410,21 @@ def graphCombinationExp(averageSimArray):
             accuracy.append(float(assignmentCount/denominatorCount))
         else:
             accuracy.append(1.0)
-        numberOfAssignments.append(assignmentCount)
+        numberOfAssignments.append(float(assignmentCount/len(predicted)))
         thresholdArray.append(threshold)
         threshold += .02
-    
+    numberOfAssignments = np.divide(np.asarray(numberOfAssignments), numberOfAssignments[0])
     plt.figure(0)
-    plt.title("Accuracy")
-    plt.plot(thresholdArray, accuracy)
+    plt.title("Accuracy vs Normalized True Assignments")
+    plt.plot(thresholdArray, accuracy, color="blue", label="Accuracy")
+    plt.plot(thresholdArray, numberOfAssignments, color="orange", label="Normalized True Assigns" )
+    plt.legend(loc="upper right")
     plt.xticks(np.arange(0, 1, step=0.1))
     plt.xlabel("Similarity Threshold")
-    plt.ylabel("Accuracy")
+    plt.ylabel("Normalized Values")
+    idx = np.argwhere(np.diff(np.sign(numberOfAssignments - accuracy))).flatten()
+    plt.plot(thresholdArray[int(idx)], numberOfAssignments[int(idx)], 'ro')
+    logging.info("Intersection Threshold is: " + str(thresholdArray[int(idx)]))
     
-    plt.figure(1)
-    plt.title("Number of Assignments")
-    plt.plot(thresholdArray, numberOfAssignments)
-    plt.xticks(np.arange(0, 1, step=0.1))
-    plt.xlabel("Similarity Threshold")
-    plt.ylabel("Number of Cluster Assignments")
 
         
