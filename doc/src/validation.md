@@ -1,16 +1,14 @@
 # Model Validation with Dynamic Analysis
 
-Validation of scientific models is a type of program verification, but is complicated by the fact that there are no
-global explicit rules about what defines a valid scientific models. In a local sense many disciplines of science have
-developed rules for valid computations. For example unit checking and dimensional analysis and conservation of physical
-laws. Dimensional analysis provides rules for arithmetic of unitful numbers. The rules of dimensional analysis are "you
-can add numbers if the units match, when you multiply/divide, the powers of the units add/subtract." Many physical
-computations obey conservation rules that provide a form of program verification. Based on a law of physics such as "The
-total mass of the system is constant," one can build a program checker that instruments a program with the ability to
-audit the fact that `sum(mass, system[t]) == sum(mass, system[t0])`, these kinds of checks may be expressed in codes.
+### Looking Forward
 
-We can use Cassette.jl to implement a context for validating these computations. The main difficulty is converting the
-human language expressed rule into a mathematical test for correctness. A data driven method is outlined below.
+We pursued a novel approach to model validation based on LSTM models of program traces, this was supposed to use the Cassette based traces to build probabilistic models of program failure. This did not work because of the long term dependencies between information in the trace and the failure condition that would happen much later. While we see no impediment to successful modeling of program failure based on traces, we are attempting a prerequisite task of building an [autoencoder](notebooks/autoencoding_julia.ipynb) of Julia code snippets that will enable learning latent space embeddings of programs. These latent space embeddings will assist with future model augmentation, synthesis, and validation tasks because we will be able to solve clustering, classification, and nearest neighbor search in this latent space that captures the meaning of julia program snippets.
+
+We also believe that the existing work on model augmentation in particular the metaprogramming on models necessary to implement the typegraph functionality will enable faster development of novel validation techniques.
+
+Validation of scientific models is a type of program verification, but is complicated by the fact that there are no global explicit rules about what defines a valid scientific models. In a local sense many disciplines of science have developed rules for valid computations. For example unit checking and dimensional analysis and conservation of physical laws. Dimensional analysis provides rules for arithmetic of unitful numbers. The rules of dimensional analysis are "you can add numbers if the units match, when you multiply/divide, the powers of the units add/subtract." Many physical computations obey conservation rules that provide a form of program verification. Based on a law of physics such as "The total mass of the system is constant," one can build a program checker that instruments a program with the ability to audit the fact that `sum(mass, system[t]) == sum(mass, system[t0])`, these kinds of checks may be expressed in codes.
+
+We can use Cassette.jl to implement a context for validating these computations. The main difficulty is converting the human language expressed rule into a mathematical test for correctness. A data driven method is outlined below.
 
 ## DeepValidate
 There are an intractable number of permutations of valid deep learning model architectures, each providing different levels of performance (both in terms of efficiency and accuracy of output) on different datasets. One current predicament in the field is an inability to rigorously define an optimal architecture starting from the types of inputs and outputs; preferred solutions are instead chosen based on empirical processes of trial and error. In light of this, it has become common to start deep learning model efforts from architectures established by previous research, especially ones which have been adopted by a significant portion of the deep learning community, for similar tasks, and then tweak and modify hyper parameters as necessary. We adopt this typical approach, beginning with a standard architecture and leaving open the possibility of optimizing the architecture as training progresses. 
