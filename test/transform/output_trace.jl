@@ -1,5 +1,12 @@
 
-module Extract
+#
+# This file copies much of the same functionality from varextract.jl, 
+# with important modifications to write out test traces to a file - 
+# "trace_test.dat" - for subsequent classification modeling. 
+# 
+
+using Distributions
+using DelimitedFiles
 using Cassette
 using Test
 Cassette.@context TraceCtx
@@ -38,7 +45,7 @@ function Extraction(ir)
 end
 
 function findvars(ext, ir, expr)
-    #@info "Finding Variables"
+    @info "Finding Variables"
     # @show ir
     # dump(expr)
     # if typeof(expr) <: SSAValue
@@ -146,7 +153,7 @@ function extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
         push!(ext, expr)
     end
     if length(ext.varnames) > 0
-        #@info "Working with method: $(modname).$(methname)"
+        @info "Working with method: $(modname).$(methname)"
         show(ext)
         # @show ext.ir
         @show ext.ir.slotnames
@@ -169,15 +176,26 @@ function Cassette.canrecurse(ctx::TraceCtx,
                                       typeof(Base.mapreduce),
                                       typeof(Base.Broadcast.copy),
                                       typeof(Base.Broadcast.instantiate),
+                                      typeof(Base.Math.throw_complex_domainerror),
                                       typeof(Base.Broadcast.broadcasted)},
                              args...)
     return false
 end
 
-# handle all function calls the same
-function Cassette.overdub(ctx::TraceCtx, f, args...)
-    @show f, args
 
+#
+# This function has been modified from the version in varextract.jl 
+# in the first line, where instead of "@show f, args" we write these
+# objects to our output file "trace_test.dat"
+# 
+# Not elegant, but various other approaches did not write out the 
+# correct trace information. This should be updated with a more elegant
+# solution when possible. 
+# 
+
+function Cassette.overdub(ctx::TraceCtx,
+                          f,
+                          args...)
     # if we are supposed to descend, we call Cassette.recurse
     if Cassette.canrecurse(ctx, f, args...)
         subtrace = (Any[],Any[])
@@ -190,8 +208,8 @@ function Cassette.overdub(ctx::TraceCtx, f, args...)
         push!(ctx.metadata[1], :t)
         push!(ctx.metadata[2], retval)
     end
-    #@info "returning"
-    @show retval
+    # @info "returning"
+    # @show retval
     return retval
 end
 
@@ -201,9 +219,115 @@ function add(a, b)
     return c
 end
 
-const OverDub = Cassette.overdub
+treeline = []
 
-export OverDub, TraceCtx, ExtractPass
+@testset "TraceExtract" begin
+    g(x) = begin
+        y = add(x.*x, -x)
+        z = 1
+        v = y .- z
+        s = sum(v)
+        return s
+    end
+    h(x) = begin
+        z = g(x)
+        zed = sqrt(z)
+        return zed
+    end
 
+    # Error conditions happen when our inputs are sufficiently small, so 
+    # Normal(0,2) gives us a good range of values to generate a reasonable
+    # percentage of "bad" traces on which to train. Empirically the share
+    # of "bad" traces is about 15-17%.
 
+    seeds = rand(Normal(0,2),30,3)
+    
+    for i=1:size(seeds,1)
+        ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
+        try
+            result = Cassette.overdub(ctx, h, seeds[i,:])
+        catch DomainError
+            dump(ctx.metadata)
+        finally
+            tree = ctx.metadata[1]
+            push!(treeline, tree)
+        end
+        if i%1000 == 0
+            @info string(i)
+        end
+    end
 end
+
+treeline = map(x -> x[1], treeline)
+
+function trace(x::T) where T
+    str_x = string(x)
+
+    if ! startswith(str_x, "(")
+        str_x = "("*str_x*")"
+    end
+
+    ex = Meta.parse(string(x))
+
+    if typeof(ex) != Expr
+        return Trace(string(x))
+    elseif ex.head == :incomplete
+        if length(ex.args) <= 1
+            return Trace(string(x))
+        else
+            ex = Expr(:call)
+        end
+    else
+        ex = Expr(ex.head)
+    end
+
+    fields = fieldnames(T)
+
+    if length(fields) >= 1
+        for f in getfield.(Ref(x), fields)
+            push!(ex.args, trace(f))
+        end
+    end
+
+    return Trace(ex, string(x))
+end
+
+
+struct Trace{T}
+  value::Any
+  rep::String
+  children::Vector{Trace{T}}
+  result::Bool
+
+  function Trace(x::Expr, rep::String)
+    new{Expr}(x, rep, x.args, true)
+  end
+
+  function Trace(x::Any)
+    new{Any}(x, string(x), [], true)
+  end
+end
+
+is_leaf(x) = x.children == []
+
+
+# #
+# # Notional tree-based model on Trace() trees
+# #
+
+# function forward(trc)
+#   if is_leaf(trc)
+#     token = embedding * string(trc.value)
+#     phrase, crossentropy(mod(token), sent)
+#   else
+#     _, sent = tree.value
+#     c1, l1 = forward(tree[1])
+#     c2, l2 = forward(tree[2])
+#     phrase = combine(c1, c2)
+#     phrase, l1 + l2 + crossentropy(sentiment(phrase), sent)
+#   end
+# end
+
+
+
+
