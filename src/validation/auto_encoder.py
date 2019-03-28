@@ -1,18 +1,21 @@
 
+from keras import regularizers
 from keras.callbacks import EarlyStopping
-from keras.layers import Input, LSTM, RepeatVector, Activation, CuDNNLSTM
+from keras.layers import Input, GRU, RepeatVector, Activation, CuDNNGRU
+from keras.layers import Dense, BatchNormalization, Embedding
 from keras.models import Model
+from keras.optimizers import Adam
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 import numpy as np
 import pandas as pd
 
-#
-# one-hot encode text
-#
+latent_dim = 64
+max_len = 500
 
 with open("all_funcs.csv", "r") as f: 
     funcs = f.read()
@@ -22,10 +25,15 @@ funcs = funcs[:-1] # remove trailing empty item
 funcs = pd.DataFrame([x.rsplit("\t",1) for x in funcs])
 funcs.columns = ['code','source']
 funcs = funcs[funcs.code.apply(lambda x: len(x)<=500)]
+funcs.reset_index(drop=True, inplace=True)
+
+funcs.source = funcs.source.apply(lambda x: x[x.index("julia/")+6:])
+funcs["top_folder"] = funcs.source.apply(lambda x: x[:x.index("/")])
+funcs['top2'] = funcs.source.apply(lambda x: '_'.join(x.split("/")[:2]))
 
 def chars_to_indices(data, tok=None, max_len=None):
     if max_len is None:
-        max_len = max(data.apply(lambda x: len(x)))+1
+        max_len = max(data.apply(lambda x: len(x)))
 
     if tok is None:
         tok = Tokenizer(num_words=None, 
@@ -43,44 +51,50 @@ def chars_to_indices(data, tok=None, max_len=None):
     return sequences, tok
 
 def ae_models(maxlen, latent_dim, N, use_gpu=False):
-    inputs = Input((maxlen,N,))
+    inputs = Input((maxlen,), name='Encoder_Inputs')
+    encoded = Embedding(N, latent_dim, name='Char_Embedding', mask_zero=False)(inputs)
+    encoded = BatchNormalization(name='BatchNorm_Encoder')(encoded)
 
     if use_gpu:
-        encoded = CuDNNLSTM(latent_dim)(inputs)
+        _, state_h = CuDNNGRU(latent_dim, return_state=True)(encoded)
     else:
-        encoded = LSTM(latent_dim)(inputs)
+        _, state_h = GRU(latent_dim, return_state=True)(encoded)
 
-    decoded = RepeatVector(maxlen)(encoded)
+    enc = Model(inputs=inputs, outputs=state_h, name='Encoder_Model')
+    enc_out = enc(inputs)
+
+    dec_inputs = Input(shape=(None,), name='Decoder_Inputs')
+    decoded = Embedding(N, latent_dim, name='Decoder_Embedding', mask_zero=False)(dec_inputs)
+    decoded = BatchNormalization(name='BatchNorm_Decoder_1')(decoded)
 
     if use_gpu:
-        decoded = CuDNNLSTM(N, return_sequences=True)(decoded)
+        dec_out, _ = CuDNNGRU(latent_dim, return_state=True, return_sequences=True)(decoded, initial_state=enc_out)
     else:
-        decoded = LSTM(N, return_sequences=True)(decoded)
+        dec_out, _ = GRU(latent_dim, return_state=True, return_sequences=True)(decoded, initial_state=enc_out)
 
-    sequence_autoencoder = Model(inputs=inputs, outputs=decoded)
-    encoder = Model(inputs, encoded)
-    #decoder = Model(encoded, decoded)
+    dec_out = BatchNormalization(name='BatchNorm_Decoder_2')(dec_out)
+    dec_out = Dense(N, activation='softmax', name='Final_Out')(dec_out)
 
-    return sequence_autoencoder, encoder #, decoder
+    sequence_autoencoder = Model(inputs=[inputs, dec_inputs], outputs=dec_out)
 
+    return sequence_autoencoder, enc
 
-# funcs = pd.read_csv("/u1/all_funcs.csv").iloc[:,0]
-funcs = fdf
 seqs, tok = chars_to_indices(funcs.iloc[:,0])
 N = len(np.unique(seqs))
 
-max_len = seqs.shape[1]
+decoder_inputs = seqs[:,  :-1]
+Y = seqs[:, 1:  ]
 
-X_train, X_test = train_test_split(seqs, test_size=1/4)
-X_train = to_categorical(X_train, N, dtype='int16')
-X_test = to_categorical(X_test, N, dtype='int16')
-X_test
+# 
+# When improvements in training initially level out, reduce the learning rate
+# to 0.0001 and re-compile the model. 
+# 
 
-opt = Adam(lr=0.0001, amsgrad=True)
-# autoencoder, enc = ae_models(max_len, 64, N, use_gpu=True)
-autoencoder, enc = ae_models(max_len, 64, N, use_gpu=False)
+autoencoder, enc = ae_models(max_len, 64, N, use_gpu=True)
 
-autoencoder.compile(loss='mse',
+opt = Adam(lr=0.001, amsgrad=True)
+
+autoencoder.compile(loss='sparse_categorical_crossentropy',
                     optimizer=opt,
                     metrics=['accuracy'])
 
@@ -91,15 +105,17 @@ early_stop = EarlyStopping(monitor='val_acc',
                           mode='auto',
                           restore_best_weights=True)
 
-autoencoder.fit(X_train,
-                X_train,
+autoencoder.fit([seqs, decoder_inputs],
+                np.expand_dims(Y, -1),
                 epochs = 100,
                 batch_size = 32,
-                validation_data=(X_test, X_test),
+                validation_split=0.12,
                 callbacks=[early_stop],
                 shuffle=True)
-
 
 autoencoder.save("autoencoder.h5")
 enc.save("encoder.h5")
 
+np.savetxt("seqs.csv", seqs, delimiter=",")
+encoded_reps = pd.DataFrame(enc.predict(seqs))
+encoded_reps.to_csv("encoded_reps.csv", index=False)
