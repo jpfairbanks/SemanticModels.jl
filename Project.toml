@@ -30,4 +30,4 @@ LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["DiffEqBase", "DifferentialEquations", "LsqFit", "Test"]
+test = ["DifferentialEquations", "LsqFit", "Polynomials", "Test"]
