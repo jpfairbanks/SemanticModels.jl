@@ -1,0 +1,50 @@
+digraph G {
+ rankdir="LR"
+ subgraph cluster_meta{
+ label="Election metamodel";
+  subgraph cluster_0 {
+    # style=filled;
+    color=lightgrey;
+    node [style=filled,shape=box];
+    a0 -> a2
+    a1 -> a2
+    label = "Belief\nModel";
+    color=black
+    {rank=same a0 a1}
+
+  }
+
+  subgraph cluster_1 {
+    node [style=filled, shape=box];
+    Finance -> ges
+    Income-> ges
+    #Wealth -> ges
+    {rank=same Finance Income}
+    label = "Economic\nModel";
+    color=darkgreen
+  }
+
+  subgraph cluster_2 {
+      node [style=filled,color=lightblue,shape=box];
+      a2->Polls [style=dashed];
+      Polls -> elec;
+    ges -> Fundamentals [style=dashed];
+      Fundamentals->elec;
+
+      label = "Election Model";
+      #style=filled;
+      color=black;
+  }
+    Finance [label="Stocks"];
+    Income [label="Wages"]
+  ges [label="Economic\nmood"];
+    elec -> end [style=dashed];
+    elec [label="Election\n winner"];
+    a0 [shape=box; label="Campaigns"];
+  a1 [shape=box; label="Initial\nBeliefs"];
+  a2 [label="Beliefs" ];
+  #start [shape=Mdiamond];
+  end [shape=Msquare, label="Policy\noutcome"];
+}
+  label="A simple model of election forcasting";
+}

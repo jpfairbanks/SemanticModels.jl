@@ -1,0 +1,39 @@
+digraph G {
+  node[shape="box", style="filled"]
+3 [ color="#FFB0A0",label="(StateModel,)"];
+5 [ color="#FFD7CD",label="Array"];
+8 [ color="#C9E7F9",label="(StateModel, Int64)"];
+9 [ color="#B3DBF6",label="StateModel"];
+10 [ color="#9BCDF2",label="(Int64,)"];
+11 [ color="#82BDEC",label="Tuple"];
+
+subgraph cluster_0 {
+  label="transitions"
+  6 [ color="#FFE7E1",label="(StateModel, Int64, Symbol)"];
+  7 [ color="#DFF1FC",label="Symbol"];
+  6 -> 7 [ label="transition", ]
+}
+
+subgraph cluster_1 {
+  label="distributions"
+  1 [ color="#FD806E",label="(StateModel, Symbol)"];
+  2 [ color="#FF9987",label="Int64"];
+  4 [ color="#FFC5B7",label="Float64"];
+  1 -> 2 [ label="count", ]
+  1 -> 4 [ label="stateload", ]
+}
+
+2 -> 6 [ label=π2, dir=back, style=dashed]
+2 -> 8 [ label=π2, dir=back, style=dashed]
+2 -> 10 [ label=π1, dir=back, style=dashed]
+3 -> 2 [ label="count", ]
+3 -> 5 [ label="tick!", ]
+7 -> 1 [ label=π2, dir=back, style=dashed]
+7 -> 6 [ label=π3, dir=back, style=dashed]
+8 -> 9 [ label="step!", ]
+9 -> 1 [ label=π1, dir=back, style=dashed]
+9 -> 3 [ label=π1, dir=back, style=dashed]
+9 -> 6 [ label=π1, dir=back, style=dashed]
+9 -> 8 [ label=π1, dir=back, style=dashed]
+10 -> 11 [ label="main", ]
+}

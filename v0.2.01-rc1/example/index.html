@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example · SemanticModels</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>SemanticModels</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">SemanticModels.jl</a></li><li><a class="toctext" href="../usecases/">Intended Use Cases</a></li><li><a class="toctext" href="../news/">News</a></li><li><a class="toctext" href="../modeltools/">ModelTools</a></li><li class="current"><a class="toctext" href>Example</a><ul class="internal"><li><a class="toctext" href="#Extraction-1">Extraction</a></li><li><a class="toctext" href="#Reasoning-1">Reasoning</a></li><li><a class="toctext" href="#Generation-1">Generation</a></li></ul></li><li><a class="toctext" href="../theory/">Theory</a></li><li><a class="toctext" href="../dubstep/">Dubstep</a></li><li><a class="toctext" href="../graph/">Knowledge Graphs</a></li><li><a class="toctext" href="../extraction/">Knowledge Extraction</a></li><li><a class="toctext" href="../validation/">Validation</a></li><li><a class="toctext" href="../library/">Library Reference</a></li><li><a class="toctext" href="../approach/">Approaches</a></li><li><a class="toctext" href="../slides/">Slides</a></li><li><a class="toctext" href="../FluModel/">Flu Model</a></li><li><a class="toctext" href="../contributing/">Contributing</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Example</a></li></ul><a class="edit-page" href="https://github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/example.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Example</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Getting-Started-Example-1" href="#Getting-Started-Example-1">Getting Started Example</a></h1><p>The following example should help you understand the goals of this project. The goal of this example is to illustrate how you can ingest two scientific models and perform a metamodeling or model modification task on the using the SemanticModels system.</p><p>Our two models are an SEIR model that has 4 subpopulations (SEIR) and a ScalingModel has 2 subpopulations (SI). The ScalingModel has a population growth parameter to approximate a changing population size. We want to graft the population growth component of the ScalingModel onto the SEIR model, to produce a new model with novel capabilities.</p><h2><a class="nav-anchor" id="Extraction-1" href="#Extraction-1">Extraction</a></h2><p>The script <code>bin/extract.jl</code> can extract a knowledge graph from code and documentation.</p><p>For example the SEIR model is described in the following Julia implementation.</p><pre><code class="language-julia">module SEIRmodel
+using DifferentialEquations
+
+#Susceptible-exposed-infected-recovered model function
+function seir_ode(dY,Y,p,t)
+    #Infected per-Capita Rate
+    β = p[1]
+    #Incubation Rate
+    σ = p[2]
+    #Recover per-capita rate
+    γ = p[3]
+    #Death Rate
+    μ = p[4]
+
+    #Susceptible Individual
+    S = Y[1]
+    #Exposed Individual
+    E = Y[2]
+    #Infected Individual
+    I = Y[3]
+    #Recovered Individual
+    #R = Y[4]
+
+    dY[1] = μ-β*S*I-μ*S
+    dY[2] = β*S*I-(σ+μ)*E
+    dY[3] = σ*E - (γ+μ)*I
+end
+
+#Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)
+pram=[520/365,1/60,1/30,774835/(65640000*365)]
+#Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)
+init=[0.8,0.1,0.1]
+tspan=(0.0,365.0)
+
+seir_prob = ODEProblem(seir_ode,init,tspan,pram)
+
+sol=solve(seir_prob);
+
+using Plots
+
+va = VectorOfArray(sol.u)
+y = convert(Array,va)
+R = ones(size(sol.t))&#39; - sum(y,dims=1);
+
+plot(sol.t,[y&#39;,R&#39;],xlabel=&quot;Time&quot;,ylabel=&quot;Proportion&quot;)
+end</code></pre><p>We can extract out a knowledge graph that covers this model along with an Scaling Model from <code>examples/epicookbook/src/ScalingModel.jl</code></p><pre><code class="language-julia">julia&gt; include(&quot;extract.jl&quot;)
+┌ Info: Graph created from markdown has v vertices and e edges.
+│   v = 0
+└   e = 0
+┌ Info: Parsing julia script
+└   file = &quot;../examples/epicookbook/src/ScalingModel.jl&quot;
+s = &quot;# -*- coding: utf-8 -*-\n# ---\n# jupyter:\n#   jupytext:\n#     text_representation:\n#       extension: .jl\n#       format_name: light\n#       format_version: &#39;1.3&#39;\n#       jupytext_version: 0.8.6\n#   kernelspec:\n#     display_name: Julia 1.0.3\n#     language: julia\n#     name: julia-1.0\n# ---\n\nmodule ScalingModel\nusing DifferentialEquations\n\nfunction micro_1(du, u, parms, time)\n    # PARAMETER DEFS\n    # β transmition rate\n    # r net population growth rate\n    # μ hosts&#39; natural mortality rate\n    # Κ population size\n    # α disease induced mortality rate\n\n    β, r, μ, K, α = parms\n    dS = r*(1-S/K)*S - β*S*I\n    dI = β*S*I-(μ+α)*I\n    du = [dS,dI]\nend\n\n# +\n# PARAMETER DEFS\n# w and m are used to define the other parameters allometrically\n\nw = 1;\nm = 10;\nβ = 0.0247*m*w^0.44;\nr = 0.6*w^-0.27;\nμ = 0.4*w^-0.26;\nK = 16.2*w^-0.7;\nα = (m-1)*μ;\n# -\n\nparms = [β,r,μ,K,α];\ninit = [K,1.];\ntspan = (0.0,10.0);\n\nsir_prob = ODEProblem(micro_1,init,tspan,parms)\n\nsir_sol = solve(sir_prob);\n\nusing Plots\n\nplot(sir_sol,xlabel=\&quot;Time\&quot;,ylabel=\&quot;Number\&quot;)\n\nm = [5,10,20,40]\nws = 10 .^collect(range(-3,length = 601,3))\nβs = zeros(601,4)\nfor i = 1:4\n    βs[:,i] = 0.0247*m[i]*ws.^0.44\nend\nplot(ws,βs,xlabel=\&quot;Weight\&quot;,ylabel=\&quot;\\\\beta_min\&quot;, xscale=:log10,yscale=:log10, label=[\&quot;m = 5\&quot; \&quot;m = 10\&quot; \&quot;m = 20\&quot; \&quot;m = 40\&quot;],lw=3)\n\nend\n&quot;
+[ Info: unknown expr type for metacollector
+expr = :(function micro_1(du, u, parms, time)
+      #= none:27 =#
+      (β, r, μ, K, α) = parms
+      #= none:28 =#
+      dS = r * (1 - S / K) * S - β * S * I
+      #= none:29 =#
+      dI = β * S * I - (μ + α) * I
+      #= none:30 =#
+      du = [dS, dI]
+  end)
+[ Info: unknown expr type for metacollector
+expr = :(plot(sir_sol, xlabel=&quot;Time&quot;, ylabel=&quot;Number&quot;))
+[ Info: unknown expr type for metacollector
+expr = :(for i = 1:4
+      #= none:62 =#
+      βs[:, i] = 0.0247 * m[i] * ws .^ 0.44
+  end)
+[ Info: unknown expr type for metacollector
+expr = :(plot(ws, βs, xlabel=&quot;Weight&quot;, ylabel=&quot;\\beta_min&quot;, xscale=:log10, yscale=:log10, label=[&quot;m = 5&quot; &quot;m = 10&quot; &quot;m = 20&quot; &quot;m = 40&quot;], lw=3))
+┌ Info: script uses modules
+│   modules =
+│    2-element Array{Any,1}:
+│     Any[:DifferentialEquations]
+└     Any[:Plots]
+┌ Info: script defines functions
+│   funcs =
+│    1-element Array{Any,1}:
+│     :(micro_1(du, u, parms, time)) =&gt; quote
+│        #= none:27 =#
+│        (β, r, μ, K, α) = parms
+│        #= none:28 =#
+│        dS = r * (1 - S / K) * S - β * S * I
+│        #= none:29 =#
+│        dI = β * S * I - (μ + α) * I
+│        #= none:30 =#
+│        du = [dS, dI]
+└    end
+┌ Info: script defines glvariables
+│   funcs =
+│    15-element Array{Any,1}:
+│            :w =&gt; 1
+│            :m =&gt; 10
+│            :β =&gt; :(0.0247 * m * w ^ 0.44)
+│            :r =&gt; :(0.6 * w ^ -0.27)
+│            :μ =&gt; :(0.4 * w ^ -0.26)
+│            :K =&gt; :(16.2 * w ^ -0.7)
+│            :α =&gt; :((m - 1) * μ)
+│        :parms =&gt; :([β, r, μ, K, α])
+│         :init =&gt; :([K, 1.0])
+│        :tspan =&gt; :((0.0, 10.0))
+│     :sir_prob =&gt; :(ODEProblem(micro_1, init, tspan, parms))
+│      :sir_sol =&gt; :(solve(sir_prob))
+│            :m =&gt; :([5, 10, 20, 40])
+│           :ws =&gt; :(10 .^ collect(range(-3, length=601, 3)))
+└           :βs =&gt; :(zeros(601, 4))
+funcdefs = Any[:(micro_1(du, u, parms, time))=&gt;quote
+    #= none:27 =#
+    (β, r, μ, K, α) = parms
+    #= none:28 =#
+    dS = r * (1 - S / K) * S - β * S * I
+    #= none:29 =#
+    dI = β * S * I - (μ + α) * I
+    #= none:30 =#
+    du = [dS, dI]
+end]
+┌ Info: local scope definitions
+│   subdefs =
+│    1-element Array{Any,1}:
+└     :(micro_1(du, u, parms, time)) =&gt; MetaCollector{FuncCollector{Array{Any,1}},Array{Any,1},Array{Any,1},Array{Any,1}}(Any[:((β, r, μ, K, α) = parms), :(dS = r * (1 - S / K) * S - β * S * I), :(dI = β * S * I - (μ + α) * I), :(du = [dS, dI])], FuncCollector{Array{Any,1}}(Any[]), Any[:((β, r, μ, K, α))=&gt;:parms, :dS=&gt;:(r * (1 - S / K) * S - β * S * I), :dI=&gt;:(β * S * I - (μ + α) * I), :du=&gt;:([dS, dI])], Any[])
+┌ Info: micro_1(du, u, parms, time) uses modules
+└   modules = 0-element Array{Any,1}
+┌ Info: micro_1(du, u, parms, time) defines functions
+└   funcs = 0-element Array{Any,1}
+┌ Info: micro_1(du, u, parms, time) defines variables
+│   funcs =
+│    4-element Array{Any,1}:
+│     :((β, r, μ, K, α)) =&gt; :parms
+│                    :dS =&gt; :(r * (1 - S / K) * S - β * S * I)
+│                    :dI =&gt; :(β * S * I - (μ + α) * I)
+└                    :du =&gt; :([dS, dI])
+┌ Info: Making edges
+└   scope = :ScalingModel
+(var, val) = (:((β, r, μ, K, α)), :parms)
+(var, val) = (:dS, :(r * (1 - S / K) * S - β * S * I))
+(var, val) = (:dI, :(β * S * I - (μ + α) * I))
+(var, val) = (:du, :([dS, dI]))
+┌ Info: Making edges
+└   scope = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+(var, val) = (:((β, r, μ, K, α)), :parms)
+(var, val) = (:dS, :(r * (1 - S / K) * S - β * S * I))
+(var, val) = (:dI, :(β * S * I - (μ + α) * I))
+(var, val) = (:du, :([dS, dI]))
+┌ Info: Edges found
+└   path = &quot;../examples/epicookbook/src/ScalingModel.jl&quot;
+[ Info: The input graph contains 0 unique vertices
+┌ Info: The input edge list refers to 26 unique vertices.
+└   nv = 26
+┌ Info: The size of the intersection of these two sets is: 0.
+└   nv = 0
+┌ Info: src vertex ScalingModel was not in G, and has been inserted.
+└   vname = &quot;ScalingModel&quot;
+┌ Info: dst vertex (β, r, μ, K, α) was not in G, and has been inserted.
+└   vname = &quot;(β, r, μ, K, α)&quot;
+[ Info: Inserting directed edge of type destructure from ScalingModel to (β, r, μ, K, α).
+┌ Info: dst vertex parms was not in G, and has been inserted.
+└   vname = &quot;parms&quot;
+[ Info: Inserting directed edge of type val from (β, r, μ, K, α) to parms.
+┌ Info: dst vertex parms was not in G, and has been inserted.
+└   vname = &quot;parms&quot;
+[ Info: Inserting directed edge of type comp from ScalingModel to parms.
+┌ Info: dst vertex β was not in G, and has been inserted.
+└   vname = &quot;β&quot;
+[ Info: Inserting directed edge of type var from parms to β.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 2
+│   type = :comp
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;parms&quot;
+┌ Info: dst vertex r was not in G, and has been inserted.
+└   vname = &quot;r&quot;
+[ Info: Inserting directed edge of type var from parms to r.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 3
+│   type = :comp
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;parms&quot;
+┌ Info: dst vertex μ was not in G, and has been inserted.
+└   vname = &quot;μ&quot;
+[ Info: Inserting directed edge of type var from parms to μ.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 4
+│   type = :comp
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;parms&quot;
+┌ Info: dst vertex K was not in G, and has been inserted.
+└   vname = &quot;K&quot;
+[ Info: Inserting directed edge of type var from parms to K.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 5
+│   type = :comp
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;parms&quot;
+┌ Info: dst vertex α was not in G, and has been inserted.
+└   vname = &quot;α&quot;
+[ Info: Inserting directed edge of type var from parms to α.
+┌ Info: dst vertex dS was not in G, and has been inserted.
+└   vname = &quot;dS&quot;
+[ Info: Inserting directed edge of type output from ScalingModel to dS.
+┌ Info: dst vertex r * (1 - S / K) * S - β * S * I was not in G, and has been inserted.
+└   vname = &quot;r * (1 - S / K) * S - β * S * I&quot;
+[ Info: Inserting directed edge of type val from dS to r * (1 - S / K) * S - β * S * I.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;dS&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 2
+│   type = &quot;exp&quot;
+│   src = &quot;dS&quot;
+└   dst = &quot;r * (1 - S / K) * S - β * S * I&quot;
+┌ Info: dst vertex - was not in G, and has been inserted.
+└   vname = &quot;-&quot;
+[ Info: Inserting directed edge of type input from ScalingModel to -.
+┌ Info: dst vertex Symbol[Symbol(&quot;r * (1 - S / K) * S&quot;), Symbol(&quot;β * S * I&quot;)] was not in G, and has been inserted.
+└   vname = &quot;Symbol[Symbol(\&quot;r * (1 - S / K) * S\&quot;), Symbol(\&quot;β * S * I\&quot;)]&quot;
+[ Info: Inserting directed edge of type args from - to Symbol[Symbol(&quot;r * (1 - S / K) * S&quot;), Symbol(&quot;β * S * I&quot;)].
+┌ Info: dst vertex dI was not in G, and has been inserted.
+└   vname = &quot;dI&quot;
+[ Info: Inserting directed edge of type output from ScalingModel to dI.
+┌ Info: dst vertex β * S * I - (μ + α) * I was not in G, and has been inserted.
+└   vname = &quot;β * S * I - (μ + α) * I&quot;
+[ Info: Inserting directed edge of type val from dI to β * S * I - (μ + α) * I.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;dI&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 2
+│   type = &quot;exp&quot;
+│   src = &quot;dI&quot;
+└   dst = &quot;β * S * I - (μ + α) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 2
+│   type = :input
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;-&quot;
+┌ Info: dst vertex Symbol[Symbol(&quot;β * S * I&quot;), Symbol(&quot;(μ + α) * I&quot;)] was not in G, and has been inserted.
+└   vname = &quot;Symbol[Symbol(\&quot;β * S * I\&quot;), Symbol(\&quot;(μ + α) * I\&quot;)]&quot;
+[ Info: Inserting directed edge of type args from - to Symbol[Symbol(&quot;β * S * I&quot;), Symbol(&quot;(μ + α) * I&quot;)].
+┌ Info: dst vertex du was not in G, and has been inserted.
+└   vname = &quot;du&quot;
+[ Info: Inserting directed edge of type takes from ScalingModel to du.
+┌ Info: dst vertex [dS, dI] was not in G, and has been inserted.
+└   vname = &quot;[dS, dI]&quot;
+[ Info: Inserting directed edge of type val from du to [dS, dI].
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :has
+│   weight = 2
+│   type = :has
+│   src = &quot;ScalingModel&quot;
+└   dst = &quot;du&quot;
+┌ Info: dst vertex collection was not in G, and has been inserted.
+└   vname = &quot;collection&quot;
+[ Info: Inserting directed edge of type property from du to collection.
+┌ Info: src vertex ScalingModel.micro_1(du, u, parms, time) was not in G, and has been inserted.
+└   vname = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+[ Info: Inserting directed edge of type destructure from ScalingModel.micro_1(du, u, parms, time) to (β, r, μ, K, α).
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;(β, r, μ, K, α)&quot;
+└   dst = &quot;parms&quot;
+[ Info: Inserting directed edge of type comp from ScalingModel.micro_1(du, u, parms, time) to parms.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;var&quot;
+│   weight = 2
+│   type = &quot;var&quot;
+│   src = &quot;parms&quot;
+└   dst = &quot;β&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 2
+│   type = :comp
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;parms&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;var&quot;
+│   weight = 2
+│   type = &quot;var&quot;
+│   src = &quot;parms&quot;
+└   dst = &quot;r&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 3
+│   type = :comp
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;parms&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;var&quot;
+│   weight = 2
+│   type = &quot;var&quot;
+│   src = &quot;parms&quot;
+└   dst = &quot;μ&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 4
+│   type = :comp
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;parms&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;var&quot;
+│   weight = 2
+│   type = &quot;var&quot;
+│   src = &quot;parms&quot;
+└   dst = &quot;K&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :comp
+│   weight = 5
+│   type = :comp
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;parms&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;var&quot;
+│   weight = 2
+│   type = &quot;var&quot;
+│   src = &quot;parms&quot;
+└   dst = &quot;α&quot;
+[ Info: Inserting directed edge of type output from ScalingModel.micro_1(du, u, parms, time) to dS.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 3
+│   type = &quot;val&quot;
+│   src = &quot;dS&quot;
+└   dst = &quot;r * (1 - S / K) * S - β * S * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;dS&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 4
+│   type = &quot;exp&quot;
+│   src = &quot;dS&quot;
+└   dst = &quot;r * (1 - S / K) * S - β * S * I&quot;
+[ Info: Inserting directed edge of type input from ScalingModel.micro_1(du, u, parms, time) to -.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;args&quot;
+│   weight = 2
+│   type = &quot;args&quot;
+│   src = &quot;-&quot;
+└   dst = &quot;Symbol[Symbol(\&quot;r * (1 - S / K) * S\&quot;), Symbol(\&quot;β * S * I\&quot;)]&quot;
+[ Info: Inserting directed edge of type output from ScalingModel.micro_1(du, u, parms, time) to dI.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 3
+│   type = &quot;val&quot;
+│   src = &quot;dI&quot;
+└   dst = &quot;β * S * I - (μ + α) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;dI&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 4
+│   type = &quot;exp&quot;
+│   src = &quot;dI&quot;
+└   dst = &quot;β * S * I - (μ + α) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 2
+│   type = :input
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;-&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;args&quot;
+│   weight = 2
+│   type = &quot;args&quot;
+│   src = &quot;-&quot;
+└   dst = &quot;Symbol[Symbol(\&quot;β * S * I\&quot;), Symbol(\&quot;(μ + α) * I\&quot;)]&quot;
+[ Info: Inserting directed edge of type takes from ScalingModel.micro_1(du, u, parms, time) to du.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;du&quot;
+└   dst = &quot;[dS, dI]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :has
+│   weight = 2
+│   type = :has
+│   src = &quot;ScalingModel.micro_1(du, u, parms, time)&quot;
+└   dst = &quot;du&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;property&quot;
+│   weight = 2
+│   type = &quot;property&quot;
+│   src = &quot;du&quot;
+└   dst = &quot;collection&quot;
+┌ Info: Returning graph G
+│   nedges = 24
+└   cardinality = 20
+┌ Info: Code graph 1 has v vertices and e edges.
+│   v = 20
+└   e = 24
+┌ Info: Parsing julia script
+└   file = &quot;../examples/epicookbook/src/SEIRmodel.jl&quot;
+s = &quot;# -*- coding: utf-8 -*-\n# ---\n# jupyter:\n#   jupytext:\n#     text_representation:\n#       extension: .jl\n#       format_name: light\n#       format_version: &#39;1.3&#39;\n#       jupytext_version: 0.8.6\n#   kernelspec:\n#     display_name: Julia 1.0.3\n#     language: julia\n#     name: julia-1.0\n# ---\n\nmodule SEIRmodel\nusing DifferentialEquations\n\n#Susceptible-exposed-infected-recovered model function\nfunction seir_ode(dY,Y,p,t)\n    #Infected per-Capita Rate\n    β = p[1]\n    #Incubation Rate\n    σ = p[2]\n    #Recover per-capita rate\n    γ = p[3]\n    #Death Rate\n    μ = p[4]\n\n    #Susceptible Individual\n    S = Y[1]\n    #Exposed Individual\n    E = Y[2]\n    #Infected Individual\n    I = Y[3]\n    #Recovered Individual\n    #R = Y[4]\n\n    dY[1] = μ-β*S*I-μ*S\n    dY[2] = β*S*I-(σ+μ)*E\n    dY[3] = σ*E - (γ+μ)*I\nend\n\n#Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)\npram=[520/365,1/60,1/30,774835/(65640000*365)]\n#Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)\ninit=[0.8,0.1,0.1]\ntspan=(0.0,365.0)\n\nseir_prob = ODEProblem(seir_ode,init,tspan,pram)\n\nsol=solve(seir_prob);\n\nusing Plots\n\nva = VectorOfArray(sol.u)\ny = convert(Array,va)\nR = ones(size(sol.t))&#39; - sum(y,dims=1);\n\nplot(sol.t,[y&#39;,R&#39;],xlabel=\&quot;Time\&quot;,ylabel=\&quot;Proportion\&quot;)\n\n\n\nend\n&quot;
+[ Info: unknown expr type for metacollector
+expr = :(function seir_ode(dY, Y, p, t)
+      #= none:22 =#
+      β = p[1]
+      #= none:24 =#
+      σ = p[2]
+      #= none:26 =#
+      γ = p[3]
+      #= none:28 =#
+      μ = p[4]
+      #= none:31 =#
+      S = Y[1]
+      #= none:33 =#
+      E = Y[2]
+      #= none:35 =#
+      I = Y[3]
+      #= none:39 =#
+      dY[1] = (μ - β * S * I) - μ * S
+      #= none:40 =#
+      dY[2] = β * S * I - (σ + μ) * E
+      #= none:41 =#
+      dY[3] = σ * E - (γ + μ) * I
+  end)
+[ Info: unknown expr type for metacollector
+expr = :(plot(sol.t, [y&#39;, R&#39;], xlabel=&quot;Time&quot;, ylabel=&quot;Proportion&quot;))
+┌ Info: script uses modules
+│   modules =
+│    2-element Array{Any,1}:
+│     Any[:DifferentialEquations]
+└     Any[:Plots]
+┌ Info: script defines functions
+│   funcs =
+│    1-element Array{Any,1}:
+│     :(seir_ode(dY, Y, p, t)) =&gt; quote
+│        #= none:22 =#
+│        β = p[1]
+│        #= none:24 =#
+│        σ = p[2]
+│        #= none:26 =#
+│        γ = p[3]
+│        #= none:28 =#
+│        μ = p[4]
+│        #= none:31 =#
+│        S = Y[1]
+│        #= none:33 =#
+│        E = Y[2]
+│        #= none:35 =#
+│        I = Y[3]
+│        #= none:39 =#
+│        dY[1] = (μ - β * S * I) - μ * S
+│        #= none:40 =#
+│        dY[2] = β * S * I - (σ + μ) * E
+│        #= none:41 =#
+│        dY[3] = σ * E - (γ + μ) * I
+└    end
+┌ Info: script defines glvariables
+│   funcs =
+│    8-element Array{Any,1}:
+│          :pram =&gt; :([520 / 365, 1 / 60, 1 / 30, 774835 / (65640000 * 365)])
+│          :init =&gt; :([0.8, 0.1, 0.1])
+│         :tspan =&gt; :((0.0, 365.0))
+│     :seir_prob =&gt; :(ODEProblem(seir_ode, init, tspan, pram))
+│           :sol =&gt; :(solve(seir_prob))
+│            :va =&gt; :(VectorOfArray(sol.u))
+│             :y =&gt; :(convert(Array, va))
+└             :R =&gt; :((ones(size(sol.t)))&#39; - sum(y, dims=1))
+funcdefs = Any[:(seir_ode(dY, Y, p, t))=&gt;quote
+    #= none:22 =#
+    β = p[1]
+    #= none:24 =#
+    σ = p[2]
+    #= none:26 =#
+    γ = p[3]
+    #= none:28 =#
+    μ = p[4]
+    #= none:31 =#
+    S = Y[1]
+    #= none:33 =#
+    E = Y[2]
+    #= none:35 =#
+    I = Y[3]
+    #= none:39 =#
+    dY[1] = (μ - β * S * I) - μ * S
+    #= none:40 =#
+    dY[2] = β * S * I - (σ + μ) * E
+    #= none:41 =#
+    dY[3] = σ * E - (γ + μ) * I
+end]
+┌ Info: local scope definitions
+│   subdefs =
+│    1-element Array{Any,1}:
+└     :(seir_ode(dY, Y, p, t)) =&gt; MetaCollector{FuncCollector{Array{Any,1}},Array{Any,1},Array{Any,1},Array{Any,1}}(Any[:(β = p[1]), :(σ = p[2]), :(γ = p[3]), :(μ = p[4]), :(S = Y[1]), :(E = Y[2]), :(I = Y[3]), :(dY[1] = (μ - β * S * I) - μ * S), :(dY[2] = β * S * I - (σ + μ) * E), :(dY[3] = σ * E - (γ + μ) * I)], FuncCollector{Array{Any,1}}(Any[]), Any[:β=&gt;:(p[1]), :σ=&gt;:(p[2]), :γ=&gt;:(p[3]), :μ=&gt;:(p[4]), :S=&gt;:(Y[1]), :E=&gt;:(Y[2]), :I=&gt;:(Y[3]), :(dY[1])=&gt;:((μ - β * S * I) - μ * S), :(dY[2])=&gt;:(β * S * I - (σ + μ) * E), :(dY[3])=&gt;:(σ * E - (γ + μ) * I)], Any[])
+┌ Info: seir_ode(dY, Y, p, t) uses modules
+└   modules = 0-element Array{Any,1}
+┌ Info: seir_ode(dY, Y, p, t) defines functions
+└   funcs = 0-element Array{Any,1}
+┌ Info: seir_ode(dY, Y, p, t) defines variables
+│   funcs =
+│    10-element Array{Any,1}:
+│           :β =&gt; :(p[1])
+│           :σ =&gt; :(p[2])
+│           :γ =&gt; :(p[3])
+│           :μ =&gt; :(p[4])
+│           :S =&gt; :(Y[1])
+│           :E =&gt; :(Y[2])
+│           :I =&gt; :(Y[3])
+│     :(dY[1]) =&gt; :((μ - β * S * I) - μ * S)
+│     :(dY[2]) =&gt; :(β * S * I - (σ + μ) * E)
+└     :(dY[3]) =&gt; :(σ * E - (γ + μ) * I)
+┌ Info: Making edges
+└   scope = :SEIRmodel
+(var, val) = (:β, :(p[1]))
+(var, val) = (:σ, :(p[2]))
+(var, val) = (:γ, :(p[3]))
+(var, val) = (:μ, :(p[4]))
+(var, val) = (:S, :(Y[1]))
+(var, val) = (:E, :(Y[2]))
+(var, val) = (:I, :(Y[3]))
+(var, val) = (:(dY[1]), :((μ - β * S * I) - μ * S))
+(var, val) = (:(dY[2]), :(β * S * I - (σ + μ) * E))
+(var, val) = (:(dY[3]), :(σ * E - (γ + μ) * I))
+┌ Info: Making edges
+└   scope = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+(var, val) = (:β, :(p[1]))
+(var, val) = (:σ, :(p[2]))
+(var, val) = (:γ, :(p[3]))
+(var, val) = (:μ, :(p[4]))
+(var, val) = (:S, :(Y[1]))
+(var, val) = (:E, :(Y[2]))
+(var, val) = (:I, :(Y[3]))
+(var, val) = (:(dY[1]), :((μ - β * S * I) - μ * S))
+(var, val) = (:(dY[2]), :(β * S * I - (σ + μ) * E))
+(var, val) = (:(dY[3]), :(σ * E - (γ + μ) * I))
+┌ Info: Edges found
+└   path = &quot;../examples/epicookbook/src/SEIRmodel.jl&quot;
+[ Info: The input graph contains 20 unique vertices
+┌ Info: The input edge list refers to 37 unique vertices.
+└   nv = 37
+┌ Info: The size of the intersection of these two sets is: 1.
+└   nv = 1
+┌ Info: src vertex SEIRmodel was not in G, and has been inserted.
+└   vname = &quot;SEIRmodel&quot;
+┌ Info: dst vertex β was not in G, and has been inserted.
+└   vname = &quot;β&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to β.
+┌ Info: dst vertex p[1] was not in G, and has been inserted.
+└   vname = &quot;p[1]&quot;
+[ Info: Inserting directed edge of type val from β to p[1].
+┌ Info: dst vertex σ was not in G, and has been inserted.
+└   vname = &quot;σ&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to σ.
+┌ Info: dst vertex p[2] was not in G, and has been inserted.
+└   vname = &quot;p[2]&quot;
+[ Info: Inserting directed edge of type val from σ to p[2].
+┌ Info: dst vertex γ was not in G, and has been inserted.
+└   vname = &quot;γ&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to γ.
+┌ Info: dst vertex p[3] was not in G, and has been inserted.
+└   vname = &quot;p[3]&quot;
+[ Info: Inserting directed edge of type val from γ to p[3].
+┌ Info: dst vertex μ was not in G, and has been inserted.
+└   vname = &quot;μ&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to μ.
+┌ Info: dst vertex p[4] was not in G, and has been inserted.
+└   vname = &quot;p[4]&quot;
+[ Info: Inserting directed edge of type val from μ to p[4].
+┌ Info: dst vertex S was not in G, and has been inserted.
+└   vname = &quot;S&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to S.
+┌ Info: dst vertex Y[1] was not in G, and has been inserted.
+└   vname = &quot;Y[1]&quot;
+[ Info: Inserting directed edge of type val from S to Y[1].
+┌ Info: dst vertex E was not in G, and has been inserted.
+└   vname = &quot;E&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to E.
+┌ Info: dst vertex Y[2] was not in G, and has been inserted.
+└   vname = &quot;Y[2]&quot;
+[ Info: Inserting directed edge of type val from E to Y[2].
+┌ Info: dst vertex I was not in G, and has been inserted.
+└   vname = &quot;I&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel to I.
+┌ Info: dst vertex Y[3] was not in G, and has been inserted.
+└   vname = &quot;Y[3]&quot;
+[ Info: Inserting directed edge of type val from I to Y[3].
+┌ Info: dst vertex dY[1] was not in G, and has been inserted.
+└   vname = &quot;dY[1]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel to dY[1].
+┌ Info: dst vertex (μ - β * S * I) - μ * S was not in G, and has been inserted.
+└   vname = &quot;(μ - β * S * I) - μ * S&quot;
+[ Info: Inserting directed edge of type val from dY[1] to (μ - β * S * I) - μ * S.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel&quot;
+└   dst = &quot;dY[1]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 2
+│   type = &quot;exp&quot;
+│   src = &quot;dY[1]&quot;
+└   dst = &quot;(μ - β * S * I) - μ * S&quot;
+[ Info: Inserting directed edge of type input from SEIRmodel to -.
+┌ Info: dst vertex Symbol[Symbol(&quot;μ - β * S * I&quot;), Symbol(&quot;μ * S&quot;)] was not in G, and has been inserted.
+└   vname = &quot;Symbol[Symbol(\&quot;μ - β * S * I\&quot;), Symbol(\&quot;μ * S\&quot;)]&quot;
+[ Info: Inserting directed edge of type args from - to Symbol[Symbol(&quot;μ - β * S * I&quot;), Symbol(&quot;μ * S&quot;)].
+┌ Info: dst vertex dY[2] was not in G, and has been inserted.
+└   vname = &quot;dY[2]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel to dY[2].
+┌ Info: dst vertex β * S * I - (σ + μ) * E was not in G, and has been inserted.
+└   vname = &quot;β * S * I - (σ + μ) * E&quot;
+[ Info: Inserting directed edge of type val from dY[2] to β * S * I - (σ + μ) * E.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel&quot;
+└   dst = &quot;dY[2]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 2
+│   type = &quot;exp&quot;
+│   src = &quot;dY[2]&quot;
+└   dst = &quot;β * S * I - (σ + μ) * E&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 2
+│   type = :input
+│   src = &quot;SEIRmodel&quot;
+└   dst = &quot;-&quot;
+┌ Info: dst vertex Symbol[Symbol(&quot;β * S * I&quot;), Symbol(&quot;(σ + μ) * E&quot;)] was not in G, and has been inserted.
+└   vname = &quot;Symbol[Symbol(\&quot;β * S * I\&quot;), Symbol(\&quot;(σ + μ) * E\&quot;)]&quot;
+[ Info: Inserting directed edge of type args from - to Symbol[Symbol(&quot;β * S * I&quot;), Symbol(&quot;(σ + μ) * E&quot;)].
+┌ Info: dst vertex dY[3] was not in G, and has been inserted.
+└   vname = &quot;dY[3]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel to dY[3].
+┌ Info: dst vertex σ * E - (γ + μ) * I was not in G, and has been inserted.
+└   vname = &quot;σ * E - (γ + μ) * I&quot;
+[ Info: Inserting directed edge of type val from dY[3] to σ * E - (γ + μ) * I.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel&quot;
+└   dst = &quot;dY[3]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 2
+│   type = &quot;exp&quot;
+│   src = &quot;dY[3]&quot;
+└   dst = &quot;σ * E - (γ + μ) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 3
+│   type = :input
+│   src = &quot;SEIRmodel&quot;
+└   dst = &quot;-&quot;
+┌ Info: dst vertex Symbol[Symbol(&quot;σ * E&quot;), Symbol(&quot;(γ + μ) * I&quot;)] was not in G, and has been inserted.
+└   vname = &quot;Symbol[Symbol(\&quot;σ * E\&quot;), Symbol(\&quot;(γ + μ) * I\&quot;)]&quot;
+[ Info: Inserting directed edge of type args from - to Symbol[Symbol(&quot;σ * E&quot;), Symbol(&quot;(γ + μ) * I&quot;)].
+┌ Info: src vertex SEIRmodel.seir_ode(dY, Y, p, t) was not in G, and has been inserted.
+└   vname = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to β.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;β&quot;
+└   dst = &quot;p[1]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to σ.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;σ&quot;
+└   dst = &quot;p[2]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to γ.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;γ&quot;
+└   dst = &quot;p[3]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to μ.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;μ&quot;
+└   dst = &quot;p[4]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to S.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;S&quot;
+└   dst = &quot;Y[1]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to E.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;E&quot;
+└   dst = &quot;Y[2]&quot;
+[ Info: Inserting directed edge of type takes from SEIRmodel.seir_ode(dY, Y, p, t) to I.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 2
+│   type = &quot;val&quot;
+│   src = &quot;I&quot;
+└   dst = &quot;Y[3]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel.seir_ode(dY, Y, p, t) to dY[1].
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 3
+│   type = &quot;val&quot;
+│   src = &quot;dY[1]&quot;
+└   dst = &quot;(μ - β * S * I) - μ * S&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+└   dst = &quot;dY[1]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 4
+│   type = &quot;exp&quot;
+│   src = &quot;dY[1]&quot;
+└   dst = &quot;(μ - β * S * I) - μ * S&quot;
+[ Info: Inserting directed edge of type input from SEIRmodel.seir_ode(dY, Y, p, t) to -.
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;args&quot;
+│   weight = 2
+│   type = &quot;args&quot;
+│   src = &quot;-&quot;
+└   dst = &quot;Symbol[Symbol(\&quot;μ - β * S * I\&quot;), Symbol(\&quot;μ * S\&quot;)]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel.seir_ode(dY, Y, p, t) to dY[2].
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 3
+│   type = &quot;val&quot;
+│   src = &quot;dY[2]&quot;
+└   dst = &quot;β * S * I - (σ + μ) * E&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+└   dst = &quot;dY[2]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 4
+│   type = &quot;exp&quot;
+│   src = &quot;dY[2]&quot;
+└   dst = &quot;β * S * I - (σ + μ) * E&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 2
+│   type = :input
+│   src = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+└   dst = &quot;-&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;args&quot;
+│   weight = 2
+│   type = &quot;args&quot;
+│   src = &quot;-&quot;
+└   dst = &quot;Symbol[Symbol(\&quot;β * S * I\&quot;), Symbol(\&quot;(σ + μ) * E\&quot;)]&quot;
+[ Info: Inserting directed edge of type output from SEIRmodel.seir_ode(dY, Y, p, t) to dY[3].
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;val&quot;
+│   weight = 3
+│   type = &quot;val&quot;
+│   src = &quot;dY[3]&quot;
+└   dst = &quot;σ * E - (γ + μ) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :output
+│   weight = 2
+│   type = :output
+│   src = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+└   dst = &quot;dY[3]&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;exp&quot;
+│   weight = 4
+│   type = &quot;exp&quot;
+│   src = &quot;dY[3]&quot;
+└   dst = &quot;σ * E - (γ + μ) * I&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = :input
+│   weight = 3
+│   type = :input
+│   src = &quot;SEIRmodel.seir_ode(dY, Y, p, t)&quot;
+└   dst = &quot;-&quot;
+┌ Info: Incrementing weight of existing directed edge
+│   edge_type = &quot;args&quot;
+│   weight = 2
+│   type = &quot;args&quot;
+│   src = &quot;-&quot;
+└   dst = &quot;Symbol[Symbol(\&quot;σ * E\&quot;), Symbol(\&quot;(γ + μ) * I\&quot;)]&quot;
+┌ Info: Returning graph G
+│   nedges = 59
+└   cardinality = 45
+┌ Info: Code graph 2 has v vertices and e edges.
+│   v = 45
+└   e = 59
+[ Info: All markdown and code files have been parsed; writing final knowledge graph to dot file
+Process(`dot -Tsvg -O ../examples/epicookbook/data/dot_file_ex1.dot`, ProcessExited(0))</code></pre><p>The extraction code will generate a dot file diagram of the edges in the graph.</p><p>Due to the fact that code extraction is a heuristic, there is some cleaning of the knowledge  graph required before it is ready for reasoning.</p><h2><a class="nav-anchor" id="Reasoning-1" href="#Reasoning-1">Reasoning</a></h2><p>Once the information is extracted from the documentation and code, we can visualize the knowledge as a graph. Most edges of type <code>cooccur</code> are elided for clarity.</p><p><img src="../img/reasoning_sir.dot.svg" alt="Knowledge Graph from epicookbook"/></p><p>This knowledge graph contains all the connections we need to combine components across models. Once can view this combination as either a modification of one model by substituting components of another model, or as the automatic generation of a metamodel by synthesizing components from the knowledge graph into a single coherent model. Further theoretical analysis of metamodeling and model modification as mathematical problems is warranted to make these categories unambiguous and precisely defined.</p><p>Once we identify a subgraph of related components we can identify the graft point between the two models. We look for a common variable that is used in two models, specifically in a derivative calculation. We find the variable <code>S</code> which appears in <code>dS</code> and <code>dY</code> (as <code>S=Y[1]</code> and <code>dY = derivative(Y)</code>). The knowledge that <code>dS, dY</code> are derivatives comes from the background knowledge of modeling that comes from reading textbooks and general scientific knowledge, while the fact that <code>S</code> and <code>Y[1]</code> both appear in an expression <code>mu-beta*S*I - mu*S</code> comes from the specific documents and codebases under consideration by the metamodeler.</p><p><img src="../img/reasoning_sir_subgraph.dot.svg" alt="Knowledge Subgraph showing model modification"/></p><p>This subgraph must then extend out to capture all of the relevant information such as the parameter sets encountered, the function calls that contain these variables and expressions. We have found the <em>largest relevant subgraph</em> for some unspecified definition of <em>relevance</em>. From this subgraph, a human modeler can easily instruct the SemanticModels system on how to combine the <code>SEIRmodel</code> and <code>ScalingModel</code> programs into a single model and generate a program to execute it.</p><h2><a class="nav-anchor" id="Generation-1" href="#Generation-1">Generation</a></h2><p>Once reasoning is complete the graft.jl program will run over the extracted knowledge graph, and generate a new model. In this case we want to take the birth rate dynamics from the <code>ScalingModel</code> and add them to the <code>SEIR</code> model to create an <code>SEIR+birth_rate</code> model.</p><p>Here is the code that does the grafting.</p><pre><code class="language-julia">using Cassette
+using DifferentialEquations
+using SemanticModels.Parsers
+using SemanticModels.Dubstep
+
+# source of original problem
+include(&quot;../examples/epicookbook/src/SEIRmodel.jl&quot;)
+
+#the functions we want to modify
+seir_ode = SEIRmodel.seir_ode
+
+# source of the problem we want to take from
+expr = parsefile(&quot;../examples/epicookbook/src/ScalingModel.jl&quot;)</code></pre><p>Once you have identified the entry point to your model, you can identify pieces of another model that you want to graft onto it. This piece of the other model might take significant preparation in order to be ready to fit onto the base model. These transformations include changing variables, and other plumbing aspects. If you stick to taking whole functions and not expressions, this prep work is reduced.</p><pre><code class="language-julia"># Find the expression we want to graft
+#vital dynamics S rate expression
+vdsre = expr.args[3].args[5].args[2].args[4]
+@show popgrowth = vdsre.args[2].args[2]
+replacevar(expr, old, new) = begin
+    dump(expr)
+    expr.args[3].args[3].args[3] = new
+    return expr
+end
+popgrowth = replacevar(popgrowth, :K,:N)
+
+# generate the function newfunc
+# this eval happens at the top level so should only happen once
+newfunc = eval(:(fpopgrowth(r,S,N) = $popgrowth))
+
+# This is the new problem
+# notice the signature doesn&#39;t even match, we have added a new parameter
+function fprime(dY,Y,p,t, ϵ)
+    #Infected per-Capita Rate
+    β = p[1]
+    #Incubation Rate
+    σ = p[2]
+    #Recover per-capita rate
+    γ = p[3]
+    #Death Rate
+    μ = p[4]
+
+    #Susceptible Individual
+    S = Y[1]
+    #Exposed Individual
+    E = Y[2]
+    #Infected Individual
+    I = Y[3]
+    #Recovered Individual
+    #R = Y[4]
+
+    # here is the graft point
+    dY[1] = μ-β*S*I-μ*S + newfunc(ϵ, S, S+E+I)
+    dY[2] = β*S*I-(σ+μ)*E
+    dY[3] = σ*E - (γ+μ)*I
+end</code></pre><p>Define the overdub behavior, all the fucntions needed to be defined at this point using run time values slows down overdub.</p><pre><code class="language-julia">function Cassette.overdub(ctx::Dubstep.GraftCtx, f::typeof(seir_ode), args...)
+    # this call matches the new signature
+    return Cassette.fallback(ctx, fprime, args..., ctx.metadata[:lambda])
+end</code></pre><p>The last step is to run the new model!</p><pre><code class="language-julia">#set up our modeling configuration
+function g()
+    #Pram (Infected Rate, Incubation Rate, Recover Rate, Death Rate)
+    pram=[520/365,1/60,1/30,774835/(65640000*365)]
+    #Initialize Param(Susceptible Individuals, Exposed Individuals, Infected Individuals)
+    init=[0.8,0.1,0.1]
+    tspan=(0.0,365.0)
+
+    seir_prob = ODEProblem(seir_ode,init,tspan,pram)
+
+    sol=solve(seir_prob);
+end
+
+# sweep over population growth rates
+function scalegrowth(λ=1.0)
+    # ctx.metadata holds our new parameter
+    ctx = Dubstep.GraftCtx(metadata=Dict(:lambda=&gt;λ))
+    return Cassette.overdub(ctx, g)
+end
+
+println(&quot;S\tI\tR&quot;)
+for λ in [1.0,1.1,1.2]
+    @time S,I,R = scalegrowth(λ)(365)
+    println(&quot;$S\t$I\t$R&quot;)
+end
+#it works!</code></pre><pre><code class="language-julia">julia&gt; include(&quot;graft.jl&quot;)
+s = &quot;# -*- coding: utf-8 -*-\n# ---\n# jupyter:\n#   jupytext:\n#     text_representation:\n#       extension: .jl\n#       format_name: light\n#       format_version: &#39;1.3&#39;\n#       jupytext_version: 0.8.6\n#   kernelspec:\n#     display_name: Julia 1.0.3\n#     language: julia\n#     name: julia-1.0\n# ---\n\nmodule ScalingModel\nusing DifferentialEquations\n\nfunction micro_1(du, u, parms, time)\n    # PARAMETER DEFS\n    # β transmition rate\n    # r net population growth rate\n    # μ hosts&#39; natural mortality rate\n    # Κ population size\n    # α disease induced mortality rate\n\n    β, r, μ, K, α = parms\n    dS = r*(1-S/K)*S - β*S*I\n    dI = β*S*I-(μ+α)*I\n    du = [dS,dI]\nend\n\n# +\n# PARAMETER DEFS\n# w and m are used to define the other parameters allometrically\n\nw = 1;\nm = 10;\nβ = 0.0247*m*w^0.44;\nr = 0.6*w^-0.27;\nμ = 0.4*w^-0.26;\nK = 16.2*w^-0.7;\nα = (m-1)*μ;\n# -\n\nparms = [β,r,μ,K,α];\ninit = [K,1.];\ntspan = (0.0,10.0);\n\nsir_prob = ODEProblem(micro_1,init,tspan,parms)\n\nsir_sol = solve(sir_prob);\n\nusing Plots\n\nplot(sir_sol,xlabel=\&quot;Time\&quot;,ylabel=\&quot;Number\&quot;)\n\nm = [5,10,20,40]\nws = 10 .^collect(range(-3,length = 601,3))\nβs = zeros(601,4)\nfor i = 1:4\n    βs[:,i] = 0.0247*m[i]*ws.^0.44\nend\nplot(ws,βs,xlabel=\&quot;Weight\&quot;,ylabel=\&quot;\\\\beta_min\&quot;, xscale=:log10,yscale=:log10, label=[\&quot;m = 5\&quot; \&quot;m = 10\&quot; \&quot;m = 20\&quot; \&quot;m = 40\&quot;],lw=3)\n\nend\n&quot;
+popgrowth = (vdsre.args[2]).args[2] = :(r * (1 - S / K) * S)
+Expr
+  head: Symbol call
+  args: Array{Any}((4,))
+    1: Symbol *
+    2: Symbol r
+    3: Expr
+      head: Symbol call
+      args: Array{Any}((3,))
+        1: Symbol -
+        2: Int64 1
+        3: Expr
+          head: Symbol call
+          args: Array{Any}((3,))
+            1: Symbol /
+            2: Symbol S
+            3: Symbol K
+    4: Symbol S
+S	I	R
+ 67.554431 seconds (125.80 M allocations: 6.555 GiB, 7.52% gc time)
+4.139701895048853e-5	1.512940651164174	1.2314284234326383
+  4.132043 seconds (1.85 M allocations: 33.602 MiB, 0.37% gc time)
+3.319429471438334e-5	1.7926581454821442	1.4394890708586585
+  4.294201 seconds (1.99 M allocations: 36.084 MiB, 0.54% gc time)
+2.7307348723966148e-5	2.096234030610046	1.6601782657100044</code></pre><table><tr><th style="text-align: right">S</th><th style="text-align: right">I</th><th style="text-align: right">R</th></tr><tr><td style="text-align: right">4.139701895048853e-5</td><td style="text-align: right">1.512940651164174</td><td style="text-align: right">1.2314284234326383</td></tr><tr><td style="text-align: right">3.319429471438334e-5</td><td style="text-align: right">1.7926581454821442</td><td style="text-align: right">1.4394890708586585</td></tr><tr><td style="text-align: right">2.7307348723966148e-5</td><td style="text-align: right">2.096234030610046</td><td style="text-align: right">1.6601782657100044</td></tr></table><p>We can see from the model output that as the birth rate of the population increases, the size of the SEIR epidemic increases. This example illustrates how we can add capabilities  to models in a way that can augment the ability of scientists to conduct <em>in silico</em> experiments. This augmentation will ultimately enable a faster development of scientific ideas informed by data and simulation.</p><p>Hopefully, this example has shown you the goals and scope of this software, the remaining documentation details the various components essential to the creation of this demonstration.</p><footer><hr/><a class="previous" href="../modeltools/"><span class="direction">Previous</span><span class="title">ModelTools</span></a><a class="next" href="../theory/"><span class="direction">Next</span><span class="title">Theory</span></a></footer></article></body></html>

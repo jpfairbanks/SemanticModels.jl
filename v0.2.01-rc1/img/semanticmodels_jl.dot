@@ -1,0 +1,19 @@
+# http://www.graphviz.org/content/cluster
+
+digraph G {
+    node[shape=circle, style=filled]
+    //rankdir=LR
+    subgraph cluster_1{
+      label="SemanticModeling"
+    code1 [label="c₁ ", color="royalblue3", fillcolor="royalblue1"]
+    code2 [label="c₂ ", color="brown3", fillcolor="indianred"]
+    m1 -> m2 [label="  T"]
+    code1 -> m1 [label="Model(Expr)"]
+    m2->code2 [label="Expr(Model)"]
+    code1 -> code2 [label="  T′"]
+    {rank=same code1, m1}
+    {rank=same code2, m2}
+    m1 [label="m₁", color="forestgreen", fillcolor="mediumseagreen"]
+    m2 [label="m₂", color="mediumorchid3", fillcolor="orchid3"]
+  }
+}
