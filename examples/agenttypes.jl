@@ -162,9 +162,11 @@ function main(nsteps)
     return newsam, counts
 end
 
+# +
 # # An example of how to run this thing.
-main(10)
-
+# main(10)
+# -
+            
 end
 
 

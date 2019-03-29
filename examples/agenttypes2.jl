@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# # @typegraph example
+# # Typegraphs: teaching the compiler to reason about models
 #
 # In this notebook, we will be going through a tutorial on how to use the `typegraph` functionality to extract the relationships between types and functions within programs.
 
@@ -71,7 +71,7 @@ for e in E_typed
 end
 
 
-# ## visualizing the edges
+# ## Visualizing the edges
 #
 # Now that we have extracted the relevant type information, we want to visualize these transformations in a knowledge graph.
 
@@ -170,7 +170,7 @@ color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))"
 #
 # In this drawing each vertex has its own color. These colors will be used again when drawing the next graph.
 
-for v in vertices(g)
+for v in vertices(h)
     h.vprops[v][:color] = color(v)
     h.vprops[v][:style] = "filled"
 end
