@@ -12,13 +12,16 @@ RUN jupyter lab --generate-config && echo 'c.NotebookApp.contents_manager_class 
 RUN julia -e 'ENV["JUPYTER"]="jupyter"; using Pkg; Pkg.add("IJulia")'
 
 ## Add SemanticModels.jl to Julia
-RUN julia --project -e 'using Pkg; pkg"add https://github.com/jpfairbanks/SemanticModels.jl.git";'
+RUN julia --project -e 'using Pkg; Pkg.develop("SemanticModels");'
 
-## Download SemanticModels.jl folder
-RUN git clone https://github.com/jpfairbanks/SemanticModels.jl.git
+RUN julia --project -e 'using Pkg; \
+          Pkg.add(["DifferentialEquations", "LsqFit", "Polynomials", "Test"]); \
+          pkg"precompile";'
 
 ## Expose port 8888
 EXPOSE 8888
 
+WORKDIR /root/.julia/dev/SemanticModels
+
 ## Create an entrypoint to jupyterlab
-ENTRYPOINT ["jupyter", "lab", "--notebook-dir=SemanticModels.jl", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
+ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]

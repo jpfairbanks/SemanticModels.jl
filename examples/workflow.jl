@@ -11,14 +11,17 @@
 #
 # An alternative approach is to design modeling frameworks for representing the models. The problem with this avenue becomes apparent when models are composed. The frameworks must be interoperable in order to make combined models. ModelTools avoids this problem by representing the models as code and manipulating the codes. The interoperation of two models is defined by user supplied functions in a fully featured programming language. 
 
-# +
+# Let $m_1,m_2$ be models, and $t_1,t_2$ be tranformations and define $M_i = t_i(m_i)$. If we denote the creation of pipelines with the function composition symbol $g\circ f$ then we want to implement everything such that the following diagram commutes.
+# <p><img src="../doc/build/img/commutative_pipeline.dot.svg" alt="A diagram showing how pipelining commutes with tranforming models"></p>
+#
+# This example shows how you can use a pipeline to represent the combination of models and then apply combinations of transformations to that pipeline. Transforming models and composing them into pipelines are two operations that commute, you can transform then compose or compose and then transform.
+
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.ExpStateModels
 import Base: push!
+import SemanticModels.ModelTools: model, isexpr
 using Random
-
-isexpr(x) = isa(x, Expr)
-# -
 
 samples = 100
 nsteps = 25
@@ -36,11 +39,11 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 # <img src="https://docs.google.com/drawings/d/e/2PACX-1vSeA7mAQ-795lLVxCWXzbkFQaFOHMpwtB121psFV_2cSUyXPyKMtvDjssia82JvQRXS08p6FAMr1hj1/pub?w=1031&amp;h=309">
 
 expr = parsefile("../examples/agentbased.jl")
-m = model(ExpStateModel, expr.args[3].args[3])
+m = model(ExpStateModel, expr)
 
 
 function returns(block::Vector{Any})
-    filter(x->(isa(x, Expr) && x.head==:return), block)
+    filter(x->(head(x)==:return), block)
 end
 returntuples = (bodyblock(filter(x->isa(x, Expr), findfunc(m.expr, :main))[end]) 
     |> returns 
@@ -50,6 +53,7 @@ push!(returntuples[1], :((ρ=ρ, μ=μ, n=n)))
 magents = m
 println("\nRunning basic model")
 AgentModels = eval(m.expr)
+@show AgentModels
 for i in 1:samples
     println(("======= . Simulation $i  ========"))
     newsam, counts, params = AgentModels.main(nsteps)
@@ -60,7 +64,7 @@ end
 @show length(finalcounts)
 finalcounts
 
-invoke(magents, 10)[2:end]
+ModelTools.invoke(magents, 10)[2:end]
 
 # ## Statistical Regression Model
 # The following expression defines a univariate polynomial regression model of degree 0, which just computes the average of target variable. This model can be augmented to an polynomial regression model using transformations
@@ -140,14 +144,11 @@ end
 #
 # See the `examples/polynomial_regression.jl` example for details of what this code does.
 
-# +
-include("groups.jl")
+using LinearAlgebra
 using SemanticModels
 using SemanticModels.ModelTools
-using .Transformations
-using LinearAlgebra
-
-import SemanticModels.ModelTools: model, AbstractProblem
+using SemanticModels.ModelTools.Transformations
+import SemanticModels.ModelTools: model, AbstractModel, isexpr
 import SemanticModels.Parsers: findfunc, findassign
 import Base: show
 
@@ -163,7 +164,7 @@ Example:
 
 See also [`(t::Pow)(m::MultivariateLsq)`](@ref)
 """
-struct Lsq <: AbstractProblem
+struct Lsq <: AbstractModel
     expr
     f
     coefficient
@@ -289,7 +290,7 @@ result′.r
 module Pipelines
 using SemanticModels.ModelTools
 using Random
-struct Pipeline <: AbstractProblem
+struct Pipeline <: AbstractModel
     steps
     connectors
     results
@@ -332,10 +333,13 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
                 end,
         (m, results...) -> begin
             data = connector(results...)
-            invoke(m, data...) end
+            Mod = eval(m.expr)
+            Base.invokelatest(Mod.main, data...) end
         ],
         Any[(10)]
         )    
+
+# Warning: Pipelines can only be run once. Recreate the pipeline and run it again if necessary.
 
 Pipelines.run!(P)
 
@@ -357,7 +361,7 @@ P.results[end][2]
 # 1. TODO implement the composition monoid on ExpStateModels
 # 2. TODO use Product acting on Pipeline to represent Tuple.coordinates == Pipeline.steps
 
-Product = Transformations.Product
+# Product = ModelTools.Transformations.Product
 function (t::Product)(m::Pipelines.Pipeline)
     for (i, s) in enumerate(m.steps)
         t.dims[i](s)
@@ -457,6 +461,7 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
             Random.seed!(42)
             results = Any[]
             Mod = eval(m.expr)
+            @show Mod
             for i in 1:samples
                 r = Base.invokelatest(Mod.main, args...)
                 push!(results, (model=:basic, counts=r[2],params=r[3]))
@@ -466,7 +471,9 @@ P = Pipelines.Pipeline(deepcopy.([magents, mstats]),
                 end,
         (m, results...) -> begin
             data = connector(results..., 1, 4)
-            invoke(m, data...) end
+            Mod = eval(m.expr)
+            Base.invokelatest(Mod.main, data...) 
+        end
         ],
         Any[(10)]
         )
@@ -501,11 +508,11 @@ P.results[end][2]
 
 # Here is the data we observed when running the first stage of the pipeline, stage two fits a polynomial to these observations
 
+table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
 try 
     using Plots
 catch
     @warn "Plotting is not available, make a table"
-    table = map(x->(round(x.params.ρ, digits=4), last(x.counts[end])), P.results[2][1]) |> sort
     for t in table
         println(join(t, "\t"))
     end
@@ -516,18 +523,26 @@ end
 #
 # The regression model that we have trained based on the simulated data from the SIRD model with population growth can be presented as a polynomial sampled over the domain. We construct this table to show the nonlinear dependence of the model on the recovery parameter $\rho$. The best fitting polynomial is shown below.
 
+using Printf
 eval(:(f(x,β) = $(poly(P.steps[2]))))
 xdomain = (0.0:0.05:1.0)
 println("ρ\tf(ρ,β)\n==============")
-z = collect(map(x-> round.(x, digits=3), zip(xdomain, f(xdomain, P.results[end][2].β))))
+xŷ = zip(xdomain, f(xdomain, P.results[end][2].β))
+z = collect(map(x->(@sprintf("%0.2f", x[1]),
+                    @sprintf("%7.3f", x[2])),
+        xŷ))
 for t in z
     println(join(t, "\t"))
 end
 
+@info "Loading Plots, this may take a while"
 using Plots
 
+@info "Making plots, this may take a while"
 p = scatter(first.(table), last.(table), label="obs")
-plot!(first.(z), last.(z), label="fit")
+plot!(first.(xŷ), last.(xŷ), label="fit")
+xlabel!(p, "Probability of Recovery")
+ylabel!(p, "Deaths")
 println("β: ", P.results[end][2].β, "\n", string(poly(P.steps[2])))
 p
 
@@ -544,5 +559,3 @@ p
 # SemanticModels.jl also provides transformations on these models that are grounded in category theory and abstract algebra. The concepts of category theory such as Functors and Product Categories allow us to build a general framework fit for any modeling task. In the language of category theory, the Pipelining functor on models commutes with the Product functor on transformations.
 #
 # This examples shows that metamodeling is feasible with SemanticModels and that the algebras of model transformations can be preserved when acting on metamodel workflows.
-
-

@@ -47,13 +47,14 @@ pages       = Any[
     "SemanticModels.jl"               => "index.md",
     "Intended Use Cases" => "usecases.md",
     "News" => "news.md",
+    "ModelTools" =>"modeltools.md",
     "Example" => "example.md",
+    "Theory" =>"theory.md",
     "Dubstep" => "dubstep.md",
     "Knowledge Graphs" => "graph.md",
     "Knowledge Extraction" => "extraction.md",
     "Validation" => "validation.md",
     "Library Reference" => "library.md",
-    "Theory" =>"theory.md",
     "Approaches" => "approach.md",
     "Slides"               => "slides.md",
     "Flu Model" => "FluModel.md",
@@ -75,6 +76,3 @@ repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
 # julia       = "stable",
 # osname      = "linux"
 )
-
-# # rm(normpath(@__FILE__, "../src/contributing.md"))
-# # rm(normpath(@__FILE__, "../src/license.md"))
