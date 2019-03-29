@@ -1,36 +1,3 @@
-# +
-using Pkg
-try
-    using DataFrames
-catch
-    Pkg.add("DataFrames")
-end
-try
-    using GraphDataFrameBridge
-catch
-    Pkg.add("GraphDataFrameBridge")
-end
-try
-    using MetaGraphs
-catch
-    Pkg.add("MetaGraphs")
-end
-try
-    using LightGraphs
-catch
-    Pkg.add("LightGraphs")
-end
-try
-    using CSV
-catch
-    Pkg.add("CSV")
-end
-try
-    using DataFramesMeta
-catch
-    Pkg.add("DataFramesMeta")
-end
-
 using DataFrames
 using GraphDataFrameBridge
 using MetaGraphs
@@ -38,7 +5,6 @@ using CSV
 using LightGraphs
 using Random
 using DataFramesMeta
-# -
 
 """    load_graph_data(input_data::Array{Any,1})
 

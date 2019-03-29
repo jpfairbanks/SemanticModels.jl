@@ -6,12 +6,6 @@
 #
 # This notebook is an example based on the SEIR model and the ScalingModel examples in the epirecipes cookbook.
 
-using Pkg
-try
-    using DifferentialEquations
-catch
-    Pkg.add("DifferentialEquations")
-end
 using DifferentialEquations
 using SemanticModels.Parsers
 using SemanticModels.ModelTools

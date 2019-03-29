@@ -1,3 +1,4 @@
+# +
 module Extraction
 using Logging
 using LightGraphs, MetaGraphs
@@ -7,7 +8,6 @@ import JSON
 # TODO: Create functions for each
 # Cause - is concept label, Effect - definition label
 # within a RelationMention with labels "Definition, Entity"
-
 
 """    definitiongraph(dir::String, namefunc)
 
@@ -52,7 +52,6 @@ function sequentialnamer(prefix="")
     end
     return genname
 end
-
 
 function definitiongraph(files::Vector{String}, namefunc)
     graph = DiGraph()
@@ -111,4 +110,3 @@ function definitiongraph(files::Vector{String}, namefunc)
 end
 
 end
-
