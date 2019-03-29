@@ -3,7 +3,7 @@
 
 ## Using ModelTools
 
-![ModelTools](http://localhost:8100/img/semanticmodels_jl.dot.svg)
+![ModelTools](img/semanticmodels_jl.dot.svg)
 
 ModelTools provides the functionality for model augmentation. It is named after the great metaprogramming package
 [MacroTools.jl](https://github.com/MikeInnes/MacroTools.jl/). With ModelTools, you treat models as code and metaprogram
