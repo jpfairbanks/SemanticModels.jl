@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 using Distributions, Random, DataFrames, GLM
 
 export generate_synthetic_data, RegressionProblem, ols
@@ -45,8 +46,9 @@ function ols(df, num_flu_patients_from_sim, year_to_predict)
     println(model)
     println("Predicted number of vaccines based on simulated number of flu patients for year ", year_to_predict, " = ", ceil(predicted_num_vaccines[1]))
     return predicted_num_vaccines
-
 end
+
+using SemanticModels.ModelTools
 
 struct RegressionProblem{F,T,U,Y} <: AbstractModel
     formula::F
@@ -62,3 +64,5 @@ end
 function solve(m::RegressionProblem{F, Missing, U,V}) where {F,U,V}
     return lm(m.formula, m.X)
 end
+
+

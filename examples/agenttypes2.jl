@@ -139,8 +139,8 @@ function add_projectors!(g, key=:label)
     end
     return g, πs
 end
+# -
 
-# +
 function draw(g, filename)
     savegraph(filename, g, DOTFormat())
     try
@@ -156,18 +156,22 @@ function draw(g, filename)
     display("image/svg+xml", read("$filename.svg", String))
 end
 
-using Colors
-cm = Colors.colormap("RdBu", 2nv(h))
-# -
-
 g = buildgraph(E)
 add_projectors!(g)
+
+h = deepcopy(g)
+g = buildgraph(E_typed)
+g, πs = add_projectors!(g);
+g
+
+using Colors
+cm = Colors.colormap("RdBu", 2nv(h))
+color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
 
 # We will draw the graph of types in initial model that uses symbols to represent the agent states. Remember that Symbol is type that represents "things that are like variable names" and in this case we are using the Symbol type to represent the agent states of :Susceptible, :Infected, and :Recovered. 
 #
 # In this drawing each vertex has its own color. These colors will be used again when drawing the next graph.
 
-color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
 for v in vertices(g)
     g.vprops[v][:color] = color(v)
     g.vprops[v][:style] = "filled"
@@ -175,11 +179,6 @@ end
 draw(g, "exampletypegraph.dot")
 
 # We then onstruct the typegraph for the program 2, which uses singleton types to represent the state of the agents. One of the central tennants of this project is that the more information you inject into the julia type system, the more the compiler can help you. Here we will see that they type system knows about the structure of the agents behavior now that the we have encoded their states as types.
-
-h = deepcopy(g)
-g = buildgraph(E_typed)
-g, πs = add_projectors!(g);
-g
 
 # now we draw the new, bigger type graph with the same color scheme as before. We define a graph homomorphism $\phi$ that maps every type to one of the vertices of the original graph show above. This homomorphism from $\phi: G \mapsto H$ shows how the semantics of the first program is embedded in the semantics of the second program. 
 
@@ -241,5 +240,3 @@ draw(DFA, "type_DFA.dot")
 # ## Conclusions
 #
 # We can see from the examples presented here that similar models produce similar type graphs. In this case we have two programs that impement the same model and have homomorphic type graphs. This homomorphism is natural in the sense that every vertex that appears in both graphs satisfies $\phi(v) = v$. Adding information to the type system in the julia program allows the type graph of the model to understand more of the program semantics. This powerful insight can teach the machines to reason about the behaviour of computational models.
-
-
