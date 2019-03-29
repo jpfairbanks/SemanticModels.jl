@@ -10,23 +10,12 @@
 # 
 
 using DelimitedFiles
-using Flux
-using Flux: onehot, onehotbatch, shuffle
-using Flux: throttle, params
-using Flux: mse, crossentropy
-using MLDataPattern: stratifiedobs, splitobs
-using Base.Iterators: partition
-using Statistics
 
-include("utils.jl")
 include("../parse.jl")
 
 #
 # Set up inputs for model
 #
-
-# Read lines from trace_test.dat text in to arrays of characters
-# Convert to onehot matrices
 
 maxlen = 500
 # dir = "~/Documents/git/julia"
@@ -36,7 +25,7 @@ file_type = "jl"
 # use parsefile function - get Expr tree object
 #     cycle through tree - pull strings of Expr objects
 
-function read_code(dir, maxlen=500, file_type="jl")
+function read_code(dir, maxlen=500, file_type="jl", verbose=false)
     comments = r"\#.*\n"
     docstring = r"\"{3}.*?\"{3}"s
 
@@ -48,7 +37,7 @@ function read_code(dir, maxlen=500, file_type="jl")
             if endswith(file, "."*file_type)
               s = Parsers.parsefile(joinpath(root, file))
               if !isa(s, Nothing)
-                all_funcs = vcat(all_funcs, get_expr(s, joinpath(root, file), true));
+                all_funcs = vcat(all_funcs, get_expr(s, joinpath(root, file), verbose));
               end
             end
         end
@@ -87,14 +76,23 @@ function get_expr(exp_tree, path, verbose=false)
     return leaves
 end
 
-all_funcs = read_code(dir, maxlen, file_type);
-writedlm("all_funcs.csv", all_funcs, quotes=true)
+all_funcs = read_code(dir, maxlen, file_type, false);
+writedlm("all_funcs.csv", all_funcs, quotes=true);
 
 
 
 #
-# For constructing auto_encoder in Julia
+# For constructing auto_encoder in Julia: WIP
 # 
+
+using Flux
+using Flux: onehot, onehotbatch, shuffle
+using Flux: throttle, params
+using Flux: mse, crossentropy
+using MLDataPattern: splitobs
+using Statistics
+
+include("utils.jl")
 
 alphabet, stop, N = descr_data(all_funcs)
 stop_hot = onehot(stop, alphabet);
