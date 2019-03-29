@@ -31,36 +31,36 @@ notebooks with jupytext or as rendered HTML pages in the docs.
 ### Model Augmentation
 
 These examples illustrate model augmentation with ModelTools
-1. [agentbased.jl](/examples/html/agentbased.html)
-1. [agentgraft.jl](/examples/html/agentgraft.html)
-1. [odegraft.jl](/examples/html/odegraft.html)
+1. [agentbased.jl](examples/html/agentbased.html)
+1. [agentgraft.jl](examples/html/agentgraft.html)
+1. [odegraft.jl](examples/html/odegraft.html)
 
 ### Algebraic Model Transformation
 These examples illustrate how model transformations can be algebraic structures
 and how to exploit that to develop new models
-1. [monomial_regression.jl](/examples/html/monomial_regression.html)
-1. [multivariate_regression.jl](/examples/html/multivariate_regression.html)
-1. [pseudo_polynomial_regression.jl](/examples/html/pseudo_polynomial_regression.html)
-1. [polynomial_regression.jl](/examples/html/polynomial_regression.html)
+1. [monomial_regression.jl](examples/html/monomial_regression.html)
+1. [multivariate_regression.jl](examples/html/multivariate_regression.html)
+1. [pseudo_polynomial_regression.jl](examples/html/pseudo_polynomial_regression.html)
+1. [polynomial_regression.jl](examples/html/polynomial_regression.html)
 
 ### Model Synthesis
 The workflow example combines `agentgraft.jl` and `polynomial_regression.jl` to
 build a modeling pipeline. This is the most important example for understanding
 the power of SemanticModels for model augmentation and synthesis.
 
-[workflow.jl](/examples/html/workflow.html)
+[workflow.jl](examples/html/workflow.html)
 
 ### Programming the type system
 These examples show how the Julia type systems is a strong ally in bringing
 order to the chaos that is scientific modeling code. 
-1. [agentbased2.jl](/examples/html/agentbased2.html)
-1. [agenttypes.jl](/examples/html/agenttypes.html)
-1. [agenttypes2.jl](/examples/html/agenttypes2.html)
+1. [agentbased2.jl](examples/html/agentbased2.html)
+1. [agenttypes.jl](examples/html/agenttypes.html)
+1. [agenttypes2.jl](examples/html/agenttypes2.html)
 
 ### Knowledge Representation with Knowledge Graphs
-1. [semanticClustering](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/semanticClustering)
-1. [dataflow.jl](/examples/html/dataflow.html)
-1. [Code Embeddings](github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/notebooks/autoencoding_julia.ipynb)
+1. [semanticClustering](https://github.com/jpfairbanks/SemanticModels.jl/blob/masterexamples/semanticClustering)
+1. [dataflow.jl](examples/html/dataflow.html)
+1. [Code Embeddings](https://github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/notebooks/autoencoding_julia.ipynb)
 
 ## Pre hoc vs post hoc frameworks
 

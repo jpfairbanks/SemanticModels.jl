@@ -44,8 +44,8 @@ using Latexify
 df = CSV.read("../../examples/knowledge_graph/data/synth_kg_edges.csv")
 mdtable(df,latex=false)
 ```
-## API reference
+<!-- ## API reference -->
 
-```@autodocs
-Modules = [SemanticModels.Graphs]
-```
+<!-- ```@autodocs -->
+<!-- Modules = [SemanticModels.Graphs] -->
+<!-- ``` -->
