@@ -11775,7 +11775,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Typegraphs:-teaching-the-compiler-to-reason-about-models">Typegraphs: teaching the compiler to reason about models<a class="anchor-link" href="#Typegraphs:-teaching-the-compiler-to-reason-about-models">&#182;</a></h1><p>In this notebook, we will be going through a tutorial on how to use the <code>typegraph</code> functionality to extract the relationships between types and functions within programs.</p>
+<h1 id="@typegraph-example">@typegraph example<a class="anchor-link" href="#@typegraph-example">&#182;</a></h1><p>In this notebook, we will be going through a tutorial on how to use the <code>typegraph</code> functionality to extract the relationships between types and functions within programs.</p>
 
 </div>
 </div>
@@ -11847,7 +11847,6 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Below we are using our <code>parsefile</code> function to take scripts and wrap them around in <code>module</code> headings that way they can be consumed by our other API's. We then pass off our <code>Expr</code>s to our <code>typegraph</code> function which collects all the type information we would like extracted from the code.</p>
-<p>You can see the code that is being loaded here at <a href="github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agentbased2.jl">agentbased2.jl</a></p>
 
 </div>
 </div>
@@ -11907,7 +11906,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>newsam.agents = Symbol[:S, :I, :R, :S, :S, :S, :R, :S, :R, :I, :S, :R, :S, :S, :R, :S, :S, :R, :I, :I]
+<pre>newsam.agents = Symbol[:I, :I, :I, :I, :S, :I, :I, :S, :I, :I, :I, :I, :I, :I, :S, :I, :S, :R, :I, :I]
 E = Tuple{String,Tuple{Symbol,Vararg{Symbol,N} where N},Symbol}[(&#34;\&#34;count\&#34;&#34;, (:StateModel, :Symbol), :Int64), (&#34;\&#34;count\&#34;&#34;, (:StateModel,), :Int64), (&#34;\&#34;stateload\&#34;&#34;, (:StateModel, :Symbol), :Float64), (&#34;\&#34;tick!\&#34;&#34;, (:StateModel,), :Array), (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Symbol), :Symbol), (&#34;\&#34;describe\&#34;&#34;, (:StateModel,), :Array), (&#34;\&#34;step!\&#34;&#34;, (:StateModel, :Int64), :StateModel), (&#34;\&#34;main\&#34;&#34;, (:Int64,), :Tuple)]
 </pre>
 </div>
@@ -11943,7 +11942,6 @@ E = Tuple{String,Tuple{Symbol,Vararg{Symbol,N} where N},Symbol}[(&#34;\&#34;coun
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We are going to repeat the process again for another similar script to see if we are able to detect the differences between the two programs.</p>
-<p>You can see the code that is being loaded here at <a href="github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agenttypes.jl">agenttypes.jl</a></p>
 
 </div>
 </div>
@@ -11992,16 +11990,26 @@ E = Tuple{String,Tuple{Symbol,Vararg{Symbol,N} where N},Symbol}[(&#34;\&#34;coun
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;17, Infected()=&gt;2, Recovered()=&gt;1]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;11, Infected()=&gt;8, Recovered()=&gt;1]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;2, Infected()=&gt;14, Recovered()=&gt;4]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;3, Infected()=&gt;7, Recovered()=&gt;10]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;5, Infected()=&gt;7, Recovered()=&gt;8]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;8, Infected()=&gt;9, Recovered()=&gt;3]
+<pre>describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;18, Infected()=&gt;1, Recovered()=&gt;1]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;18, Infected()=&gt;1, Recovered()=&gt;1]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;17, Infected()=&gt;1, Recovered()=&gt;2]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;15, Infected()=&gt;2, Recovered()=&gt;3]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;13, Infected()=&gt;4, Recovered()=&gt;3]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;10, Infected()=&gt;8, Recovered()=&gt;2]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;3, Infected()=&gt;10, Recovered()=&gt;7]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;3, Infected()=&gt;6, Recovered()=&gt;11]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;7, Infected()=&gt;4, Recovered()=&gt;9]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;10, Infected()=&gt;2, Recovered()=&gt;8]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;18, Infected()=&gt;2, Recovered()=&gt;0]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;16, Infected()=&gt;3, Recovered()=&gt;1]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;11, Infected()=&gt;6, Recovered()=&gt;3]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;7, Infected()=&gt;8, Recovered()=&gt;5]
 describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;4, Infected()=&gt;8, Recovered()=&gt;8]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;6, Infected()=&gt;5, Recovered()=&gt;9]
-describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;7, Infected()=&gt;6, Recovered()=&gt;7]
 describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;6, Infected()=&gt;7, Recovered()=&gt;7]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;4, Infected()=&gt;6, Recovered()=&gt;10]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;7, Infected()=&gt;8, Recovered()=&gt;5]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;3, Infected()=&gt;11, Recovered()=&gt;6]
+describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;2, Infected()=&gt;6, Recovered()=&gt;12]
 </pre>
 </div>
 </div>
@@ -12026,9 +12034,9 @@ describe(sm) = Pair{_1,Int64} where _1[Susceptible()=&gt;6, Infected()=&gt;7, Re
  (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Susceptible), :Infected)   
  (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Infected), :Recovered)     
  (&#34;\&#34;describe\&#34;&#34;, (:StateModel,), :Array)                             
- (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Infected), :Infected)      
- (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Recovered), :Recovered)    
  (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Recovered), :Susceptible)  
+ (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Recovered), :Recovered)    
+ (&#34;\&#34;transition\&#34;&#34;, (:StateModel, :Int64, :Infected), :Infected)      
  (&#34;\&#34;tick!\&#34;&#34;, (:StateModel,), :StateModel)                           
  (&#34;\&#34;tick!\&#34;&#34;, (:StateModel,), :Tuple)                                </pre>
 </div>
@@ -12094,9 +12102,9 @@ Types Graph
 &#34;transition&#34;, (:StateModel, :Int64, :Susceptible), Infected
 &#34;transition&#34;, (:StateModel, :Int64, :Infected), Recovered
 &#34;describe&#34;, (:StateModel,), Array
-&#34;transition&#34;, (:StateModel, :Int64, :Infected), Infected
-&#34;transition&#34;, (:StateModel, :Int64, :Recovered), Recovered
 &#34;transition&#34;, (:StateModel, :Int64, :Recovered), Susceptible
+&#34;transition&#34;, (:StateModel, :Int64, :Recovered), Recovered
+&#34;transition&#34;, (:StateModel, :Int64, :Infected), Infected
 &#34;tick!&#34;, (:StateModel,), StateModel
 &#34;tick!&#34;, (:StateModel,), Tuple
 </pre>
@@ -12111,7 +12119,7 @@ Types Graph
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Visualizing-the-edges">Visualizing the edges<a class="anchor-link" href="#Visualizing-the-edges">&#182;</a></h2><p>Now that we have extracted the relevant type information, we want to visualize these transformations in a knowledge graph.</p>
+<h2 id="visualizing-the-edges">visualizing the edges<a class="anchor-link" href="#visualizing-the-edges">&#182;</a></h2><p>Now that we have extracted the relevant type information, we want to visualize these transformations in a knowledge graph.</p>
 
 </div>
 </div>
@@ -12187,13 +12195,13 @@ Types Graph
         <span class="k">catch</span>
             <span class="n">add_vertex!</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="o">:</span><span class="n">label</span><span class="p">,</span><span class="nb">e</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="c"># add ags</span>
         <span class="k">end</span>
-
+        
         <span class="k">try</span>
             <span class="n">g</span><span class="p">[</span><span class="nb">e</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="o">:</span><span class="n">label</span><span class="p">]</span>
         <span class="k">catch</span>
             <span class="n">add_vertex!</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="o">:</span><span class="n">label</span><span class="p">,</span><span class="nb">e</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="c"># add rets</span>
         <span class="k">end</span>
-
+        
         <span class="k">try</span>
             <span class="n">add_edge!</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="n">g</span><span class="p">[</span><span class="nb">e</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="o">:</span><span class="n">label</span><span class="p">],</span><span class="n">g</span><span class="p">[</span><span class="nb">e</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="o">:</span><span class="n">label</span><span class="p">],</span><span class="o">:</span><span class="n">label</span><span class="p">,</span><span class="nb">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="c">#escapehtml(string(e[1]))) # add func edges</span>
         <span class="k">catch</span>
@@ -12203,6 +12211,12 @@ Types Graph
     <span class="k">return</span> <span class="n">g</span>
 <span class="k">end</span>
 
+<span class="c"># for e in edges(g)</span>
+<span class="c">#     sn, dn = g[src(e),:label], g[dst(e), :label]</span>
+<span class="c">#     # f = g[sn, :label, dn, :label]</span>
+<span class="c">#     @show g.eprops[e][:label]</span>
+<span class="c">#     println(sn, &quot;---&gt;&quot;, dn)</span>
+<span class="c"># end</span>
 <span class="k">function</span> <span class="n">projectors</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">key</span><span class="o">=:</span><span class="n">label</span><span class="p">)</span>
     <span class="n">newedges</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">v</span> <span class="kp">in</span> <span class="n">vertices</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
@@ -12373,7 +12387,7 @@ Types Graph
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span></span><span class="k">using</span> <span class="n">Colors</span>
 <span class="n">cm</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">colormap</span><span class="p">(</span><span class="s">&quot;RdBu&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="n">nv</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
-<span class="n">color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">$</span><span class="p">(</span><span class="n">hex</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">floor</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="n">nv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]))</span><span class="s">&quot;</span>
+<span class="n">color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">$</span><span class="p">(</span><span class="n">hex</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">floor</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="n">nv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]))</span><span class="s">&quot;</span> <span class="c">#&quot;gray$(100 - 3v)&quot;</span>
 </pre></div>
 
 </div>
@@ -12416,11 +12430,11 @@ Types Graph
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">for</span> <span class="n">v</span> <span class="kp">in</span> <span class="n">vertices</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">vprops</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="o">:</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">vprops</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="o">:</span><span class="n">style</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;filled&quot;</span>
+<div class=" highlight hl-julia"><pre><span></span><span class="k">for</span> <span class="n">v</span> <span class="kp">in</span> <span class="n">vertices</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">vprops</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="o">:</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">vprops</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="o">:</span><span class="n">style</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;filled&quot;</span>
 <span class="k">end</span>
-<span class="n">draw</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s">&quot;exampletypegraph.dot&quot;</span><span class="p">)</span>
+<span class="n">draw</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">&quot;exampletypegraph.dot&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12444,188 +12458,324 @@ Types Graph
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: G Pages: 1 -->
-<svg width="469pt" height="474pt"
- viewBox="0.00 0.00 469.06 474.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 470)">
+<svg width="888pt" height="740pt"
+ viewBox="0.00 0.00 888.00 740.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 736)">
 <title>G</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-470 465.0592,-470 465.0592,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-736 884,-736 884,4 -4,4"/>
 <!-- 1 -->
 <g id="node1" class="node">
 <title>1</title>
-<ellipse fill="#fd806e" stroke="#fd806e" cx="93.6232" cy="-448" rx="93.7465" ry="18"/>
-<text text-anchor="middle" x="93.6232" y="-443.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Symbol)</text>
+<ellipse fill="#fd806e" stroke="#fd806e" cx="561" cy="-627" rx="107.781" ry="18"/>
+<text text-anchor="middle" x="561" y="-623.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Susceptible)</text>
 </g>
 <!-- 2 -->
 <g id="node2" class="node">
 <title>2</title>
-<ellipse fill="#ff9987" stroke="#ff9987" cx="169.6232" cy="-362" rx="28.5497" ry="18"/>
-<text text-anchor="middle" x="169.6232" y="-357.8" font-family="Times,serif" font-size="14.00" fill="#000000">Int64</text>
+<ellipse fill="#ff9987" stroke="#ff9987" cx="444" cy="-540" rx="29.4969" ry="18"/>
+<text text-anchor="middle" x="444" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Int64</text>
 </g>
 <!-- 1&#45;&gt;2 -->
 <g id="edge1" class="edge">
 <title>1&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M109.3704,-430.1807C120.7828,-417.2668 136.3297,-399.6742 148.7723,-385.5944"/>
-<polygon fill="#000000" stroke="#000000" points="151.6856,-387.5832 155.685,-377.7722 146.4403,-382.9478 151.6856,-387.5832"/>
-<text text-anchor="middle" x="152.1749" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+<path fill="none" stroke="#000000" d="M537.3233,-609.3943C518.1595,-595.1442 491.1567,-575.0652 471.1247,-560.1697"/>
+<polygon fill="#000000" stroke="#000000" points="473.1227,-557.2937 463.0095,-554.1353 468.9457,-562.911 473.1227,-557.2937"/>
+<text text-anchor="middle" x="524.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
 </g>
 <!-- 4 -->
 <g id="node4" class="node">
 <title>4</title>
-<ellipse fill="#ffc5b7" stroke="#ffc5b7" cx="253.6232" cy="-362" rx="37.2594" ry="18"/>
-<text text-anchor="middle" x="253.6232" y="-357.8" font-family="Times,serif" font-size="14.00" fill="#000000">Float64</text>
+<ellipse fill="#ffc5b7" stroke="#ffc5b7" cx="667" cy="-18" rx="37.8943" ry="18"/>
+<text text-anchor="middle" x="667" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">Float64</text>
 </g>
 <!-- 1&#45;&gt;4 -->
 <g id="edge2" class="edge">
 <title>1&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M131.7418,-431.4679C144.5685,-425.6257 158.8584,-418.8083 171.6232,-412 188.9638,-402.751 207.7194,-391.4196 222.9109,-381.8839"/>
-<polygon fill="#000000" stroke="#000000" points="224.8287,-384.8123 231.406,-376.5063 221.0846,-378.8978 224.8287,-384.8123"/>
-<text text-anchor="middle" x="219.5026" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
-</g>
-<!-- 6 -->
-<g id="node6" class="node">
-<title>6</title>
-<ellipse fill="#ffe7e1" stroke="#ffe7e1" cx="174.6232" cy="-104" rx="119.3383" ry="18"/>
-<text text-anchor="middle" x="174.6232" y="-99.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Symbol)</text>
-</g>
-<!-- 2&#45;&gt;6 -->
-<g id="edge3" class="edge">
-<title>2&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M154.734,-346.4676C143.4702,-333.5709 128.9056,-314.1388 122.6232,-294 106.4757,-242.238 105.2364,-223.359 122.6232,-172 127.9278,-156.3306 138.4507,-141.4314 148.651,-129.5952"/>
-<polygon fill="#000000" stroke="#000000" points="151.4818,-131.683 155.593,-121.9184 146.2898,-126.9879 151.4818,-131.683"/>
-<text text-anchor="middle" x="117.965" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
-</g>
-<!-- 8 -->
-<g id="node8" class="node">
-<title>8</title>
-<ellipse fill="#c9e7f9" stroke="#c9e7f9" cx="216.6232" cy="-276" rx="84.5427" ry="18"/>
-<text text-anchor="middle" x="216.6232" y="-271.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64)</text>
-</g>
-<!-- 2&#45;&gt;8 -->
-<g id="edge4" class="edge">
-<title>2&#45;&gt;8</title>
-<path fill="none" stroke="#000000" d="M179.1343,-344.5966C185.6725,-332.6331 194.4821,-316.5135 201.9185,-302.9064"/>
-<polygon fill="#000000" stroke="#000000" points="205.0782,-304.4231 206.8026,-293.9695 198.9356,-301.0661 205.0782,-304.4231"/>
-<text text-anchor="middle" x="203.965" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
-</g>
-<!-- 10 -->
-<g id="node10" class="node">
-<title>10</title>
-<ellipse fill="#9bcdf2" stroke="#9bcdf2" cx="358.6232" cy="-276" rx="39.1641" ry="18"/>
-<text text-anchor="middle" x="358.6232" y="-271.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:Int64,)</text>
-</g>
-<!-- 2&#45;&gt;10 -->
-<g id="edge5" class="edge">
-<title>2&#45;&gt;10</title>
-<path fill="none" stroke="#000000" d="M192.4974,-351.0776C197.4752,-348.7252 202.7192,-346.2654 207.6232,-344 246.0123,-326.2659 290.1337,-306.4632 320.7284,-292.8228"/>
-<polygon fill="#000000" stroke="#000000" points="322.4513,-295.887 330.1621,-288.6211 319.6032,-289.4926 322.4513,-295.887"/>
-<text text-anchor="middle" x="285.965" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
-</g>
-<!-- 3 -->
-<g id="node3" class="node">
-<title>3</title>
-<ellipse fill="#ffb0a0" stroke="#ffb0a0" cx="399.6232" cy="-104" rx="61.3722" ry="18"/>
-<text text-anchor="middle" x="399.6232" y="-99.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel,)</text>
-</g>
-<!-- 3&#45;&gt;2 -->
-<g id="edge6" class="edge">
-<title>3&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M406.986,-121.8837C420.6945,-158.3482 445.3956,-242.2085 406.6232,-294 351.9713,-367.0029 294.1905,-315.3236 207.6232,-344 205.4836,-344.7087 203.3075,-345.5083 201.1346,-346.3666"/>
-<polygon fill="#000000" stroke="#000000" points="199.5546,-343.2361 191.7533,-350.4048 202.3223,-349.6658 199.5546,-343.2361"/>
-<text text-anchor="middle" x="442.1749" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
-</g>
-<!-- 5 -->
-<g id="node5" class="node">
-<title>5</title>
-<ellipse fill="#ffd7cd" stroke="#ffd7cd" cx="399.6232" cy="-18" rx="30.9619" ry="18"/>
-<text text-anchor="middle" x="399.6232" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Array</text>
-</g>
-<!-- 3&#45;&gt;5 -->
-<g id="edge7" class="edge">
-<title>3&#45;&gt;5</title>
-<path fill="none" stroke="#000000" d="M399.6232,-85.7616C399.6232,-74.3597 399.6232,-59.4342 399.6232,-46.494"/>
-<polygon fill="#000000" stroke="#000000" points="403.1233,-46.2121 399.6232,-36.2121 396.1233,-46.2121 403.1233,-46.2121"/>
-<text text-anchor="middle" x="412.4508" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
+<path fill="none" stroke="#000000" d="M637.2782,-614.2449C707.2232,-600.3211 800,-575.2149 800,-540 800,-540 800,-540 800,-105 800,-61.942 750.5774,-39.0503 711.9872,-27.7389"/>
+<polygon fill="#000000" stroke="#000000" points="712.5143,-24.254 701.9442,-24.9777 710.6586,-31.0035 712.5143,-24.254"/>
+<text text-anchor="middle" x="824.5" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
 </g>
 <!-- 7 -->
 <g id="node7" class="node">
 <title>7</title>
-<ellipse fill="#dff1fc" stroke="#dff1fc" cx="136.6232" cy="-18" rx="37.7525" ry="18"/>
-<text text-anchor="middle" x="136.6232" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Symbol</text>
+<ellipse fill="#dff1fc" stroke="#dff1fc" cx="276" cy="-453" rx="133.7763" ry="18"/>
+<text text-anchor="middle" x="276" y="-449.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Susceptible)</text>
 </g>
-<!-- 6&#45;&gt;7 -->
+<!-- 2&#45;&gt;7 -->
+<g id="edge3" class="edge">
+<title>2&#45;&gt;7</title>
+<path fill="none" stroke="#000000" d="M421.3428,-528.2668C395.1453,-514.7002 351.4448,-492.0696 318.7899,-475.1591"/>
+<polygon fill="#000000" stroke="#000000" points="320.3857,-472.044 309.8962,-470.5534 317.1667,-478.26 320.3857,-472.044"/>
+<text text-anchor="middle" x="378" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 10 -->
+<g id="node10" class="node">
+<title>10</title>
+<ellipse fill="#9bcdf2" stroke="#9bcdf2" cx="226" cy="-279" rx="122.3786" ry="18"/>
+<text text-anchor="middle" x="226" y="-275.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Infected)</text>
+</g>
+<!-- 2&#45;&gt;10 -->
+<g id="edge4" class="edge">
+<title>2&#45;&gt;10</title>
+<path fill="none" stroke="#000000" d="M442.3866,-521.992C439.8578,-500.3133 433.6357,-463.2948 419,-435 407.5701,-412.9028 357.6239,-348.0808 311,-315 302.8638,-309.2272 293.6585,-304.1332 284.3852,-299.7293"/>
+<polygon fill="#000000" stroke="#000000" points="285.6811,-296.4744 275.1262,-295.5558 282.8046,-302.856 285.6811,-296.4744"/>
+<text text-anchor="middle" x="415" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 13 -->
+<g id="node13" class="node">
+<title>13</title>
+<ellipse fill="#5295d6" stroke="#5295d6" cx="217" cy="-105" rx="130.777" ry="18"/>
+<text text-anchor="middle" x="217" y="-101.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Recovered)</text>
+</g>
+<!-- 2&#45;&gt;13 -->
+<g id="edge5" class="edge">
+<title>2&#45;&gt;13</title>
+<path fill="none" stroke="#000000" d="M421.4815,-528.1688C416.4816,-525.873 411.1386,-523.6661 406,-522 288.5848,-483.9313 235.3461,-539.9987 133,-471 68.0347,-427.2024 38,-400.85 38,-322.5 38,-322.5 38,-322.5 38,-192 38,-166.1939 98.9421,-140.883 149.7083,-124.2753"/>
+<polygon fill="#000000" stroke="#000000" points="150.9241,-127.5611 159.378,-121.175 148.7868,-120.8954 150.9241,-127.5611"/>
+<text text-anchor="middle" x="47" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 3 -->
+<g id="node3" class="node">
+<title>3</title>
+<ellipse fill="#ffb0a0" stroke="#ffb0a0" cx="366" cy="-627" rx="62.2891" ry="18"/>
+<text text-anchor="middle" x="366" y="-623.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel,)</text>
+</g>
+<!-- 3&#45;&gt;2 -->
+<g id="edge6" class="edge">
+<title>3&#45;&gt;2</title>
+<path fill="none" stroke="#000000" d="M381.7845,-609.3943C393.6534,-596.1559 410.0325,-577.8868 423.0059,-563.4165"/>
+<polygon fill="#000000" stroke="#000000" points="425.7431,-565.6066 429.8126,-555.8244 420.5311,-560.9337 425.7431,-565.6066"/>
+<text text-anchor="middle" x="424.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+</g>
+<!-- 12 -->
+<g id="node12" class="node">
+<title>12</title>
+<ellipse fill="#6aaae3" stroke="#6aaae3" cx="286" cy="-540" rx="31.3957" ry="18"/>
+<text text-anchor="middle" x="286" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Array</text>
+</g>
+<!-- 3&#45;&gt;12 -->
+<g id="edge7" class="edge">
+<title>3&#45;&gt;12</title>
+<path fill="none" stroke="#000000" d="M339.153,-610.7419C331.1334,-605.1122 322.7021,-598.3511 316,-591 309.463,-583.83 303.6659,-575.0082 298.9525,-566.7296"/>
+<polygon fill="#000000" stroke="#000000" points="301.9307,-564.8779 294.1098,-557.7306 295.7666,-568.1951 301.9307,-564.8779"/>
+<text text-anchor="middle" x="339" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">describe</text>
+</g>
+<!-- 14 -->
+<g id="node14" class="node">
+<title>14</title>
+<ellipse fill="#3d7dc2" stroke="#3d7dc2" cx="366" cy="-714" rx="51.9908" ry="18"/>
+<text text-anchor="middle" x="366" y="-710.3" font-family="Times,serif" font-size="14.00" fill="#000000">StateModel</text>
+</g>
+<!-- 3&#45;&gt;14 -->
 <g id="edge8" class="edge">
-<title>6&#45;&gt;7</title>
-<path fill="none" stroke="#000000" d="M166.6966,-85.9411C162.5184,-76.4332 157.3026,-64.5816 152.6232,-54 151.3637,-51.152 150.0461,-48.1782 148.7309,-45.2136"/>
-<polygon fill="#000000" stroke="#000000" points="151.8697,-43.6579 144.612,-35.9394 145.4723,-46.4993 151.8697,-43.6579"/>
-<text text-anchor="middle" x="186.0646" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<title>3&#45;&gt;14</title>
+<path fill="none" stroke="#000000" d="M350.9604,-644.9425C344.7445,-654.5099 339.6767,-666.6258 343,-678 343.936,-681.2036 345.2536,-684.3932 346.7898,-687.4749"/>
+<polygon fill="#000000" stroke="#000000" points="343.8568,-689.3949 351.8907,-696.3019 349.9176,-685.8924 343.8568,-689.3949"/>
+<text text-anchor="middle" x="355.5" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
 </g>
-<!-- 7&#45;&gt;1 -->
+<!-- 15 -->
+<g id="node15" class="node">
+<title>15</title>
+<ellipse fill="#2a64a6" stroke="#2a64a6" cx="366" cy="-540" rx="31.3957" ry="18"/>
+<text text-anchor="middle" x="366" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Tuple</text>
+</g>
+<!-- 3&#45;&gt;15 -->
 <g id="edge9" class="edge">
-<title>7&#45;&gt;1</title>
-<path fill="none" stroke="#000000" d="M104.8028,-27.9093C72.63,-40.1452 27.6232,-64.3482 27.6232,-104 27.6232,-362 27.6232,-362 27.6232,-362 27.6232,-386.4815 44.6633,-408.2878 61.4267,-423.8168"/>
-<polygon fill="#000000" stroke="#000000" points="59.2203,-426.537 69.0472,-430.4971 63.8347,-421.2732 59.2203,-426.537"/>
-<text text-anchor="middle" x="34.965" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<title>3&#45;&gt;15</title>
+<path fill="none" stroke="#000000" d="M366,-608.9735C366,-597.1918 366,-581.5607 366,-568.1581"/>
+<polygon fill="#000000" stroke="#000000" points="369.5001,-568.0033 366,-558.0034 362.5001,-568.0034 369.5001,-568.0033"/>
+<text text-anchor="middle" x="378.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
 </g>
-<!-- 7&#45;&gt;6 -->
+<!-- 5 -->
+<g id="node5" class="node">
+<title>5</title>
+<ellipse fill="#ffd7cd" stroke="#ffd7cd" cx="500" cy="-279" rx="96.3833" ry="18"/>
+<text text-anchor="middle" x="500" y="-275.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Infected)</text>
+</g>
+<!-- 5&#45;&gt;2 -->
 <g id="edge10" class="edge">
-<title>7&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M131.77,-35.8598C130.0211,-45.7446 129.4413,-58.0131 133.9396,-68 135.6825,-71.8697 138.0698,-75.4913 140.8211,-78.8325"/>
-<polygon fill="#000000" stroke="#000000" points="138.3303,-81.2921 147.7692,-86.1044 143.3915,-76.4563 138.3303,-81.2921"/>
-<text text-anchor="middle" x="141.965" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<title>5&#45;&gt;2</title>
+<path fill="none" stroke="#000000" d="M496.1945,-297.0934C488.1421,-335.3217 468.743,-427.1172 452,-504 451.4197,-506.6646 450.8111,-509.4391 450.1996,-512.2132"/>
+<polygon fill="#000000" stroke="#000000" points="446.7637,-511.541 448.0178,-522.0614 453.598,-513.0551 446.7637,-511.541"/>
+<text text-anchor="middle" x="488.5" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+</g>
+<!-- 5&#45;&gt;4 -->
+<g id="edge11" class="edge">
+<title>5&#45;&gt;4</title>
+<path fill="none" stroke="#000000" d="M494.7573,-260.668C487.9555,-233.3364 478.8582,-180.8525 496,-141 519.8619,-85.5241 584.0935,-50.4379 626.6835,-32.5201"/>
+<polygon fill="#000000" stroke="#000000" points="628.2686,-35.6539 636.2129,-28.644 625.6311,-29.1698 628.2686,-35.6539"/>
+<text text-anchor="middle" x="520.5" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
+</g>
+<!-- 6 -->
+<g id="node6" class="node">
+<title>6</title>
+<ellipse fill="#ffe7e1" stroke="#ffe7e1" cx="667" cy="-105" rx="104.7816" ry="18"/>
+<text text-anchor="middle" x="667" y="-101.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Recovered)</text>
+</g>
+<!-- 6&#45;&gt;2 -->
+<g id="edge12" class="edge">
+<title>6&#45;&gt;2</title>
+<path fill="none" stroke="#000000" d="M665.6681,-123.3193C664.5045,-140.9178 663,-168.2614 663,-192 663,-453 663,-453 663,-453 663,-491.463 544.8514,-520.3596 482.1146,-532.9923"/>
+<polygon fill="#000000" stroke="#000000" points="481.3166,-529.5822 472.1821,-534.9498 482.6701,-536.4501 481.3166,-529.5822"/>
+<text text-anchor="middle" x="678.5" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+</g>
+<!-- 6&#45;&gt;4 -->
+<g id="edge13" class="edge">
+<title>6&#45;&gt;4</title>
+<path fill="none" stroke="#000000" d="M667,-86.9735C667,-75.1918 667,-59.5607 667,-46.1581"/>
+<polygon fill="#000000" stroke="#000000" points="670.5001,-46.0033 667,-36.0034 663.5001,-46.0034 670.5001,-46.0033"/>
+<text text-anchor="middle" x="691.5" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
+</g>
+<!-- 8 -->
+<g id="node8" class="node">
+<title>8</title>
+<ellipse fill="#c9e7f9" stroke="#c9e7f9" cx="297" cy="-18" rx="51.1914" ry="18"/>
+<text text-anchor="middle" x="297" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">Susceptible</text>
+</g>
+<!-- 7&#45;&gt;8 -->
+<g id="edge14" class="edge">
+<title>7&#45;&gt;8</title>
+<path fill="none" stroke="#000000" d="M318.1192,-435.8979C345.4485,-421.7073 376,-398.5617 376,-366 376,-366 376,-366 376,-105 376,-77.3855 353.9162,-54.6514 333.1008,-39.3564"/>
+<polygon fill="#000000" stroke="#000000" points="334.8384,-36.3016 324.6304,-33.4648 330.8413,-42.0482 334.8384,-36.3016"/>
+<text text-anchor="middle" x="402" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 9 -->
 <g id="node9" class="node">
 <title>9</title>
-<ellipse fill="#b3dbf6" stroke="#b3dbf6" cx="182.6232" cy="-190" rx="50.7569" ry="18"/>
-<text text-anchor="middle" x="182.6232" y="-185.8" font-family="Times,serif" font-size="14.00" fill="#000000">StateModel</text>
+<ellipse fill="#b3dbf6" stroke="#b3dbf6" cx="274" cy="-366" rx="39.7935" ry="18"/>
+<text text-anchor="middle" x="274" y="-362.3" font-family="Times,serif" font-size="14.00" fill="#000000">Infected</text>
 </g>
-<!-- 8&#45;&gt;9 -->
-<g id="edge11" class="edge">
-<title>8&#45;&gt;9</title>
-<path fill="none" stroke="#000000" d="M189.8517,-258.5447C184.018,-253.3354 178.6314,-247.0928 175.4093,-240 172.352,-233.2701 172.0897,-225.552 173.1133,-218.2259"/>
-<polygon fill="#000000" stroke="#000000" points="176.5727,-218.7871 175.2595,-208.274 169.73,-217.3114 176.5727,-218.7871"/>
-<text text-anchor="middle" x="189.2301" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">step!</text>
-</g>
-<!-- 9&#45;&gt;1 -->
-<g id="edge12" class="edge">
-<title>9&#45;&gt;1</title>
-<path fill="none" stroke="#000000" d="M141.0505,-200.4922C127.9034,-205.919 114.7062,-214.0176 106.6232,-226 66.6468,-285.2616 77.6971,-374.9308 86.8745,-420.0213"/>
-<polygon fill="#000000" stroke="#000000" points="83.4898,-420.9297 89.0184,-429.9677 90.3327,-419.4547 83.4898,-420.9297"/>
-<text text-anchor="middle" x="86.965" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
-</g>
-<!-- 9&#45;&gt;3 -->
-<g id="edge13" class="edge">
-<title>9&#45;&gt;3</title>
-<path fill="none" stroke="#000000" d="M216.5294,-176.5625C253.3879,-161.955 312.5062,-138.5256 353.5543,-122.2577"/>
-<polygon fill="#000000" stroke="#000000" points="355.0505,-125.4297 363.0575,-118.4915 352.4714,-118.9221 355.0505,-125.4297"/>
-<text text-anchor="middle" x="311.965" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
-</g>
-<!-- 9&#45;&gt;6 -->
-<g id="edge14" class="edge">
-<title>9&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M180.9266,-171.7616C179.8659,-160.3597 178.4775,-145.4342 177.2738,-132.494"/>
-<polygon fill="#000000" stroke="#000000" points="180.7286,-131.8449 176.3173,-122.2121 173.7587,-132.4933 180.7286,-131.8449"/>
-<text text-anchor="middle" x="186.965" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
-</g>
-<!-- 9&#45;&gt;8 -->
+<!-- 7&#45;&gt;9 -->
 <g id="edge15" class="edge">
-<title>9&#45;&gt;8</title>
-<path fill="none" stroke="#000000" d="M193.6513,-207.9033C196.8356,-213.5558 200.1221,-219.9163 202.6232,-226 205.4327,-232.834 207.8784,-240.4177 209.9052,-247.5705"/>
-<polygon fill="#000000" stroke="#000000" points="206.6201,-248.8367 212.5685,-257.6041 213.3858,-247.0408 206.6201,-248.8367"/>
-<text text-anchor="middle" x="214.965" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<title>7&#45;&gt;9</title>
+<path fill="none" stroke="#000000" d="M275.5856,-434.9735C275.3148,-423.1918 274.9554,-407.5607 274.6473,-394.1581"/>
+<polygon fill="#000000" stroke="#000000" points="278.1429,-393.9202 274.4139,-384.0034 271.1447,-394.0812 278.1429,-393.9202"/>
+<text text-anchor="middle" x="302" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+</g>
+<!-- 8&#45;&gt;1 -->
+<g id="edge16" class="edge">
+<title>8&#45;&gt;1</title>
+<path fill="none" stroke="#000000" d="M329.9543,-32.056C378.5234,-52.649 472.3026,-91.9422 553,-123 575.0422,-131.4833 588.3293,-122.4906 603,-141 653.4408,-204.6392 624,-241.2952 624,-322.5 624,-540 624,-540 624,-540 624,-564.4193 607.5168,-586.6198 591.413,-602.4825"/>
+<polygon fill="#000000" stroke="#000000" points="589.0215,-599.9269 584.1011,-609.3099 593.7989,-605.0432 589.0215,-599.9269"/>
+<text text-anchor="middle" x="632" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 8&#45;&gt;7 -->
+<g id="edge17" class="edge">
+<title>8&#45;&gt;7</title>
+<path fill="none" stroke="#000000" d="M250.5903,-25.9681C192.3823,-37.0168 97.6729,-58.8503 77,-87 21.5516,-162.5022 51.6376,-213.965 95,-297 126.3738,-357.0779 191.4231,-404.011 234.386,-430.1076"/>
+<polygon fill="#000000" stroke="#000000" points="232.8161,-433.2464 243.1985,-435.3574 236.3986,-427.2326 232.8161,-433.2464"/>
+<text text-anchor="middle" x="76" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+</g>
+<!-- 9&#45;&gt;5 -->
+<g id="edge18" class="edge">
+<title>9&#45;&gt;5</title>
+<path fill="none" stroke="#000000" d="M304.4794,-354.2668C341.297,-340.0937 403.8129,-316.0278 448.2372,-298.9264"/>
+<polygon fill="#000000" stroke="#000000" points="449.6316,-302.1401 457.7066,-295.2811 447.1168,-295.6074 449.6316,-302.1401"/>
+<text text-anchor="middle" x="408" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 9&#45;&gt;10 -->
+<g id="edge19" class="edge">
+<title>9&#45;&gt;10</title>
+<path fill="none" stroke="#000000" d="M250.1704,-351.4301C242.8001,-345.691 235.4546,-338.4377 231,-330 227.402,-323.1848 225.6664,-315.1423 224.9449,-307.4835"/>
+<polygon fill="#000000" stroke="#000000" points="228.4389,-307.268 224.5098,-297.4287 221.4455,-307.5707 228.4389,-307.268"/>
+<text text-anchor="middle" x="239" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+</g>
+<!-- 10&#45;&gt;9 -->
+<g id="edge20" class="edge">
+<title>10&#45;&gt;9</title>
+<path fill="none" stroke="#000000" d="M236.8298,-297.2306C240.1429,-302.8965 243.7649,-309.1822 247,-315 251.4093,-322.9295 256.0779,-331.6311 260.2705,-339.5663"/>
+<polygon fill="#000000" stroke="#000000" points="257.1811,-341.2114 264.9295,-348.4372 263.3783,-337.9565 257.1811,-341.2114"/>
+<text text-anchor="middle" x="281" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 11 -->
 <g id="node11" class="node">
 <title>11</title>
-<ellipse fill="#82bdec" stroke="#82bdec" cx="358.6232" cy="-190" rx="30.3558" ry="18"/>
-<text text-anchor="middle" x="358.6232" y="-185.8" font-family="Times,serif" font-size="14.00" fill="#000000">Tuple</text>
+<ellipse fill="#82bdec" stroke="#82bdec" cx="245" cy="-192" rx="48.1917" ry="18"/>
+<text text-anchor="middle" x="245" y="-188.3" font-family="Times,serif" font-size="14.00" fill="#000000">Recovered</text>
 </g>
 <!-- 10&#45;&gt;11 -->
-<g id="edge16" class="edge">
+<g id="edge21" class="edge">
 <title>10&#45;&gt;11</title>
-<path fill="none" stroke="#000000" d="M358.6232,-257.7616C358.6232,-246.3597 358.6232,-231.4342 358.6232,-218.494"/>
-<polygon fill="#000000" stroke="#000000" points="362.1233,-218.2121 358.6232,-208.2121 355.1233,-218.2121 362.1233,-218.2121"/>
-<text text-anchor="middle" x="372.6197" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">main</text>
+<path fill="none" stroke="#000000" d="M229.9368,-260.9735C232.5098,-249.1918 235.9235,-233.5607 238.8505,-220.1581"/>
+<polygon fill="#000000" stroke="#000000" points="242.3539,-220.5199 241.0682,-210.0034 235.5151,-219.0263 242.3539,-220.5199"/>
+<text text-anchor="middle" x="263" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+</g>
+<!-- 11&#45;&gt;6 -->
+<g id="edge22" class="edge">
+<title>11&#45;&gt;6</title>
+<path fill="none" stroke="#000000" d="M293.2007,-190.5893C353.8418,-187.8419 460.7291,-179.7576 549,-156 575.2111,-148.9454 603.1512,-137.0825 625.2612,-126.5724"/>
+<polygon fill="#000000" stroke="#000000" points="626.882,-129.6763 634.3579,-122.1688 623.832,-123.3757 626.882,-129.6763"/>
+<text text-anchor="middle" x="600" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+</g>
+<!-- 11&#45;&gt;13 -->
+<g id="edge23" class="edge">
+<title>11&#45;&gt;13</title>
+<path fill="none" stroke="#000000" d="M226.3847,-175.3649C221.3872,-169.7639 216.6408,-163.1137 214,-156 211.3261,-148.7971 210.8053,-140.6293 211.2866,-132.9744"/>
+<polygon fill="#000000" stroke="#000000" points="214.7686,-133.3318 212.456,-122.9924 207.8162,-132.5172 214.7686,-133.3318"/>
+<text text-anchor="middle" x="222" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+</g>
+<!-- 13&#45;&gt;8 -->
+<g id="edge24" class="edge">
+<title>13&#45;&gt;8</title>
+<path fill="none" stroke="#000000" d="M233.5761,-86.9735C245.3152,-74.2072 261.2102,-56.9214 274.1509,-42.8484"/>
+<polygon fill="#000000" stroke="#000000" points="276.7987,-45.1398 280.9911,-35.4097 271.646,-40.4016 276.7987,-45.1398"/>
+<text text-anchor="middle" x="288" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+</g>
+<!-- 13&#45;&gt;11 -->
+<g id="edge25" class="edge">
+<title>13&#45;&gt;11</title>
+<path fill="none" stroke="#000000" d="M223.8287,-123.2401C225.8847,-128.9063 228.0984,-135.1898 230,-141 232.4473,-148.4776 234.9281,-156.6306 237.1486,-164.18"/>
+<polygon fill="#000000" stroke="#000000" points="233.8433,-165.3491 239.9878,-173.9803 240.5669,-163.4013 233.8433,-165.3491"/>
+<text text-anchor="middle" x="261" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+</g>
+<!-- 14&#45;&gt;1 -->
+<g id="edge26" class="edge">
+<title>14&#45;&gt;1</title>
+<path fill="none" stroke="#000000" d="M398.2003,-699.6337C429.6787,-685.5895 477.9637,-664.047 513.7828,-648.0661"/>
+<polygon fill="#000000" stroke="#000000" points="515.3596,-651.1952 523.0659,-643.9244 512.5075,-644.8026 515.3596,-651.1952"/>
+<text text-anchor="middle" x="483" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;3 -->
+<g id="edge27" class="edge">
+<title>14&#45;&gt;3</title>
+<path fill="none" stroke="#000000" d="M367.214,-695.6941C367.537,-690.0251 367.8402,-683.7566 368,-678 368.2015,-670.7396 368.069,-662.9 367.7956,-655.5964"/>
+<polygon fill="#000000" stroke="#000000" points="371.2825,-655.234 367.3168,-645.4094 364.2902,-655.5627 371.2825,-655.234"/>
+<text text-anchor="middle" x="376" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;5 -->
+<g id="edge28" class="edge">
+<title>14&#45;&gt;5</title>
+<path fill="none" stroke="#000000" d="M417.7219,-711.5807C513.5421,-705.6775 709,-686.3609 709,-627 709,-627 709,-627 709,-366 709,-342.4948 712.3146,-330.8965 695,-315 680.3577,-301.5569 639.2466,-292.9166 598.5257,-287.4815"/>
+<polygon fill="#000000" stroke="#000000" points="598.8382,-283.9931 588.4761,-286.2015 597.9538,-290.937 598.8382,-283.9931"/>
+<text text-anchor="middle" x="717" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;6 -->
+<g id="edge29" class="edge">
+<title>14&#45;&gt;6</title>
+<path fill="none" stroke="#000000" d="M416.9544,-710.408C543.8778,-700.781 864,-672.0358 864,-627 864,-627 864,-627 864,-192 864,-163.5485 794.3712,-138.1768 737.9041,-122.279"/>
+<polygon fill="#000000" stroke="#000000" points="738.8229,-118.9018 728.2522,-119.6162 736.9612,-125.6497 738.8229,-118.9018"/>
+<text text-anchor="middle" x="872" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;7 -->
+<g id="edge30" class="edge">
+<title>14&#45;&gt;7</title>
+<path fill="none" stroke="#000000" d="M345.1755,-697.0808C315.1795,-671.0361 261.6882,-617.8234 246,-558 239.0354,-531.4421 249.5512,-501.3298 259.9988,-480.1837"/>
+<polygon fill="#000000" stroke="#000000" points="263.1941,-481.6265 264.7312,-471.1438 256.9924,-478.3799 263.1941,-481.6265"/>
+<text text-anchor="middle" x="267" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;10 -->
+<g id="edge31" class="edge">
+<title>14&#45;&gt;10</title>
+<path fill="none" stroke="#000000" d="M315.4859,-709.3044C232.3989,-700.1688 76,-676.4102 76,-627 76,-627 76,-627 76,-366 76,-330.5021 107.8231,-309.2476 142.1538,-296.6464"/>
+<polygon fill="#000000" stroke="#000000" points="143.5516,-299.8674 151.8789,-293.3171 141.2843,-293.2447 143.5516,-299.8674"/>
+<text text-anchor="middle" x="84" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+</g>
+<!-- 14&#45;&gt;13 -->
+<g id="edge32" class="edge">
+<title>14&#45;&gt;13</title>
+<path fill="none" stroke="#000000" d="M313.9498,-712.3992C212.9037,-707.8698 0,-690.761 0,-627 0,-627 0,-627 0,-192 0,-162.0104 72.3057,-137.6543 133.4416,-122.4206"/>
+<polygon fill="#000000" stroke="#000000" points="134.6464,-125.7295 143.5337,-119.9618 132.9894,-118.9285 134.6464,-125.7295"/>
+<text text-anchor="middle" x="8" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 </g>
 </svg>
@@ -12661,7 +12811,8 @@ Types Graph
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="n">ϕ</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+<div class=" highlight hl-julia"><pre><span></span><span class="n">color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">$</span><span class="p">(</span><span class="n">hex</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">floor</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="n">nv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]))</span><span class="s">&quot;</span> <span class="c">#&quot;gray$(100 - 3v)&quot;</span>
+<span class="n">ϕ</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">d</span><span class="o">=</span><span class="kt">Dict</span><span class="p">{</span><span class="kt">Symbol</span><span class="p">,</span><span class="kt">Symbol</span><span class="p">}(</span><span class="o">:</span><span class="n">Susceptible</span><span class="o">=&gt;:</span><span class="kt">Symbol</span><span class="p">,</span>
         <span class="o">:</span><span class="n">Infected</span><span class="o">=&gt;:</span><span class="kt">Symbol</span><span class="p">,</span>
         <span class="o">:</span><span class="n">Recovered</span><span class="o">=&gt;:</span><span class="kt">Symbol</span><span class="p">,</span>
@@ -12716,324 +12867,324 @@ Types Graph
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: G Pages: 1 -->
-<svg width="882pt" height="732pt"
- viewBox="0.00 0.00 881.68 732.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 728)">
+<svg width="888pt" height="740pt"
+ viewBox="0.00 0.00 888.00 740.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 736)">
 <title>G</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-728 877.6836,-728 877.6836,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-736 884,-736 884,4 -4,4"/>
 <!-- 1 -->
 <g id="node1" class="node">
 <title>1</title>
-<ellipse fill="#fd806e" stroke="#000000" cx="562" cy="-620" rx="106.751" ry="18"/>
-<text text-anchor="middle" x="562" y="-615.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Susceptible)</text>
+<ellipse fill="#fd806e" stroke="#fd806e" cx="561" cy="-627" rx="107.781" ry="18"/>
+<text text-anchor="middle" x="561" y="-623.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Susceptible)</text>
 </g>
 <!-- 2 -->
 <g id="node2" class="node">
 <title>2</title>
-<ellipse fill="#ff9987" stroke="#000000" cx="440" cy="-534" rx="28.5497" ry="18"/>
-<text text-anchor="middle" x="440" y="-529.8" font-family="Times,serif" font-size="14.00" fill="#000000">Int64</text>
+<ellipse fill="#ff9987" stroke="#ff9987" cx="444" cy="-540" rx="29.4969" ry="18"/>
+<text text-anchor="middle" x="444" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Int64</text>
 </g>
 <!-- 1&#45;&gt;2 -->
 <g id="edge1" class="edge">
 <title>1&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M537.0171,-602.3891C516.8877,-588.1995 488.6059,-568.2632 467.7694,-553.5751"/>
-<polygon fill="#000000" stroke="#000000" points="469.5307,-550.5346 459.3407,-547.6336 465.4976,-556.2559 469.5307,-550.5346"/>
-<text text-anchor="middle" x="523.5518" y="-572.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+<path fill="none" stroke="#000000" d="M537.3233,-609.3943C518.1595,-595.1442 491.1567,-575.0652 471.1247,-560.1697"/>
+<polygon fill="#000000" stroke="#000000" points="473.1227,-557.2937 463.0095,-554.1353 468.9457,-562.911 473.1227,-557.2937"/>
+<text text-anchor="middle" x="524.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
 </g>
 <!-- 4 -->
 <g id="node4" class="node">
 <title>4</title>
-<ellipse fill="#ffc5b7" stroke="#000000" cx="662" cy="-18" rx="37.2594" ry="18"/>
-<text text-anchor="middle" x="662" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Float64</text>
+<ellipse fill="#ffc5b7" stroke="#ffc5b7" cx="667" cy="-18" rx="37.8943" ry="18"/>
+<text text-anchor="middle" x="667" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">Float64</text>
 </g>
 <!-- 1&#45;&gt;4 -->
 <g id="edge2" class="edge">
 <title>1&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M636.6833,-607.0244C704.5043,-593.0545 794,-568.15 794,-534 794,-534 794,-534 794,-104 794,-61.317 744.949,-38.7147 706.6489,-27.5721"/>
-<polygon fill="#000000" stroke="#000000" points="707.2501,-24.1082 696.6814,-24.8533 705.4079,-30.8615 707.2501,-24.1082"/>
-<text text-anchor="middle" x="818.8794" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
+<path fill="none" stroke="#000000" d="M637.2782,-614.2449C707.2232,-600.3211 800,-575.2149 800,-540 800,-540 800,-540 800,-105 800,-61.942 750.5774,-39.0503 711.9872,-27.7389"/>
+<polygon fill="#000000" stroke="#000000" points="712.5143,-24.254 701.9442,-24.9777 710.6586,-31.0035 712.5143,-24.254"/>
+<text text-anchor="middle" x="824.5" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
 </g>
 <!-- 7 -->
 <g id="node7" class="node">
 <title>7</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="274" cy="-448" rx="132.3426" ry="18"/>
-<text text-anchor="middle" x="274" y="-443.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Susceptible)</text>
+<ellipse fill="#ffe7e1" stroke="#dff1fc" cx="276" cy="-453" rx="133.7763" ry="18"/>
+<text text-anchor="middle" x="276" y="-449.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Susceptible)</text>
 </g>
 <!-- 2&#45;&gt;7 -->
 <g id="edge3" class="edge">
 <title>2&#45;&gt;7</title>
-<path fill="none" stroke="#000000" d="M417.6125,-522.4017C391.9181,-509.0901 349.1835,-486.9505 316.9972,-470.2756"/>
-<polygon fill="#000000" stroke="#000000" points="318.2897,-467.0035 307.8005,-465.5111 315.0696,-473.2189 318.2897,-467.0035"/>
-<text text-anchor="middle" x="373.3418" y="-486.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M421.3428,-528.2668C395.1453,-514.7002 351.4448,-492.0696 318.7899,-475.1591"/>
+<polygon fill="#000000" stroke="#000000" points="320.3857,-472.044 309.8962,-470.5534 317.1667,-478.26 320.3857,-472.044"/>
+<text text-anchor="middle" x="378" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 10 -->
 <g id="node10" class="node">
 <title>10</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="225" cy="-276" rx="120.7313" ry="18"/>
-<text text-anchor="middle" x="225" y="-271.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Infected)</text>
+<ellipse fill="#ffe7e1" stroke="#9bcdf2" cx="226" cy="-279" rx="122.3786" ry="18"/>
+<text text-anchor="middle" x="226" y="-275.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Infected)</text>
 </g>
 <!-- 2&#45;&gt;10 -->
 <g id="edge4" class="edge">
 <title>2&#45;&gt;10</title>
-<path fill="none" stroke="#000000" d="M438.2093,-515.8325C435.5248,-494.3573 429.1677,-458.0032 415,-430 402.9954,-406.2723 354.2873,-342.1698 312,-312 303.8164,-306.1614 294.5437,-301.0504 285.1776,-296.6544"/>
-<polygon fill="#000000" stroke="#000000" points="286.377,-293.3574 275.8172,-292.4963 283.5351,-299.7546 286.377,-293.3574"/>
-<text text-anchor="middle" x="410.3418" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M442.3866,-521.992C439.8578,-500.3133 433.6357,-463.2948 419,-435 407.5701,-412.9028 357.6239,-348.0808 311,-315 302.8638,-309.2272 293.6585,-304.1332 284.3852,-299.7293"/>
+<polygon fill="#000000" stroke="#000000" points="285.6811,-296.4744 275.1262,-295.5558 282.8046,-302.856 285.6811,-296.4744"/>
+<text text-anchor="middle" x="415" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 13 -->
 <g id="node13" class="node">
 <title>13</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="217" cy="-104" rx="129.4182" ry="18"/>
-<text text-anchor="middle" x="217" y="-99.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Recovered)</text>
+<ellipse fill="#ffe7e1" stroke="#5295d6" cx="217" cy="-105" rx="130.777" ry="18"/>
+<text text-anchor="middle" x="217" y="-101.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Recovered)</text>
 </g>
 <!-- 2&#45;&gt;13 -->
 <g id="edge5" class="edge">
 <title>2&#45;&gt;13</title>
-<path fill="none" stroke="#000000" d="M417.8873,-522.3516C412.7717,-519.9893 407.2783,-517.7087 402,-516 286.3077,-478.5479 234.017,-533.6974 133,-466 68.3798,-422.6942 38,-396.7892 38,-319 38,-319 38,-319 38,-190 38,-164.4123 98.178,-139.5847 148.7493,-123.2381"/>
-<polygon fill="#000000" stroke="#000000" points="149.9121,-126.5413 158.3887,-120.1853 147.7986,-119.8679 149.9121,-126.5413"/>
-<text text-anchor="middle" x="46.3418" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M421.4815,-528.1688C416.4816,-525.873 411.1386,-523.6661 406,-522 288.5848,-483.9313 235.3461,-539.9987 133,-471 68.0347,-427.2024 38,-400.85 38,-322.5 38,-322.5 38,-322.5 38,-192 38,-166.1939 98.9421,-140.883 149.7083,-124.2753"/>
+<polygon fill="#000000" stroke="#000000" points="150.9241,-127.5611 159.378,-121.175 148.7868,-120.8954 150.9241,-127.5611"/>
+<text text-anchor="middle" x="47" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 3 -->
 <g id="node3" class="node">
 <title>3</title>
-<ellipse fill="#ffb0a0" stroke="#000000" cx="363" cy="-620" rx="61.3722" ry="18"/>
-<text text-anchor="middle" x="363" y="-615.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel,)</text>
+<ellipse fill="#ffb0a0" stroke="#ffb0a0" cx="366" cy="-627" rx="62.2891" ry="18"/>
+<text text-anchor="middle" x="366" y="-623.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel,)</text>
 </g>
 <!-- 3&#45;&gt;2 -->
 <g id="edge6" class="edge">
 <title>3&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M378.9544,-602.1807C390.517,-589.2668 406.2684,-571.6742 418.8748,-557.5944"/>
-<polygon fill="#000000" stroke="#000000" points="421.8155,-559.557 425.8784,-549.7722 416.6003,-554.8877 421.8155,-559.557"/>
-<text text-anchor="middle" x="421.5518" y="-572.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+<path fill="none" stroke="#000000" d="M381.7845,-609.3943C393.6534,-596.1559 410.0325,-577.8868 423.0059,-563.4165"/>
+<polygon fill="#000000" stroke="#000000" points="425.7431,-565.6066 429.8126,-555.8244 420.5311,-560.9337 425.7431,-565.6066"/>
+<text text-anchor="middle" x="424.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
 </g>
 <!-- 12 -->
 <g id="node12" class="node">
 <title>12</title>
-<ellipse fill="#ffd7cd" stroke="#000000" cx="284" cy="-534" rx="30.9619" ry="18"/>
-<text text-anchor="middle" x="284" y="-529.8" font-family="Times,serif" font-size="14.00" fill="#000000">Array</text>
+<ellipse fill="#ffd7cd" stroke="#6aaae3" cx="286" cy="-540" rx="31.3957" ry="18"/>
+<text text-anchor="middle" x="286" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Array</text>
 </g>
 <!-- 3&#45;&gt;12 -->
 <g id="edge7" class="edge">
 <title>3&#45;&gt;12</title>
-<path fill="none" stroke="#000000" d="M335.7288,-603.8576C327.6026,-598.2334 319.081,-591.4463 312.3584,-584 306.2059,-577.1852 300.813,-568.8111 296.4284,-560.8784"/>
-<polygon fill="#000000" stroke="#000000" points="299.4747,-559.15 291.7592,-551.8889 293.2626,-562.3766 299.4747,-559.15"/>
-<text text-anchor="middle" x="336.3208" y="-572.8" font-family="Times,serif" font-size="14.00" fill="#000000">describe</text>
+<path fill="none" stroke="#000000" d="M339.153,-610.7419C331.1334,-605.1122 322.7021,-598.3511 316,-591 309.463,-583.83 303.6659,-575.0082 298.9525,-566.7296"/>
+<polygon fill="#000000" stroke="#000000" points="301.9307,-564.8779 294.1098,-557.7306 295.7666,-568.1951 301.9307,-564.8779"/>
+<text text-anchor="middle" x="339" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">describe</text>
 </g>
 <!-- 14 -->
 <g id="node14" class="node">
 <title>14</title>
-<ellipse fill="#b3dbf6" stroke="#000000" cx="362" cy="-706" rx="50.7569" ry="18"/>
-<text text-anchor="middle" x="362" y="-701.8" font-family="Times,serif" font-size="14.00" fill="#000000">StateModel</text>
+<ellipse fill="#b3dbf6" stroke="#3d7dc2" cx="366" cy="-714" rx="51.9908" ry="18"/>
+<text text-anchor="middle" x="366" y="-710.3" font-family="Times,serif" font-size="14.00" fill="#000000">StateModel</text>
 </g>
 <!-- 3&#45;&gt;14 -->
 <g id="edge8" class="edge">
 <title>3&#45;&gt;14</title>
-<path fill="none" stroke="#000000" d="M348.4934,-637.6461C344.7701,-643.1878 341.2737,-649.5517 339.3447,-656 337.0018,-663.8321 338.7728,-672.0294 342.1637,-679.4678"/>
-<polygon fill="#000000" stroke="#000000" points="339.2144,-681.3655 347.1376,-688.3993 345.33,-677.9597 339.2144,-681.3655"/>
-<text text-anchor="middle" x="351.8276" y="-658.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
+<path fill="none" stroke="#000000" d="M350.9604,-644.9425C344.7445,-654.5099 339.6767,-666.6258 343,-678 343.936,-681.2036 345.2536,-684.3932 346.7898,-687.4749"/>
+<polygon fill="#000000" stroke="#000000" points="343.8568,-689.3949 351.8907,-696.3019 349.9176,-685.8924 343.8568,-689.3949"/>
+<text text-anchor="middle" x="355.5" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
 </g>
 <!-- 15 -->
 <g id="node15" class="node">
 <title>15</title>
-<ellipse fill="#82bdec" stroke="#000000" cx="363" cy="-534" rx="30.3558" ry="18"/>
-<text text-anchor="middle" x="363" y="-529.8" font-family="Times,serif" font-size="14.00" fill="#000000">Tuple</text>
+<ellipse fill="#82bdec" stroke="#2a64a6" cx="366" cy="-540" rx="31.3957" ry="18"/>
+<text text-anchor="middle" x="366" y="-536.3" font-family="Times,serif" font-size="14.00" fill="#000000">Tuple</text>
 </g>
 <!-- 3&#45;&gt;15 -->
 <g id="edge9" class="edge">
 <title>3&#45;&gt;15</title>
-<path fill="none" stroke="#000000" d="M363,-601.7616C363,-590.3597 363,-575.4342 363,-562.494"/>
-<polygon fill="#000000" stroke="#000000" points="366.5001,-562.2121 363,-552.2121 359.5001,-562.2121 366.5001,-562.2121"/>
-<text text-anchor="middle" x="375.8276" y="-572.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
+<path fill="none" stroke="#000000" d="M366,-608.9735C366,-597.1918 366,-581.5607 366,-568.1581"/>
+<polygon fill="#000000" stroke="#000000" points="369.5001,-568.0033 366,-558.0034 362.5001,-568.0034 369.5001,-568.0033"/>
+<text text-anchor="middle" x="378.5" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">tick!</text>
 </g>
 <!-- 5 -->
 <g id="node5" class="node">
 <title>5</title>
-<ellipse fill="#fd806e" stroke="#000000" cx="497" cy="-276" rx="95.1395" ry="18"/>
-<text text-anchor="middle" x="497" y="-271.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Infected)</text>
+<ellipse fill="#fd806e" stroke="#ffd7cd" cx="500" cy="-279" rx="96.3833" ry="18"/>
+<text text-anchor="middle" x="500" y="-275.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Infected)</text>
 </g>
 <!-- 5&#45;&gt;2 -->
 <g id="edge10" class="edge">
 <title>5&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M493.0073,-294.1311C484.6652,-332.0038 464.7703,-422.2776 448,-498 447.4103,-500.6625 446.7954,-503.4357 446.18,-506.2089"/>
-<polygon fill="#000000" stroke="#000000" points="442.7445,-505.5349 443.9929,-516.0559 449.5779,-507.0527 442.7445,-505.5349"/>
-<text text-anchor="middle" x="484.5518" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+<path fill="none" stroke="#000000" d="M496.1945,-297.0934C488.1421,-335.3217 468.743,-427.1172 452,-504 451.4197,-506.6646 450.8111,-509.4391 450.1996,-512.2132"/>
+<polygon fill="#000000" stroke="#000000" points="446.7637,-511.541 448.0178,-522.0614 453.598,-513.0551 446.7637,-511.541"/>
+<text text-anchor="middle" x="488.5" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
 </g>
 <!-- 5&#45;&gt;4 -->
 <g id="edge11" class="edge">
 <title>5&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M491.4214,-257.9241C484.1409,-230.9763 474.2102,-179.2377 491.2412,-140 515.2645,-84.6529 579.6616,-49.8604 622.1462,-32.19"/>
-<polygon fill="#000000" stroke="#000000" points="623.6732,-35.3484 631.6458,-28.3707 621.062,-28.8536 623.6732,-35.3484"/>
-<text text-anchor="middle" x="515.8794" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
+<path fill="none" stroke="#000000" d="M494.7573,-260.668C487.9555,-233.3364 478.8582,-180.8525 496,-141 519.8619,-85.5241 584.0935,-50.4379 626.6835,-32.5201"/>
+<polygon fill="#000000" stroke="#000000" points="628.2686,-35.6539 636.2129,-28.644 625.6311,-29.1698 628.2686,-35.6539"/>
+<text text-anchor="middle" x="520.5" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
 </g>
 <!-- 6 -->
 <g id="node6" class="node">
 <title>6</title>
-<ellipse fill="#fd806e" stroke="#000000" cx="662" cy="-104" rx="103.8265" ry="18"/>
-<text text-anchor="middle" x="662" y="-99.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Recovered)</text>
+<ellipse fill="#fd806e" stroke="#ffe7e1" cx="667" cy="-105" rx="104.7816" ry="18"/>
+<text text-anchor="middle" x="667" y="-101.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Recovered)</text>
 </g>
 <!-- 6&#45;&gt;2 -->
 <g id="edge12" class="edge">
 <title>6&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M660.6681,-122.1085C659.5045,-139.5045 658,-166.5337 658,-190 658,-448 658,-448 658,-448 658,-486.2512 540.3908,-514.7076 477.9406,-527.1216"/>
-<polygon fill="#000000" stroke="#000000" points="477.2012,-523.6997 468.0534,-529.0446 478.5377,-530.5709 477.2012,-523.6997"/>
-<text text-anchor="middle" x="673.5518" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
+<path fill="none" stroke="#000000" d="M665.6681,-123.3193C664.5045,-140.9178 663,-168.2614 663,-192 663,-453 663,-453 663,-453 663,-491.463 544.8514,-520.3596 482.1146,-532.9923"/>
+<polygon fill="#000000" stroke="#000000" points="481.3166,-529.5822 472.1821,-534.9498 482.6701,-536.4501 481.3166,-529.5822"/>
+<text text-anchor="middle" x="678.5" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">count</text>
 </g>
 <!-- 6&#45;&gt;4 -->
 <g id="edge13" class="edge">
 <title>6&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M662,-85.7616C662,-74.3597 662,-59.4342 662,-46.494"/>
-<polygon fill="#000000" stroke="#000000" points="665.5001,-46.2121 662,-36.2121 658.5001,-46.2121 665.5001,-46.2121"/>
-<text text-anchor="middle" x="686.8794" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
+<path fill="none" stroke="#000000" d="M667,-86.9735C667,-75.1918 667,-59.5607 667,-46.1581"/>
+<polygon fill="#000000" stroke="#000000" points="670.5001,-46.0033 667,-36.0034 663.5001,-46.0034 670.5001,-46.0033"/>
+<text text-anchor="middle" x="691.5" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">stateload</text>
 </g>
 <!-- 8 -->
 <g id="node8" class="node">
 <title>8</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="296" cy="-18" rx="50.7569" ry="18"/>
-<text text-anchor="middle" x="296" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Susceptible</text>
+<ellipse fill="#dff1fc" stroke="#c9e7f9" cx="297" cy="-18" rx="51.1914" ry="18"/>
+<text text-anchor="middle" x="297" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">Susceptible</text>
 </g>
 <!-- 7&#45;&gt;8 -->
 <g id="edge14" class="edge">
 <title>7&#45;&gt;8</title>
-<path fill="none" stroke="#000000" d="M316.6991,-430.9252C343.8788,-416.9345 374,-394.172 374,-362 374,-362 374,-362 374,-104 374,-76.7174 352.1957,-54.2438 331.6438,-39.1206"/>
-<polygon fill="#000000" stroke="#000000" points="333.4866,-36.1388 323.2806,-33.2949 329.4855,-41.8826 333.4866,-36.1388"/>
-<text text-anchor="middle" x="400.4414" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M318.1192,-435.8979C345.4485,-421.7073 376,-398.5617 376,-366 376,-366 376,-366 376,-105 376,-77.3855 353.9162,-54.6514 333.1008,-39.3564"/>
+<polygon fill="#000000" stroke="#000000" points="334.8384,-36.3016 324.6304,-33.4648 330.8413,-42.0482 334.8384,-36.3016"/>
+<text text-anchor="middle" x="402" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 9 -->
 <g id="node9" class="node">
 <title>9</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="272" cy="-362" rx="39.1454" ry="18"/>
-<text text-anchor="middle" x="272" y="-357.8" font-family="Times,serif" font-size="14.00" fill="#000000">Infected</text>
+<ellipse fill="#dff1fc" stroke="#b3dbf6" cx="274" cy="-366" rx="39.7935" ry="18"/>
+<text text-anchor="middle" x="274" y="-362.3" font-family="Times,serif" font-size="14.00" fill="#000000">Infected</text>
 </g>
 <!-- 7&#45;&gt;9 -->
 <g id="edge15" class="edge">
 <title>7&#45;&gt;9</title>
-<path fill="none" stroke="#000000" d="M273.5759,-429.7616C273.3107,-418.3597 272.9636,-403.4342 272.6627,-390.494"/>
-<polygon fill="#000000" stroke="#000000" points="276.1552,-390.128 272.4235,-380.2121 269.1571,-390.2908 276.1552,-390.128"/>
-<text text-anchor="middle" x="300.4414" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M275.5856,-434.9735C275.3148,-423.1918 274.9554,-407.5607 274.6473,-394.1581"/>
+<polygon fill="#000000" stroke="#000000" points="278.1429,-393.9202 274.4139,-384.0034 271.1447,-394.0812 278.1429,-393.9202"/>
+<text text-anchor="middle" x="302" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 8&#45;&gt;1 -->
 <g id="edge16" class="edge">
 <title>8&#45;&gt;1</title>
-<path fill="none" stroke="#000000" d="M329.4894,-31.7501C405.7263,-63.083 585.8328,-137.2978 588,-140 638.5632,-203.0454 620,-238.1832 620,-319 620,-534 620,-534 620,-534 620,-557.3692 605.0972,-579.144 590.4,-594.9363"/>
-<polygon fill="#000000" stroke="#000000" points="587.7838,-592.605 583.2677,-602.1891 592.7749,-597.5131 587.7838,-592.605"/>
-<text text-anchor="middle" x="627.3418" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M329.9543,-32.056C378.5234,-52.649 472.3026,-91.9422 553,-123 575.0422,-131.4833 588.3293,-122.4906 603,-141 653.4408,-204.6392 624,-241.2952 624,-322.5 624,-540 624,-540 624,-540 624,-564.4193 607.5168,-586.6198 591.413,-602.4825"/>
+<polygon fill="#000000" stroke="#000000" points="589.0215,-599.9269 584.1011,-609.3099 593.7989,-605.0432 589.0215,-599.9269"/>
+<text text-anchor="middle" x="632" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 8&#45;&gt;7 -->
 <g id="edge17" class="edge">
 <title>8&#45;&gt;7</title>
-<path fill="none" stroke="#000000" d="M249.7293,-25.9405C192.2754,-36.8522 99.3345,-58.3184 79,-86 24.1094,-160.7233 52.4694,-211.6126 95,-294 125.6352,-353.3444 189.7697,-399.5241 232.3608,-425.2616"/>
-<polygon fill="#000000" stroke="#000000" points="230.715,-428.3547 241.1025,-430.4408 234.2831,-422.3323 230.715,-428.3547"/>
-<text text-anchor="middle" x="75.3418" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<path fill="none" stroke="#000000" d="M250.5903,-25.9681C192.3823,-37.0168 97.6729,-58.8503 77,-87 21.5516,-162.5022 51.6376,-213.965 95,-297 126.3738,-357.0779 191.4231,-404.011 234.386,-430.1076"/>
+<polygon fill="#000000" stroke="#000000" points="232.8161,-433.2464 243.1985,-435.3574 236.3986,-427.2326 232.8161,-433.2464"/>
+<text text-anchor="middle" x="76" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
 <!-- 9&#45;&gt;5 -->
 <g id="edge18" class="edge">
 <title>9&#45;&gt;5</title>
-<path fill="none" stroke="#000000" d="M302.3445,-350.4017C338.8874,-336.4341 400.8592,-312.7472 445.0612,-295.8522"/>
-<polygon fill="#000000" stroke="#000000" points="446.3958,-299.0891 454.4871,-292.2494 443.8965,-292.5504 446.3958,-299.0891"/>
-<text text-anchor="middle" x="404.3418" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M304.4794,-354.2668C341.297,-340.0937 403.8129,-316.0278 448.2372,-298.9264"/>
+<polygon fill="#000000" stroke="#000000" points="449.6316,-302.1401 457.7066,-295.2811 447.1168,-295.6074 449.6316,-302.1401"/>
+<text text-anchor="middle" x="408" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 9&#45;&gt;10 -->
 <g id="edge19" class="edge">
 <title>9&#45;&gt;10</title>
-<path fill="none" stroke="#000000" d="M250.2099,-346.981C243.4243,-341.2059 236.6039,-334.0448 232.3164,-326 228.7827,-319.3696 226.7945,-311.5798 225.7132,-304.1482"/>
-<polygon fill="#000000" stroke="#000000" points="229.1812,-303.6498 224.7219,-294.0392 222.2146,-304.3331 229.1812,-303.6498"/>
-<text text-anchor="middle" x="240.3418" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<path fill="none" stroke="#000000" d="M250.1704,-351.4301C242.8001,-345.691 235.4546,-338.4377 231,-330 227.402,-323.1848 225.6664,-315.1423 224.9449,-307.4835"/>
+<polygon fill="#000000" stroke="#000000" points="228.4389,-307.268 224.5098,-297.4287 221.4455,-307.5707 228.4389,-307.268"/>
+<text text-anchor="middle" x="239" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
 <!-- 10&#45;&gt;9 -->
 <g id="edge20" class="edge">
 <title>10&#45;&gt;9</title>
-<path fill="none" stroke="#000000" d="M236.4963,-294.1369C239.9732,-299.799 243.7333,-306.1061 247,-312 251.102,-319.4009 255.3097,-327.5603 259.0753,-335.1031"/>
-<polygon fill="#000000" stroke="#000000" points="256.0092,-336.7994 263.5674,-344.224 262.2889,-333.7065 256.0092,-336.7994"/>
-<text text-anchor="middle" x="281.4414" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M236.8298,-297.2306C240.1429,-302.8965 243.7649,-309.1822 247,-315 251.4093,-322.9295 256.0779,-331.6311 260.2705,-339.5663"/>
+<polygon fill="#000000" stroke="#000000" points="257.1811,-341.2114 264.9295,-348.4372 263.3783,-337.9565 257.1811,-341.2114"/>
+<text text-anchor="middle" x="281" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 11 -->
 <g id="node11" class="node">
 <title>11</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="244" cy="-190" rx="47.8323" ry="18"/>
-<text text-anchor="middle" x="244" y="-185.8" font-family="Times,serif" font-size="14.00" fill="#000000">Recovered</text>
+<ellipse fill="#dff1fc" stroke="#82bdec" cx="245" cy="-192" rx="48.1917" ry="18"/>
+<text text-anchor="middle" x="245" y="-188.3" font-family="Times,serif" font-size="14.00" fill="#000000">Recovered</text>
 </g>
 <!-- 10&#45;&gt;11 -->
 <g id="edge21" class="edge">
 <title>10&#45;&gt;11</title>
-<path fill="none" stroke="#000000" d="M229.0294,-257.7616C231.5736,-246.2456 234.912,-231.1353 237.7905,-218.1064"/>
-<polygon fill="#000000" stroke="#000000" points="241.2366,-218.7317 239.9764,-208.2121 234.4015,-217.2216 241.2366,-218.7317"/>
-<text text-anchor="middle" x="262.4414" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M229.9368,-260.9735C232.5098,-249.1918 235.9235,-233.5607 238.8505,-220.1581"/>
+<polygon fill="#000000" stroke="#000000" points="242.3539,-220.5199 241.0682,-210.0034 235.5151,-219.0263 242.3539,-220.5199"/>
+<text text-anchor="middle" x="263" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 11&#45;&gt;6 -->
 <g id="edge22" class="edge">
 <title>11&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M291.9721,-188.4607C352.0447,-185.5822 457.6808,-177.3642 545,-154 570.5588,-147.1612 597.8129,-135.7765 619.581,-125.5968"/>
-<polygon fill="#000000" stroke="#000000" points="621.3389,-128.6363 628.8612,-121.1754 618.3281,-122.3169 621.3389,-128.6363"/>
-<text text-anchor="middle" x="591.3418" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
+<path fill="none" stroke="#000000" d="M293.2007,-190.5893C353.8418,-187.8419 460.7291,-179.7576 549,-156 575.2111,-148.9454 603.1512,-137.0825 625.2612,-126.5724"/>
+<polygon fill="#000000" stroke="#000000" points="626.882,-129.6763 634.3579,-122.1688 623.832,-123.3757 626.882,-129.6763"/>
+<text text-anchor="middle" x="600" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">π2</text>
 </g>
 <!-- 11&#45;&gt;13 -->
 <g id="edge23" class="edge">
 <title>11&#45;&gt;13</title>
-<path fill="none" stroke="#000000" d="M226.163,-173.2422C221.3772,-167.6361 216.8352,-161.014 214.3164,-154 211.8687,-147.1838 211.2983,-139.5086 211.6427,-132.2553"/>
-<polygon fill="#000000" stroke="#000000" points="215.1477,-132.3854 212.6895,-122.0797 208.1844,-131.669 215.1477,-132.3854"/>
-<text text-anchor="middle" x="222.3418" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<path fill="none" stroke="#000000" d="M226.3847,-175.3649C221.3872,-169.7639 216.6408,-163.1137 214,-156 211.3261,-148.7971 210.8053,-140.6293 211.2866,-132.9744"/>
+<polygon fill="#000000" stroke="#000000" points="214.7686,-133.3318 212.456,-122.9924 207.8162,-132.5172 214.7686,-133.3318"/>
+<text text-anchor="middle" x="222" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
 <!-- 13&#45;&gt;8 -->
 <g id="edge24" class="edge">
 <title>13&#45;&gt;8</title>
-<path fill="none" stroke="#000000" d="M233.7539,-85.7616C245.1881,-73.3142 260.4798,-56.6675 273.0451,-42.9889"/>
-<polygon fill="#000000" stroke="#000000" points="275.8911,-45.0645 280.0785,-35.3322 270.7359,-40.3289 275.8911,-45.0645"/>
-<text text-anchor="middle" x="288.4414" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M233.5761,-86.9735C245.3152,-74.2072 261.2102,-56.9214 274.1509,-42.8484"/>
+<polygon fill="#000000" stroke="#000000" points="276.7987,-45.1398 280.9911,-35.4097 271.646,-40.4016 276.7987,-45.1398"/>
+<text text-anchor="middle" x="288" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 13&#45;&gt;11 -->
 <g id="edge25" class="edge">
 <title>13&#45;&gt;11</title>
-<path fill="none" stroke="#000000" d="M223.2122,-122.2792C225.1063,-127.947 227.1706,-134.2216 229,-140 231.2682,-147.1645 233.6408,-154.9337 235.8122,-162.1641"/>
-<polygon fill="#000000" stroke="#000000" points="232.5056,-163.3239 238.716,-171.9077 239.2141,-161.3246 232.5056,-163.3239"/>
-<text text-anchor="middle" x="260.4414" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M223.8287,-123.2401C225.8847,-128.9063 228.0984,-135.1898 230,-141 232.4473,-148.4776 234.9281,-156.6306 237.1486,-164.18"/>
+<polygon fill="#000000" stroke="#000000" points="233.8433,-165.3491 239.9878,-173.9803 240.5669,-163.4013 233.8433,-165.3491"/>
+<text text-anchor="middle" x="261" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 14&#45;&gt;1 -->
 <g id="edge26" class="edge">
 <title>14&#45;&gt;1</title>
-<path fill="none" stroke="#000000" d="M394.5786,-691.9912C426.7884,-678.141 476.4663,-656.7795 513.3517,-640.9188"/>
-<polygon fill="#000000" stroke="#000000" points="515.108,-643.9735 522.9121,-636.8078 512.3428,-637.5428 515.108,-643.9735"/>
-<text text-anchor="middle" x="480.3418" y="-658.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M398.2003,-699.6337C429.6787,-685.5895 477.9637,-664.047 513.7828,-648.0661"/>
+<polygon fill="#000000" stroke="#000000" points="515.3596,-651.1952 523.0659,-643.9244 512.5075,-644.8026 515.3596,-651.1952"/>
+<text text-anchor="middle" x="483" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;3 -->
 <g id="edge27" class="edge">
 <title>14&#45;&gt;3</title>
-<path fill="none" stroke="#000000" d="M363.8209,-687.7043C364.3053,-682.0358 364.7602,-675.7649 365,-670 365.2959,-662.8851 365.1973,-655.2004 364.9265,-648.0401"/>
-<polygon fill="#000000" stroke="#000000" points="368.4223,-647.8671 364.4323,-638.0523 361.4308,-648.2131 368.4223,-647.8671"/>
-<text text-anchor="middle" x="372.3418" y="-658.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M367.214,-695.6941C367.537,-690.0251 367.8402,-683.7566 368,-678 368.2015,-670.7396 368.069,-662.9 367.7956,-655.5964"/>
+<polygon fill="#000000" stroke="#000000" points="371.2825,-655.234 367.3168,-645.4094 364.2902,-655.5627 371.2825,-655.234"/>
+<text text-anchor="middle" x="376" y="-666.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;5 -->
 <g id="edge28" class="edge">
 <title>14&#45;&gt;5</title>
-<path fill="none" stroke="#000000" d="M412.8316,-703.7386C508.1022,-698.1051 704,-679.3102 704,-620 704,-620 704,-620 704,-362 704,-338.9231 707.0245,-327.5792 690,-312 675.4232,-298.6607 634.4633,-290.0199 594.0076,-284.5578"/>
-<polygon fill="#000000" stroke="#000000" points="594.3915,-281.0784 584.026,-283.2707 593.4962,-288.021 594.3915,-281.0784"/>
-<text text-anchor="middle" x="711.3418" y="-486.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M417.7219,-711.5807C513.5421,-705.6775 709,-686.3609 709,-627 709,-627 709,-627 709,-366 709,-342.4948 712.3146,-330.8965 695,-315 680.3577,-301.5569 639.2466,-292.9166 598.5257,-287.4815"/>
+<polygon fill="#000000" stroke="#000000" points="598.8382,-283.9931 588.4761,-286.2015 597.9538,-290.937 598.8382,-283.9931"/>
+<text text-anchor="middle" x="717" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;6 -->
 <g id="edge29" class="edge">
 <title>14&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M412.3901,-702.5325C538.7419,-693.1659 859,-664.9875 859,-620 859,-620 859,-620 859,-190 859,-161.7483 790.0887,-136.832 733.7801,-121.1882"/>
-<polygon fill="#000000" stroke="#000000" points="734.3595,-117.7187 723.7915,-118.472 732.5227,-124.4734 734.3595,-117.7187"/>
-<text text-anchor="middle" x="866.3418" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M416.9544,-710.408C543.8778,-700.781 864,-672.0358 864,-627 864,-627 864,-627 864,-192 864,-163.5485 794.3712,-138.1768 737.9041,-122.279"/>
+<polygon fill="#000000" stroke="#000000" points="738.8229,-118.9018 728.2522,-119.6162 736.9612,-125.6497 738.8229,-118.9018"/>
+<text text-anchor="middle" x="872" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;7 -->
 <g id="edge30" class="edge">
 <title>14&#45;&gt;7</title>
-<path fill="none" stroke="#000000" d="M341.57,-689.2657C312.1344,-663.5143 259.6109,-610.9325 244,-552 237.0315,-525.693 247.5478,-495.8678 257.9966,-474.9236"/>
-<polygon fill="#000000" stroke="#000000" points="261.1504,-476.4466 262.7296,-465.9701 254.9619,-473.1752 261.1504,-476.4466"/>
-<text text-anchor="middle" x="264.3418" y="-572.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M345.1755,-697.0808C315.1795,-671.0361 261.6882,-617.8234 246,-558 239.0354,-531.4421 249.5512,-501.3298 259.9988,-480.1837"/>
+<polygon fill="#000000" stroke="#000000" points="263.1941,-481.6265 264.7312,-471.1438 256.9924,-478.3799 263.1941,-481.6265"/>
+<text text-anchor="middle" x="267" y="-579.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;10 -->
 <g id="edge31" class="edge">
 <title>14&#45;&gt;10</title>
-<path fill="none" stroke="#000000" d="M312.5091,-701.3724C230.6522,-692.335 76,-668.8029 76,-620 76,-620 76,-620 76,-362 76,-327.0548 107.1228,-306.0883 140.9201,-293.6222"/>
-<polygon fill="#000000" stroke="#000000" points="142.1822,-296.8894 150.5,-290.327 139.9053,-290.2701 142.1822,-296.8894"/>
-<text text-anchor="middle" x="83.3418" y="-486.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M315.4859,-709.3044C232.3989,-700.1688 76,-676.4102 76,-627 76,-627 76,-627 76,-366 76,-330.5021 107.8231,-309.2476 142.1538,-296.6464"/>
+<polygon fill="#000000" stroke="#000000" points="143.5516,-299.8674 151.8789,-293.3171 141.2843,-293.2447 143.5516,-299.8674"/>
+<text text-anchor="middle" x="84" y="-492.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 <!-- 14&#45;&gt;13 -->
 <g id="edge32" class="edge">
 <title>14&#45;&gt;13</title>
-<path fill="none" stroke="#000000" d="M311.2843,-704.4575C211.6568,-700.0427 0,-683.2237 0,-620 0,-620 0,-620 0,-190 0,-160.1539 71.8429,-136.1817 132.8534,-121.2052"/>
-<polygon fill="#000000" stroke="#000000" points="134.0204,-124.5246 142.9278,-118.7881 132.3872,-117.7178 134.0204,-124.5246"/>
-<text text-anchor="middle" x="7.3418" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
+<path fill="none" stroke="#000000" d="M313.9498,-712.3992C212.9037,-707.8698 0,-690.761 0,-627 0,-627 0,-627 0,-192 0,-162.0104 72.3057,-137.6543 133.4416,-122.4206"/>
+<polygon fill="#000000" stroke="#000000" points="134.6464,-125.7295 143.5337,-119.9618 132.9894,-118.9285 134.6464,-125.7295"/>
+<text text-anchor="middle" x="8" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">π1</text>
 </g>
 </g>
 </svg>
@@ -13088,109 +13239,109 @@ Types Graph
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: G Pages: 1 -->
-<svg width="430pt" height="474pt"
- viewBox="0.00 0.00 429.88 474.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 470)">
+<svg width="348pt" height="479pt"
+ viewBox="0.00 0.00 348.00 479.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 475)">
 <title>G</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-470 425.8804,-470 425.8804,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-475 344,-475 344,4 -4,4"/>
 <!-- 1 -->
 <g id="node1" class="node">
 <title>1</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="292.4213" cy="-448" rx="129.4182" ry="18"/>
-<text text-anchor="middle" x="292.4213" y="-443.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Recovered)</text>
+<ellipse fill="#ffe7e1" stroke="#9bcdf2" cx="160" cy="-453" rx="122.3786" ry="18"/>
+<text text-anchor="middle" x="160" y="-449.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Infected)</text>
 </g>
 <!-- 4 -->
 <g id="node4" class="node">
 <title>4</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="170.4213" cy="-362" rx="50.7569" ry="18"/>
-<text text-anchor="middle" x="170.4213" y="-357.8" font-family="Times,serif" font-size="14.00" fill="#000000">Susceptible</text>
+<ellipse fill="#dff1fc" stroke="#b3dbf6" cx="162" cy="-18" rx="39.7935" ry="18"/>
+<text text-anchor="middle" x="162" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">Infected</text>
 </g>
 <!-- 1&#45;&gt;4 -->
 <g id="edge1" class="edge">
 <title>1&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M256.4046,-430.676C246.1264,-425.189 235.1225,-418.7739 225.5385,-412 214.8232,-404.4266 203.935,-394.9926 194.6975,-386.3665"/>
-<polygon fill="#000000" stroke="#000000" points="197.0167,-383.7417 187.3663,-379.369 192.1836,-388.8054 197.0167,-383.7417"/>
-<text text-anchor="middle" x="251.8627" y="-400.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
-</g>
-<!-- 5 -->
-<g id="node5" class="node">
-<title>5</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="292.4213" cy="-18" rx="47.8323" ry="18"/>
-<text text-anchor="middle" x="292.4213" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Recovered</text>
-</g>
-<!-- 1&#45;&gt;5 -->
-<g id="edge2" class="edge">
-<title>1&#45;&gt;5</title>
-<path fill="none" stroke="#000000" d="M292.4213,-429.8801C292.4213,-412.4759 292.4213,-385.441 292.4213,-362 292.4213,-362 292.4213,-362 292.4213,-104 292.4213,-84.7711 292.4213,-63.1237 292.4213,-46.358"/>
-<polygon fill="#000000" stroke="#000000" points="295.9214,-46.1198 292.4213,-36.1199 288.9214,-46.1199 295.9214,-46.1198"/>
-<text text-anchor="middle" x="318.8627" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
-</g>
-<!-- 2 -->
-<g id="node2" class="node">
-<title>2</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="143.4213" cy="-104" rx="120.7313" ry="18"/>
-<text text-anchor="middle" x="143.4213" y="-99.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Infected)</text>
-</g>
-<!-- 2&#45;&gt;5 -->
-<g id="edge3" class="edge">
-<title>2&#45;&gt;5</title>
-<path fill="none" stroke="#000000" d="M171.7023,-86.2702C187.4333,-76.5374 207.4359,-64.3734 225.5385,-54 235.076,-48.5347 245.4938,-42.8116 255.2074,-37.578"/>
-<polygon fill="#000000" stroke="#000000" points="257.0893,-40.5406 264.253,-32.7347 253.785,-34.3695 257.0893,-40.5406"/>
-<text text-anchor="middle" x="251.8627" y="-56.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M78.5938,-439.4408C39.068,-427.7096 0,-405.9976 0,-366 0,-366 0,-366 0,-105 0,-52.9917 65.6057,-31.9443 113.3175,-23.5143"/>
+<polygon fill="#000000" stroke="#000000" points="113.8921,-26.9669 123.197,-21.9003 112.7635,-20.0585 113.8921,-26.9669"/>
+<text text-anchor="middle" x="26" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 6 -->
 <g id="node6" class="node">
 <title>6</title>
-<ellipse fill="#dff1fc" stroke="#000000" cx="132.4213" cy="-190" rx="39.1454" ry="18"/>
-<text text-anchor="middle" x="132.4213" y="-185.8" font-family="Times,serif" font-size="14.00" fill="#000000">Infected</text>
+<ellipse fill="#dff1fc" stroke="#82bdec" cx="160" cy="-366" rx="48.1917" ry="18"/>
+<text text-anchor="middle" x="160" y="-362.3" font-family="Times,serif" font-size="14.00" fill="#000000">Recovered</text>
+</g>
+<!-- 1&#45;&gt;6 -->
+<g id="edge2" class="edge">
+<title>1&#45;&gt;6</title>
+<path fill="none" stroke="#000000" d="M160,-434.9735C160,-423.1918 160,-407.5607 160,-394.1581"/>
+<polygon fill="#000000" stroke="#000000" points="163.5001,-394.0033 160,-384.0034 156.5001,-394.0034 163.5001,-394.0033"/>
+<text text-anchor="middle" x="186" y="-405.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+</g>
+<!-- 2 -->
+<g id="node2" class="node">
+<title>2</title>
+<ellipse fill="#ffe7e1" stroke="#5295d6" cx="160" cy="-279" rx="130.777" ry="18"/>
+<text text-anchor="middle" x="160" y="-275.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Recovered)</text>
+</g>
+<!-- 5 -->
+<g id="node5" class="node">
+<title>5</title>
+<ellipse fill="#dff1fc" stroke="#c9e7f9" cx="160" cy="-192" rx="51.1914" ry="18"/>
+<text text-anchor="middle" x="160" y="-188.3" font-family="Times,serif" font-size="14.00" fill="#000000">Susceptible</text>
+</g>
+<!-- 2&#45;&gt;5 -->
+<g id="edge3" class="edge">
+<title>2&#45;&gt;5</title>
+<path fill="none" stroke="#000000" d="M160,-260.9735C160,-249.1918 160,-233.5607 160,-220.1581"/>
+<polygon fill="#000000" stroke="#000000" points="163.5001,-220.0033 160,-210.0034 156.5001,-220.0034 163.5001,-220.0033"/>
+<text text-anchor="middle" x="186" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 2&#45;&gt;6 -->
 <g id="edge4" class="edge">
 <title>2&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M141.0918,-122.2121C139.6341,-133.6086 137.7252,-148.5329 136.0697,-161.4762"/>
-<polygon fill="#000000" stroke="#000000" points="132.5512,-161.3983 134.7541,-171.7616 139.4946,-162.2865 132.5512,-161.3983"/>
-<text text-anchor="middle" x="165.8627" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M160,-297.0034C160,-308.7801 160,-324.4102 160,-337.8156"/>
+<polygon fill="#000000" stroke="#000000" points="156.5001,-337.9735 160,-347.9735 163.5001,-337.9736 156.5001,-337.9735"/>
+<text text-anchor="middle" x="186" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
 <!-- 3 -->
 <g id="node3" class="node">
 <title>3</title>
-<ellipse fill="#ffe7e1" stroke="#000000" cx="132.4213" cy="-276" rx="132.3426" ry="18"/>
-<text text-anchor="middle" x="132.4213" y="-271.8" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Susceptible)</text>
+<ellipse fill="#ffe7e1" stroke="#dff1fc" cx="162" cy="-105" rx="133.7763" ry="18"/>
+<text text-anchor="middle" x="162" y="-101.3" font-family="Times,serif" font-size="14.00" fill="#000000">(:StateModel, :Int64, :Susceptible)</text>
 </g>
 <!-- 3&#45;&gt;4 -->
 <g id="edge5" class="edge">
 <title>3&#45;&gt;4</title>
-<path fill="none" stroke="#000000" d="M140.5741,-294.3083C143.0943,-299.9773 145.8764,-306.2453 148.4213,-312 151.6384,-319.2748 155.109,-327.15 158.3217,-334.4511"/>
-<polygon fill="#000000" stroke="#000000" points="155.2654,-336.1959 162.4947,-343.9411 161.6733,-333.3782 155.2654,-336.1959"/>
-<text text-anchor="middle" x="181.8627" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<path fill="none" stroke="#000000" d="M162,-86.9735C162,-75.1918 162,-59.5607 162,-46.1581"/>
+<polygon fill="#000000" stroke="#000000" points="165.5001,-46.0033 162,-36.0034 158.5001,-46.0034 165.5001,-46.0033"/>
+<text text-anchor="middle" x="188" y="-57.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
-<!-- 3&#45;&gt;6 -->
+<!-- 3&#45;&gt;5 -->
 <g id="edge6" class="edge">
-<title>3&#45;&gt;6</title>
-<path fill="none" stroke="#000000" d="M132.4213,-257.7616C132.4213,-246.3597 132.4213,-231.4342 132.4213,-218.494"/>
-<polygon fill="#000000" stroke="#000000" points="135.9214,-218.2121 132.4213,-208.2121 128.9214,-218.2121 135.9214,-218.2121"/>
-<text text-anchor="middle" x="158.8627" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
+<title>3&#45;&gt;5</title>
+<path fill="none" stroke="#000000" d="M161.5861,-123.0034C161.3154,-134.7801 160.9561,-150.4102 160.6479,-163.8156"/>
+<polygon fill="#000000" stroke="#000000" points="157.1452,-163.8957 160.4144,-173.9735 164.1434,-164.0567 157.1452,-163.8957"/>
+<text text-anchor="middle" x="188" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">transition</text>
 </g>
-<!-- 4&#45;&gt;3 -->
+<!-- 4&#45;&gt;1 -->
 <g id="edge7" class="edge">
-<title>4&#45;&gt;3</title>
-<path fill="none" stroke="#000000" d="M145.6844,-345.9824C139.2869,-340.4865 133.2236,-333.7394 129.7377,-326 126.7288,-319.3197 125.992,-311.6187 126.3573,-304.293"/>
-<polygon fill="#000000" stroke="#000000" points="129.8377,-304.6627 127.4857,-294.3323 122.8822,-303.8747 129.8377,-304.6627"/>
-<text text-anchor="middle" x="137.7631" y="-314.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<title>4&#45;&gt;1</title>
+<path fill="none" stroke="#000000" d="M200.803,-21.9003C248.7293,-29.1067 324,-49.2924 324,-105 324,-366 324,-366 324,-366 324,-403.2791 290.5219,-424.6315 253.8174,-436.8392"/>
+<polygon fill="#000000" stroke="#000000" points="252.4423,-433.6007 243.9217,-439.8976 254.5093,-440.2886 252.4423,-433.6007"/>
+<text text-anchor="middle" x="332" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
-<!-- 5&#45;&gt;1 -->
+<!-- 5&#45;&gt;3 -->
 <g id="edge8" class="edge">
-<title>5&#45;&gt;1</title>
-<path fill="none" stroke="#000000" d="M318.5762,-33.1745C340.5603,-48.1036 368.4213,-73.1159 368.4213,-104 368.4213,-362 368.4213,-362 368.4213,-362 368.4213,-387.6288 349.2353,-409.2142 330.143,-424.3493"/>
-<polygon fill="#000000" stroke="#000000" points="327.9265,-421.6365 322.0225,-430.4339 332.124,-427.2385 327.9265,-421.6365"/>
-<text text-anchor="middle" x="375.7631" y="-228.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<title>5&#45;&gt;3</title>
+<path fill="none" stroke="#000000" d="M147.616,-174.3263C142.3045,-164.6293 137.9423,-152.3103 141,-141 141.8049,-138.0227 142.924,-135.0388 144.2303,-132.1331"/>
+<polygon fill="#000000" stroke="#000000" points="147.3576,-133.7055 148.8853,-123.2213 141.1531,-130.4645 147.3576,-133.7055"/>
+<text text-anchor="middle" x="149" y="-144.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
 <!-- 6&#45;&gt;2 -->
 <g id="edge9" class="edge">
 <title>6&#45;&gt;2</title>
-<path fill="none" stroke="#000000" d="M122.624,-172.3307C118.5415,-162.7236 115.4343,-150.6596 118.7377,-140 119.7247,-136.8151 121.1016,-133.6615 122.7052,-130.6226"/>
-<polygon fill="#000000" stroke="#000000" points="125.7898,-132.2877 128.033,-121.9331 119.8221,-128.6288 125.7898,-132.2877"/>
-<text text-anchor="middle" x="126.7631" y="-142.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
+<path fill="none" stroke="#000000" d="M147.9239,-348.4461C144.697,-342.8077 141.65,-336.3675 140,-330 137.9535,-322.1025 139.5242,-313.7713 142.5176,-306.1838"/>
+<polygon fill="#000000" stroke="#000000" points="145.7258,-307.5884 146.9051,-297.0594 139.4172,-304.5549 145.7258,-307.5884"/>
+<text text-anchor="middle" x="148" y="-318.8" font-family="Times,serif" font-size="14.00" fill="#000000">π3</text>
 </g>
 </g>
 </svg>
@@ -13207,16 +13358,16 @@ Types Graph
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>By contracting the edges labeled $\pi_3$ you identify a minor of
-the typegraph isomorphic to the discrete finite automata or
+<p>By contracting the edges labeled $\pi_3$ you identify a minor of 
+the typegraph isomorphic to the discrete finite automata or 
 finite state machine representation of the agents in our agent based simulation.</p>
-<p>Since the typegraph contains this information, we can say that the julia compiler "understands"
+<p>Since the typegraph contains this information, we can say that the julia compiler "understands" 
 a semantic feature of the model. We can introduce compile time logic based on these properties of
-the model. ANy changes to the underlying code that changed the state space of the agents, or the
+the model. ANy changes to the underlying code that changed the state space of the agents, or the 
 possible transitions they undergo would affect the type graph of the model.</p>
-<p>For the model version that used :Symbols, or categorical states, the julia type system is blissfully
-ignorant of the relationships between the states. However once we introduce types to the model, the
-compiler is able to represent the structure of the model. Any changes to the model will either preserve
+<p>For the model version that used :Symbols, or categorical states, the julia type system is blissfully 
+ignorant of the relationships between the states. However once we introduce types to the model, the 
+compiler is able to represent the structure of the model. Any changes to the model will either preserve 
 or disrupt this type graph and we will be able to identify and quantify that change to the structure of the model.</p>
 <p>This example is an instance of a large phenomenon that we hope to advance in modeling.
 Programs that implement models can get more out of the compiler if they add more information.
