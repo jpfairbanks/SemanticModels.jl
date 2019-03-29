@@ -93,7 +93,7 @@ want to push that to expanding.
 ### Ologs
 
 Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used
-to precisely specify what a scientist is talking about (see [Spivak Kent 2012]("Ologs: A Categorical Framework for Knowledge Representation.")). 
+to precisely specify what a scientist is talking about (see [Spivak Kent 2012](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0024274) "Ologs: A Categorical Framework for Knowledge Representation."). 
 
 An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the
 name of the aspect. An aspect is valid if it is a function (1-many relation). 

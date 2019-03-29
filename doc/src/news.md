@@ -57,7 +57,9 @@ Release v0.2.0 include an inital version of our new model augmentation tools and
     - Updates to Theory
     - Updated examples
     
-
+- Removed Functionality
+    - SemanticModels.Graph, replaced by `SemanticModels.ModelTools.typegraph`
+    - Parsers.edges, replaces by `typegraph` and `MetaGraphs.edges(g)`
 
 ## Release v0.1
 
@@ -74,10 +76,10 @@ The following is a summary of the most important new features and updates:
   - Parsers
     - [`Parsers.parsefile`](@ref) reads in a julia source file as an expression.
     - [`Parsers.defs`](@ref) extracts  all of the code definitions from a module definition expression.
-    - [`Parsers.edges`](@ref) extracts edges for the knowledge graph from code.
+    - `Parsers.edges` extracts edges for the knowledge graph from code.
   - Graphs
     - A knowledge graph schema [Knowledge Graphs](@ref).
-    - [`Graphs.insert_edges_from_jl`](@ref) builds a knowledge graph from extracted edges.
+    - `Graphs.insert_edges_from_jl` builds a knowledge graph from extracted edges.
 - Examples
   - `test/transform/ode.jl` shows how to perturb an ODE with overdub.
   - `test/transform/varextract.jl` shows how to use a compiler pass to extract dynamic analysis information.

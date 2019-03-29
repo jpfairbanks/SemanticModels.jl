@@ -7,7 +7,7 @@
 #       extension: .jl
 #       format_name: light
 #       format_version: '1.3'
-#       jupytext_version: 1.0.2
+#       jupytext_version: 1.0.4
 #   kernelspec:
 #     display_name: Julia 1.0.3
 #     language: julia
@@ -43,7 +43,7 @@ using Plots
 # This workflow touches on validation-related tasks in that we should expect some swaps to result in alterations to programs that do not halt execution, but do meaningfully alter results. Ideally, we'd be able to flag inappropriate swaps of this nature by observing cases where the results represent marked deviations from previously observed values/outputs.
 #
 # For demonstration purposes, we begin by defining a set of extraction, graph construction, and graph visualization methods. We then provide example programs to illustrate how to apply this analytical pipeline.
-
+#
 # ### 1. Define Structs and Code Annotation Methods 
 # The data structures and methods defined below are intended to facilitate the annotation of our input "program" via injection (e.g., we insert data structures into the toy methods defined above for the purpose of extracting information that we can use to build the dataflow graph, including directed relationships of the types: `method -calls-> method`; `method -interacts_with-> variable`; `method -returns-> variable`; and `variable -takes-> value`).
 
@@ -149,8 +149,6 @@ function collect_method_info(expr_to_parse::Expr)
         delc_methods, called_methods)
 end
 
-
-
 # +
 """
     nametype(ex::Expr)
@@ -191,9 +189,9 @@ A function to inject variable collection commands into the Expr representation o
 """
 function describe_args(fu::Expr, collector::Array)
     f = fu
-    @show argl = f.args[1].args[2:end]
-    @show argl
-    @show body = f.args[2].args
+#     @show argl = f.args[1].args[2:end]
+#     @show argl
+#     @show body = f.args[2].args
 
     fname = string(f.args[1])
     
@@ -333,7 +331,7 @@ function get_method_calls_method_edges(called_methods)
         push!(methods_df, [m.called_by, m.expression])
     end
     
-    @show methods_df
+#     @show methods_df
     return methods_df
 end
 
@@ -345,7 +343,7 @@ function get_method_rw_variable_edges(prog_variables)
         push!(vars_df, [v.read_write_by, v.name])
     end
     
-    @show vars_df
+#     @show vars_df
     return vars_df
 end
 

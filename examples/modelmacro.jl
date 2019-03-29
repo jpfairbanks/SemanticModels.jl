@@ -6,7 +6,7 @@
 #       extension: .jl
 #       format_name: light
 #       format_version: '1.3'
-#       jupytext_version: 1.0.2
+#       jupytext_version: 1.0.4
 #   kernelspec:
 #     display_name: Julia 1.0.3
 #     language: julia

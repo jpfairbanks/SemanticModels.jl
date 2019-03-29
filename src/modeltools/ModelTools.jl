@@ -9,6 +9,10 @@ export model, callsites, structured, AbstractModel,
 
 # TODO Possible imports/exports: invoke
 
+""" isexpr(x)
+
+predicate for isa(x, Expr).
+"""
 isexpr(x) = isa(x, Expr)
 
 """    AbstractModel

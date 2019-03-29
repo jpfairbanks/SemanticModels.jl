@@ -106,21 +106,20 @@ expr = quote
     fit = curve_fit(f, X, target, a₀; autodiff=:forwarddiff)
     result = describe(fit)
     end
-end
+end;
 
 # ## Implementation Details
 # The following code is the implementation details for representing the models as an `AbstractProblem` and representing the transformations as `Product{Tuple{Pow{Int}, Pow{Int}}}` and applying the transformations onto the models.
 
-# include("groups.jl")
 using SemanticModels
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.Transformations
-# using .Transformations
 
-import SemanticModels.ModelTools: model, AbstractProblem
+import SemanticModels.ModelTools: model, AbstractModel
 import SemanticModels.Parsers: findfunc, findassign
 import Base: show
 
+# +
 """"    MultivariateLsq
 
 
@@ -136,6 +135,7 @@ struct MultivariateLsq <: AbstractModel
     coefficient
     p₀
 end
+# -
 
 function show(io::IO, m::MultivariateLsq)
     write(io, "MultivariateLsq(\n  f=$(repr(m.f)),\n  coefficient=$(repr(m.coefficient)),\n  p₀=$(repr(m.p₀))\n)")
@@ -161,7 +161,6 @@ function poly(m::MultivariateLsq)
     poly = func.args[2].args[end].args[1]
     return poly
 end
-
 
 """    (t::Pow)(m::MultivariateLsq, i::Int)
 
@@ -212,8 +211,9 @@ end
 
 # ## Model Augmentation with Group Actions
 # the Group `Product{Tuple{Pow{Int},Pow{Int}}}` which is isomorphic to $(Z, +, 0)\times (Z,+,0)$ can act on our class of models
+#
+# Let's build an instance of the model object from the code snippet `expr`
 
-# Let's build an instance of the model object from the code snippet expr
 m = model(MultivariateLsq, expr)
 @show m
 poly(m)
@@ -229,8 +229,7 @@ poly(m)
 @show T₁ = Product((one(Pow), zero(Pow)))
 @show T₂ = Product((zero(Pow), one(Pow)))
 
-# TODO: make these tests
-#
+# Some Checks that we get what is expected.
 
 m′ = @show (T₁^2 ∘ T₂^3)(deepcopy(m))
 p = poly(m)
@@ -258,13 +257,14 @@ for i in 1:3
     end
 end
 
-
 # It turns out that this method recovers the *true* model order $2,3$
+#
+#
+#
+#
 
 sort(results, by=x->x.r)
 
 # ## Conclusions
 #
 # We have seen how abstract algebra can be applied to the category of models to build a systematic treatment of model augmentation. This proves that the model transformations can be arranged into a simple algebraic structure that can act on a model to build new models. The structure of the transformations are easier to analyze than the changes to the models themselves. 
-
-

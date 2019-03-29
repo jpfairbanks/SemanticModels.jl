@@ -14,7 +14,7 @@ export ExpStateModel, ExpStateTransition, model
 represents an agent based model symbolically, with a collection of stats, agents, and transitions.
 The agents are a collection of states and the transitions map from state to state. This structure allows you to represent an agent based model at the semantic level and apply transformations to that model.
 
-The common transformations for an agent based model are adding, removing, or replacing, states, agents, or transitions. See [`model`](@ref), [`put!`](@ref), [`setindex`](@ref), [`getindex`](@ref), [`put!`](@ref), [`replace!`](@ref).
+The common transformations for an agent based model are adding, removing, or replacing, states, agents, or transitions. See [`model`](@ref), [`put!`](@ref), [`setindex!`](@ref), [`getindex`](@ref), [`put!`](@ref), [`replace!`](@ref).
 """
 struct ExpStateModel <: AbstractModel
     expr::Expr
@@ -75,7 +75,7 @@ end
 
 """ setindex!(m::ExpStateModel, expr::Expr, sym::Symbol)
 
-Store an [`Expr`](@ref) `expr` as the transition function for state `sym` in [`ExpStateModel`](@ref) `m`. A `setindex!` on an already set state will replace the current transition function.
+Store an [`Expr`](https://docs.julialang.org/en/v1/manual/metaprogramming/index.html#Expressions-and-evaluation-1) `expr` as the transition function for state `sym` in [`ExpStateModel`](@ref) `m`. A `setindex!` on an already set state will replace the current transition function.
 
 Returns the transition function inserted into `m`.
 """
