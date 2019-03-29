@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-# + {}
-using Pkg
-Pkg.activate("Algebra")
-try 
-    using Polynomials
-catch
-    Pkg.add("Polynomials")
-end
-
-using Polynomials
-# -
-
 # # Polynomial Ring of Transformations
 #
 # One goal of SemanticModels is to lift model augmentation into the world of category theory and algebra.
@@ -18,6 +6,7 @@ using Polynomials
 #
 # He we will represent a model class *monomial regression* with a data structure `MonomialRegression` and define a set group of transformations that can act on models from this class.
 
+using Polynomials
 using SemanticModels
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.Transformations

@@ -1,12 +1,11 @@
+
 module Extract
 using Cassette
 using Test
 Cassette.@context TraceCtx
 
 """    varname(ir::Core.CodeInfo, sym::Symbol)
-
 look up the name of a slot from the codeinfo slotnames.
-
 see also: ir.slotnames
 """
 function varname(ir::Core.CodeInfo, sym::Symbol)
@@ -16,13 +15,7 @@ function varname(ir::Core.CodeInfo, sym::Symbol)
     return varname
 end
 
-# function Cassette.overdub(ctx::TraceCtx, f::typeof(varname), args...)
-#     println("calling varname")
-#     return Cassette.fallback(varname, args...)
-# end
-
 """    Extraction
-
 - ir: a CodeInfo object that we are extracting from
 - varnames: Variable names used as left hand sides
 - funccalls: Tuples of (returnvar, funcname)
@@ -38,7 +31,6 @@ struct Extraction
 end
 
 """     Extraction(ir)
-
 construct an Extraction object from a piece of code info
 """
 function Extraction(ir)
@@ -46,7 +38,7 @@ function Extraction(ir)
 end
 
 function findvars(ext, ir, expr)
-    @info "Finding Variables"
+    #@info "Finding Variables"
     # @show ir
     # dump(expr)
     # if typeof(expr) <: SSAValue
@@ -130,10 +122,8 @@ function Base.show(ext::Extraction)
 end
 
 """    extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
-
 is a Cassette pass to log the varnames and function calls to build the dynamic code graph
 part of the SemanticModels knowledge graph.
-
 """
 function extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
     ir = reflection.code_info
@@ -156,7 +146,7 @@ function extractpass(::Type{<:TraceCtx}, reflection::Cassette.Reflection)
         push!(ext, expr)
     end
     if length(ext.varnames) > 0
-        @info "Working with method: $(modname).$(methname)"
+        #@info "Working with method: $(modname).$(methname)"
         show(ext)
         # @show ext.ir
         @show ext.ir.slotnames
@@ -185,10 +175,9 @@ function Cassette.canrecurse(ctx::TraceCtx,
 end
 
 # handle all function calls the same
-function Cassette.overdub(ctx::TraceCtx,
-                          f,
-                          args...)
+function Cassette.overdub(ctx::TraceCtx, f, args...)
     @show f, args
+
     # if we are supposed to descend, we call Cassette.recurse
     if Cassette.canrecurse(ctx, f, args...)
         subtrace = (Any[],Any[])
@@ -201,40 +190,20 @@ function Cassette.overdub(ctx::TraceCtx,
         push!(ctx.metadata[1], :t)
         push!(ctx.metadata[2], retval)
     end
-    @info "returning"
+    #@info "returning"
     @show retval
     return retval
 end
 
-# function Cassette.overdub(ctx::TraceCtx, args...)
-# end
 
-using Random
-Random.seed!(0)
-a = rand(3)
-b = rand(3)
 function add(a, b)
     c = a + b
     return c
 end
 
+const OverDub = Cassette.overdub
 
-ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
-# before_time = time()
-result = Cassette.overdub(ctx, add, a, b)
-@test result == a + b
-@show result
-# println("done (took ", time() - before_time, " seconds)")
-@info "Analyzing function g"
-g(x) = begin
-    y = add(x.*x, x)
-    z = 1
-    v = y .- z
-    s = sum(v)
-    return s
-end
+export OverDub, TraceCtx, ExtractPass
 
-ctx = TraceCtx(pass=ExtractPass, metadata = (Any[], Any[]))
-result = Cassette.overdub(ctx, g, [2,2,2])
-dump(ctx.metadata)
+
 end

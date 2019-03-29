@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+using MetaGraphs
 using SemanticModels.ModelTools
 
 
@@ -133,16 +134,6 @@ edgelist = @typegraph begin
     end
 
 E = unique((f.func, f.args, f.ret) for f in edgelist)
-
-using Pkg
-try 
-    using MetaGraphs
-catch
-    
-    Pkg.add("MetaGraphs")
-finally
-    using MetaGraphs
-end
 
 g = MetaDiGraph()
 

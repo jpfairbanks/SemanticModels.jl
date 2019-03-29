@@ -69,15 +69,18 @@ You can easily spin up a `SemanticModels.jl` Jupyterlab instance with docker.
 1. Navigate to the link it returns: `localhost:8888/?token=...`
 1. From there you can run the examples included in this repository, or write your own code to explore the functionality of `SemanticModels.jl`
 
+Note: to open a `.jl` file as a notebook in the jupyterlab interface right click and select "Open in > Notebook".
+
 ## Documentation
 
 There is a docs folder which contains the documentation, including reports sent to our sponsor, DARPA.
 
 Documentation is currently published https://aske.gtri.gatech.edu/docs/latest
 
-Many of our documentation and examples are built with Jupyter notebooks. We use
+Our documentation and examples are built with Jupyter notebooks. We use
 [jupytext](https://github.com/mwouts/jupytext) to support diff friendly outputs in the repo.
-Please follow the jupytext readme to install this jupyter plugin.
+Please follow the jupytext readme to install this jupyter plugin. If you use the docker container, jupytext is already
+installed.
 
 
 ### Examples
@@ -111,6 +114,9 @@ if you want to add a new class of models you will just have to write:
 
 SemanticModels.jl provides library functions to help with steps 2 and 3 and functions for executing and comparing then
 outputs of different variations of the model.
+
+We think of SemanticModels as a _post hoc_ modeling framework the enters the scene after scientific code has been
+written. As opposed to a standard modeling framework that you develop before you write the scientific code.
 
 ### Overdubbing
 

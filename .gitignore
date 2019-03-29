@@ -273,3 +273,5 @@ doc/src/img/*.dot.png
 **/.ipynb_checkpoints
 /doc/build
 *__pycache__/
+examples/*.dot
+examples/*.dot.svg

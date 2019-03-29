@@ -1,28 +1,8 @@
 # -*- coding: utf-8 -*-
-# + {}
-using Pkg
-Pkg.activate("Algebra")
-try
-    using Polynomials
-catch
-    Pkg.add("Polynomials")
-end
-try
-    using DifferentialEquations
-catch
-    Pkg.add("DifferentialEquations")
-end
-try
-    using Test
-catch
-    Pkg.add("Test")
-end
-
 using Test
 using Polynomials
 using DifferentialEquations
 import DifferentialEquations: solve
-# -
 
 # f = @ode_def LotkaVolterra begin
 #   dx = a*x - b*x*y
