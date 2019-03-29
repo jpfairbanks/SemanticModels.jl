@@ -13,6 +13,7 @@ The examples require the some dependencies, they are pre-installed in the
 docker container, and you can install them with 
 
 ```julia
+using Pkg
 Pkg.add(["LsqFit",
   "Polynomials",
   "DifferentialEquations",
