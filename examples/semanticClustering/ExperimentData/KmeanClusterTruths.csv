@@ -1,0 +1,127 @@
+variable,cluster
+dt,5
+head size,29
+I,28
+pf,12
+pf1,12
+pf2,12
+R,5
+Ra,12
+results,19
+results[:I],12
+results[:R],20
+results[:S],12
+results[:time],35
+ru,35
+S,18
+Sa,12
+ta,12
+beta,9
+correct result,0
+density prob,9
+distribution,0
+E 1,35
+exposed block adm rates,12
+exposed blocks,4
+exposed blocks[1  n exposed blocks],12
+exposed blocks[time  :],12
+exposed blocks[time  1:end - 1],12
+exposure prob,20
+factorials,30
+factorials[1],35
+factorials[i + 1],35
+gamma E,9
+gamma I,9
+I 1,28
+infectious block adm rates,19
+infectious blocks,19
+j,5
+k E,28
+k I,28
+n bin,23
+n exposed blocks,14
+n infectious blocks,0
+new exposed,7
+new infectious,19
+new recovered,7
+one sub cummulative probs,23
+one sub cummulative probs[end],12
+population size,19
+R 1,35
+S 1,16
+sim,35
+sim data,30
+sim data[:time],12
+test result,19
+test sim,14
+time,6
+transmission rate,27
+dD,35
+dE,12
+dR,23
+dS,12
+du,12
+N,28
+a,25
+i,28
+infection,2
+r,5
+recovery,8
+s,18
+sir out,11
+t,23
+tl,12
+a1,12
+a2,12
+a3,35
+a4,14
+a5,12
+final size[Z1 + 1],35
+final size[Z1 + 2],35
+final size[Z5 + 1],35
+Z1,12
+Z2,12
+Z3,35
+Z4,35
+Z5,12
+H,35
+macro odeProblem,12
+tspan,18
+E Hs,5
+H comps,12
+host,7
+host 1,16
+host 2,35
+host 3,16
+host 4,16
+host infection,19
+host mortality,19
+host0,12
+I Hs,28
+p,5
+R Hs,5
+S Hs,12
+vec births,9
+vec infection,19
+vec mortality,27
+E Hs,5
+host 1,16
+virus 1,19
+host births,21
+host progression,19
+prob,28
+I,28
+sigma spsir,35
+spsir bm,12
+spsir bm prob,12
+spsir bm sol,12
+spsir logbm drift,12
+spsir logbm drift prob,12
+sir prob,17
+sir prob2,35
+sir sol,12
+gamma,9
+infected ind,2
+sis prob,12
+sis sol,23
+susceptible,2
