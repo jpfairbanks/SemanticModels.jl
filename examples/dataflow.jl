@@ -7,9 +7,9 @@
 #       extension: .jl
 #       format_name: light
 #       format_version: '1.3'
-#       jupytext_version: 1.0.4
+#       jupytext_version: 1.0.2
 #   kernelspec:
-#     display_name: Julia 1.0.2
+#     display_name: Julia 1.0.3
 #     language: julia
 #     name: julia-1.0
 # ---
@@ -42,7 +42,7 @@ using Plots
 #
 # This workflow touches on validation-related tasks in that we should expect some swaps to result in alterations to programs that do not halt execution, but do meaningfully alter results. Ideally, we'd be able to flag inappropriate swaps of this nature by observing cases where the results represent marked deviations from previously observed values/outputs.
 #
-# For demonstration purposes, we begin by defining a set of extraction, graph construction, and graph visualization methods. We then provide example "programs" to illustrate how the analytical pipeline outlined above can be beneficially applied.
+# For demonstration purposes, we begin by defining a set of extraction, graph construction, and graph visualization methods. We then provide example programs to illustrate how to apply this analytical pipeline.
 
 # ### 1. Define Structs and Code Annotation Methods 
 # The data structures and methods defined below are intended to facilitate the annotation of our input "program" via injection (e.g., we insert data structures into the toy methods defined above for the purpose of extracting information that we can use to build the dataflow graph, including directed relationships of the types: `method -calls-> method`; `method -interacts_with-> variable`; `method -returns-> variable`; and `variable -takes-> value`).
@@ -585,10 +585,10 @@ tspan=(0.0,100.0)
 macro_odeProblem = ODEProblem(macroParasiteModelFunction,init,tspan,par)
 
 
-@show sol=solve(macro_odeProblem);
+sol=solve(macro_odeProblem);
+@show typeof(sol)
 
-
-plot(sol,xlabel="Time",yscale=:log10)
+p = plot(sol,xlabel="Time",yscale=:log10)
 end
 @show main()
 end
@@ -680,9 +680,8 @@ g_out = create_dataflow_graph(first_and_second_order_calls, prog_vars, methods_d
 
 plot_dataflow_graph(g_out)
 
-
-
-
-
-
-
+# ## Conclusions
+#
+# Dynamic program analysis is able to capture variables, values, functions, and types. Knowledge graphs extracted from scientific model programs include rich information that can be tied to the concept graphs from the text, through the intermediary of variables. 
+#
+# We can collect this dynamic analysis information from programs that use highly optimized complex libraries such as DifferentialEquations.jl, which we did not write. This shows promise for the ability of model metaprogramming and semantically annotated syntax trees to provide information about the structure and function of scientific models.

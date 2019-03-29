@@ -57,6 +57,11 @@ order to the chaos that is scientific modeling code.
 1. [agenttypes.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agenttypes.jl)
 1. [agenttypes2.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agenttypes2.jl)
 
+## Knowledge Representation with Knowledge Graphs
+1. [semanticClustering](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/semanticClustering)
+1. [dataflow.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/dataflow.jl)
+1. [Code Embeddings](github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/notebooks/autoencoding_julia.ipynb)
+
 You can run all the examples to test that they work with
 
 ```bash
