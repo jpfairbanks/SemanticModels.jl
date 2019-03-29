@@ -35,7 +35,7 @@ model(ExpODEModel, expr)::ExpODEModel
 
 """
 function model(::Type{ExpODEModel}, expr::Expr)
-    matches = callsites(expr, :ODEModel)
+    matches = callsites(expr, :ODEProblem)
     @show matches
     funcs = [findfunc(expr, rhs.args[2])[1] for rhs in matches]
     params(x) = structured(x, x.args[1].args[4])
