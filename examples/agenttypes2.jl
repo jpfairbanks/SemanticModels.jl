@@ -20,6 +20,8 @@ shorttype(T::Type) = T.name.name
 # -
 
 # Below we are using our `parsefile` function to take scripts and wrap them around in `module` headings that way they can be consumed by our other API's. We then pass off our `Expr`s to our `typegraph` function which collects all the type information we would like extracted from the code.
+#
+# You can see the code that is being loaded here at [agentbased2.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agentbased2.jl)
 
 expr = parsefile("agentbased2.jl")
 expr2 = ModelTools.typegraph(expr.args[end])
@@ -41,6 +43,8 @@ E = unique(("\"$(f.func)\"", tuple(shorttype.(f.args)...), shorttype.(f.ret)) fo
 # -
 
 # We are going to repeat the process again for another similar script to see if we are able to detect the differences between the two programs.
+#
+# You can see the code that is being loaded here at [agenttypes.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agenttypes.jl)
 
 expr = parsefile("agenttypes.jl")
 expr2 = ModelTools.typegraph(expr.args[end].args[end].args[end])
@@ -97,13 +101,13 @@ function buildgraph(E)
         catch
             add_vertex!(g,:label,e[2]) # add ags
         end
-        
+
         try
             g[e[3],:label]
         catch
             add_vertex!(g,:label,e[3]) # add rets
         end
-        
+
         try
             add_edge!(g,g[e[2],:label],g[e[3],:label],:label,e[1])#escapehtml(string(e[1]))) # add func edges
         catch
@@ -113,12 +117,6 @@ function buildgraph(E)
     return g
 end
 
-# for e in edges(g)
-#     sn, dn = g[src(e),:label], g[dst(e), :label]
-#     # f = g[sn, :label, dn, :label]
-#     @show g.eprops[e][:label]
-#     println(sn, "--->", dn)
-# end
 function projectors(g, key=:label)
     newedges = []
 for v in vertices(g)
@@ -166,24 +164,23 @@ g
 
 using Colors
 cm = Colors.colormap("RdBu", 2nv(h))
-color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
+color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))"
 
-# We will draw the graph of types in initial model that uses symbols to represent the agent states. Remember that Symbol is type that represents "things that are like variable names" and in this case we are using the Symbol type to represent the agent states of :Susceptible, :Infected, and :Recovered. 
+# We will draw the graph of types in initial model that uses symbols to represent the agent states. Remember that Symbol is type that represents "things that are like variable names" and in this case we are using the Symbol type to represent the agent states of :Susceptible, :Infected, and :Recovered.
 #
 # In this drawing each vertex has its own color. These colors will be used again when drawing the next graph.
 
 for v in vertices(g)
-    g.vprops[v][:color] = color(v)
-    g.vprops[v][:style] = "filled"
+    h.vprops[v][:color] = color(v)
+    h.vprops[v][:style] = "filled"
 end
-draw(g, "exampletypegraph.dot")
+draw(h, "exampletypegraph.dot")
 
 # We then onstruct the typegraph for the program 2, which uses singleton types to represent the state of the agents. One of the central tennants of this project is that the more information you inject into the julia type system, the more the compiler can help you. Here we will see that they type system knows about the structure of the agents behavior now that the we have encoded their states as types.
 
-# now we draw the new, bigger type graph with the same color scheme as before. We define a graph homomorphism $\phi$ that maps every type to one of the vertices of the original graph show above. This homomorphism from $\phi: G \mapsto H$ shows how the semantics of the first program is embedded in the semantics of the second program. 
+# now we draw the new, bigger type graph with the same color scheme as before. We define a graph homomorphism $\phi$ that maps every type to one of the vertices of the original graph show above. This homomorphism from $\phi: G \mapsto H$ shows how the semantics of the first program is embedded in the semantics of the second program.
 
 # +
-color(v) = "#$(hex(cm[v + floor(Int, nv(h)/2)]))" #"gray$(100 - 3v)"
 ϕ(t) = begin
     d=Dict{Symbol,Symbol}(:Susceptible=>:Symbol,
         :Infected=>:Symbol,
@@ -217,20 +214,20 @@ tv = src.(keys(tedges)) ∪ dst.(keys(tedges))
 DFA = g[tv]
 draw(DFA, "type_DFA.dot")
 
-# By contracting the edges labeled $\pi_3$ you identify a minor of 
-# the typegraph isomorphic to the discrete finite automata or 
+# By contracting the edges labeled $\pi_3$ you identify a minor of
+# the typegraph isomorphic to the discrete finite automata or
 # finite state machine representation of the agents in our agent based simulation.
 #
 #
-# Since the typegraph contains this information, we can say that the julia compiler "understands" 
+# Since the typegraph contains this information, we can say that the julia compiler "understands"
 # a semantic feature of the model. We can introduce compile time logic based on these properties of
-# the model. ANy changes to the underlying code that changed the state space of the agents, or the 
+# the model. ANy changes to the underlying code that changed the state space of the agents, or the
 # possible transitions they undergo would affect the type graph of the model.
 #
-# For the model version that used :Symbols, or categorical states, the julia type system is blissfully 
-# ignorant of the relationships between the states. However once we introduce types to the model, the 
-# compiler is able to represent the structure of the model. Any changes to the model will either preserve 
-# or disrupt this type graph and we will be able to identify and quantify that change to the structure of the model.  
+# For the model version that used :Symbols, or categorical states, the julia type system is blissfully
+# ignorant of the relationships between the states. However once we introduce types to the model, the
+# compiler is able to represent the structure of the model. Any changes to the model will either preserve
+# or disrupt this type graph and we will be able to identify and quantify that change to the structure of the model.
 #
 # This example is an instance of a large phenomenon that we hope to advance in modeling.
 # Programs that implement models can get more out of the compiler if they add more information.
