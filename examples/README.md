@@ -62,11 +62,7 @@ order to the chaos that is scientific modeling code.
 1. [dataflow.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/dataflow.jl)
 1. [Code Embeddings](github.com/jpfairbanks/SemanticModels.jl/blob/master/doc/src/notebooks/autoencoding_julia.ipynb)
 
-You can run all the examples to test that they work with
-
-```bash
-julia test.jl
-```
+The examples are run as part of the test suite in `SemanticModels/test/runtests.jl`
 
 Additional subfolders exist for storing collections of programs from the wild
 include epicookbook and stats.
