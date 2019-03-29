@@ -1,18 +1,12 @@
-# Copyright 2017 Peter de Vocht
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import en_core_web_sm
+import sys
+import os
+import re
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
+CSV_OUTPUT_PATH = "svo.csv"
+REGEX_PATTERNS = '[.,/$]'
 
 # use spacy small model
 nlp = en_core_web_sm.load()
@@ -27,6 +21,105 @@ BREAKER_POS = {"CCONJ", "VERB"}
 NEGATIONS = {"no", "not", "n't", "never", "none"}
 
 
+
+def extract(text):
+    text = removeIntro(text)
+
+    text = removeEquations(text)
+    text = removeFigures(text)
+    text = removeStarHeaders(text)
+    text = removeNumerics(text)
+    
+    text = re.split("### References", text)
+      
+    split_array = re.split(" |\n", text[0])
+
+
+    capitalied_var_array = capitalizeVariables(split_array)      
+    processedText = arrayToSentence(capitalied_var_array)
+    
+
+    return processedText
+
+
+
+def removeNumerics(text):
+    removedNumerText = re.sub(r'[0-9]+','',text)
+    return removedNumerText
+
+def removeStarHeaders(text):
+    removedIntroText = re.sub('\*((.|\n)*)\*', '', text)
+    return removedIntroText
+    
+
+def removeIntro(text):
+    removedIntroText = re.sub('\-\-\-((.|\n)*)\-\-\-', '', text)
+    return removedIntroText
+
+def removeEquations(text):
+    removedEquationText = re.sub('\$\$((.|\n)*)\$\$', '', text)
+    return removedEquationText
+
+def removeFigures(text):
+    removedEquationText = re.sub('\`\`\`((.|\n)*)\`\`\`', '', text)
+    return removedEquationText
+    
+def capitalizeVariables(split_array):
+
+    variable_pattern1 = re.compile("\$\\\(.+)+\$")
+    variable_pattern2 = re.compile("\$(.+)+\$")
+    caps = False
+    for i in range (len(split_array)):
+        split_array[i] = split_array[i].strip()
+        
+        
+        if variable_pattern1.match(split_array[i]) is not None\
+        or variable_pattern2.match(split_array[i]) is not None:
+            caps = True
+            
+        cleaned_text = re.sub('\W', '', split_array[i])
+        if len(cleaned_text.strip()) == 0:
+            split_array[i] = cleaned_text
+        
+
+        if caps == True:
+            split_array[i] = cleaned_text.capitalize()
+            caps = False
+    
+    return split_array
+
+def arrayToSentence(word_array):
+    returnString = ""
+    for word in word_array:
+        if word != "":
+            returnString += re.sub("[$\\\]", '', str(word)) + " "
+    
+    return returnString.strip()
+def extractSVO(dir_path):
+    if os.path.isdir(dir_path):
+        for file in os.listdir(dir_path):
+            if file.endswith(".txt"):
+                file_string = open(os.path.join(dir_path,file)).read()
+                tokens = nlp(file_string)
+                svos = findSVOs(tokens)
+                tuplesToFile(svos)
+            else:
+                logging.info("Skipping file {}".format(file))
+                
+    else:
+        logging.fatal(dir_path + " is not a directory")
+    logging.info("File " + CSV_OUTPUT_PATH + " created")
+
+def tuplesToFile(svo):
+    csv_string = "subject,verb,object\n"
+    for triplet in svo:
+        csv_string += re.sub(REGEX_PATTERNS, '', triplet[0]) + ","\
+                    + re.sub(REGEX_PATTERNS, '', triplet[1]) + ","\
+                    + re.sub(REGEX_PATTERNS, '', triplet[2]) + "\n"
+    logging.debug("writing tuples to {}".format(CSV_OUTPUT_PATH))
+    logging.info("writing {} tuples".format(len(svo)))
+    with open(CSV_OUTPUT_PATH,'a') as outputFile:
+        outputFile.write(csv_string)
 # does dependency set contain any coordinating conjunctions?
 def contains_conj(depSet):
     return "and" in depSet or "or" in depSet or "nor" in depSet or \

@@ -18,6 +18,15 @@ RUN julia --project -e 'using Pkg; \
           Pkg.add(["DifferentialEquations", "LsqFit", "Polynomials", "Test"]); \
           pkg"precompile";'
 
+## Install nlp example pip packages
+
+# Correct command until nlpextraction is merged to master
+#RUN cd /root/.julia/dev/SemanticModels && git checkout jpf/nlpextraction && pip3 install -r /root/.julia/dev/SemanticModels/examples/semanticClustering/requirements.txt
+RUN pip3 install -r /root/.julia/dev/SemanticModels/examples/semanticClustering/requirements.txt
+
+RUN python3 -m spacy download en_core_web_md
+RUN python3 -m spacy download en_core_web_sm
+
 ## Expose port 8888
 EXPOSE 8888
 
