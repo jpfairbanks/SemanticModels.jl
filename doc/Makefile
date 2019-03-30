@@ -16,3 +16,15 @@ deliver: build/index.html
 
 doc.tar.gz: build/index.html
 	tar zcf doc.tar.gz build
+
+slides.slides.html: slides.ipynb
+	jupyter nbconvert --to slides --reveal-prefix reveal.js $^
+
+workflow.slides.html: workflow.ipynb
+	jupyter nbconvert --to slides --reveal-prefix reveal.js $^
+
+serve: slides.slides.html workflow.slides.html
+	go run server.go -d . -p 8080 &
+
+open: slides.slides.html workflow.slides.html
+	open $^

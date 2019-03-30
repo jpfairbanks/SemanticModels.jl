@@ -114,7 +114,7 @@ end
 function main(nsteps)
     n = 20
     a = fill(:S, n)
-    ρ = 0.5 + randn(Float64)/4 # chance of recovery
+    ρ = min(1, max(0, 0.5 + randn(Float64)/4)) # chance of recovery
     μ = 0.5 # chance of immunity
     T = Dict(
         :S=>(x...)->rand(Float64) < stateload(x[1], :I) ? :I : :S,
