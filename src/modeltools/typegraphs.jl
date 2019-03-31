@@ -48,9 +48,6 @@ function Edges(snapshots)
     return fs
 end
 
-head(x) = :nothing
-head(x::Expr) = x.head
-
 annotate(x::Any) = x
 
 function annotate(x::Expr)
