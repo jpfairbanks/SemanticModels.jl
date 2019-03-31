@@ -28,3 +28,12 @@ serve: slides.slides.html workflow.slides.html
 
 open: slides.slides.html workflow.slides.html
 	open $^
+
+uploadimages:
+	scp -r src/img jpfnet:public/doc/slides/ufdsi/src/
+
+uploadreveal: reveal.js
+	scp -r $^ jpfnet:public/doc/slides/ufdsi/
+
+upload: slides.slides.html workflow.slides.html
+	scp -r $^ jpfnet:public/doc/slides/ufdsi
