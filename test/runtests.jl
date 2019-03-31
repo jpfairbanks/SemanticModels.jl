@@ -9,9 +9,15 @@ using GLM
 using DataFrames
 using Plots
 
-include("parse.jl")
-include("cassette.jl")
-include("transform/ode.jl")
+tests = ["parse.jl",
+         "cassette.jl",
+         "transform/ode.jl"]
+
+for test in tests
+  @testset "Running $test" begin
+    include(test)
+  end
+end
 
 examples = ["agentbased.jl",
             "agentgraft.jl",
@@ -23,12 +29,16 @@ examples = ["agentbased.jl",
             "pseudo_polynomial_regression.jl",
             "odegraft.jl",
             ]
-for ex in examples
-    @info "Running example: " file=ex
-    try
-      include(ex)
-    catch err
-      println(err)
-      @warn "Error running: " file=ex
-    end
+@testset "Test all examples" begin
+  for ex in examples
+      @info "Running example: " file=ex
+      try
+        include(ex)
+        @test true == true
+      catch err
+        println(err)
+        @info "Error running " file=ex
+        @test true == false
+      end
+  end
 end
