@@ -9,27 +9,25 @@ using GLM
 using DataFrames
 using Plots
 
-#tests = ["parse.jl",
-#         "cassette.jl",
-#         "transform/ode.jl"]
-#
-#for test in tests
-#  @testset "Running $test" begin
-#    include(test)
-#  end
-#end
+tests = ["parse.jl",
+         "cassette.jl",
+         "transform/ode.jl"]
 
-#examples = ["agentbased.jl",
-#            "agentgraft.jl",
-#            "modelmacro.jl",
-#            "monomial_regression.jl",
-#            "multivariate_regression.jl",
-#            "polynomial_regression.jl",
-#            "workflow.jl",
-#            "pseudo_polynomial_regression.jl",
-#            "odegraft.jl",
-#            ]
-examples = ["pseudo_polynomial_regression.jl",
+for test in tests
+  @testset "Running $test" begin
+    include(test)
+  end
+end
+
+examples = ["agentbased.jl",
+            "agentgraft.jl",
+            "modelmacro.jl",
+            "monomial_regression.jl",
+            "multivariate_regression.jl",
+            "polynomial_regression.jl",
+            "workflow.jl",
+            "pseudo_polynomial_regression.jl",
+            "odegraft.jl",
             ]
 @testset "Test all examples" begin
   for ex in examples
