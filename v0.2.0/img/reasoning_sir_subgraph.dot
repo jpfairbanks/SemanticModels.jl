@@ -1,0 +1,65 @@
+digraph G_code_and_markdown {
+  rankdir="LR"
+  node[shape=box, fillcolor="#AAAAAA"]
+  node [color="#5DADE2"]
+// 1 [label="ScalingModel"];
+2 [label="(β, r, μ, K, α)"];
+3 [color="orange" , label="parms"];
+4 [color="orange" , label="parms"];
+// 5 [label="β"];
+6 [color="orange" , label="r"];
+// 7 [label="μ"];
+// 8 [label="K"];
+// 9 [label="α"];
+10 [color="orange" , label="dS"];
+11 [color="orange" , label="r * (1 - S / K) * S - β * S * I"];
+// 12 [label="-"];
+// 13 [label=":[:( r * (1 - S / K) * S ), :( β * S * I )]"];
+// 14 [label="dI"];
+// 15 [label="β * S * I - (μ + α) * I"];
+// 16 [label=":[:( β * S * I ), :( (μ + α) * I )]"];
+// 17 [label="du"];
+18 [color="orange" , label="[dS, dI]"];
+// 19 [label="collection"];
+20 [color="orange" , label="ScalingModel.micro_1(du, u, parms, time)"];
+// 21 [label="SEIRmodel"];
+// 22 [label="β"];
+// 23 [label="p[1]"];
+// 24 [label="σ"];
+// 25 [label="p[2]"];
+// 26 [label="γ"];
+// 27 [label="p[3]"];
+// 28 [label="μ"];
+// 29 [label="p[4]"];
+30 [color="orange" , label="S"];
+31 [color="orange" , label="Y[1]"];
+// 32 [label="E"];
+// 33 [label="Y[2]"];
+// 34 [label="I"];
+// 35 [label="Y[3]"];
+36 [color="orange" , label="dY[1]"];
+37 [color="orange" , label="(μ - β * S * I) - μ * S"];
+// 38 [label=":[:( μ - β * S * I ), :( μ * S )]"];
+// 39 [label="dY[2]"];
+// 40 [label="β * S * I - (σ + μ) * E"];
+// 41 [label=":[:( β * S * I ), :( (σ + μ) * E )]"];
+// 42 [label="dY[3]"];
+// 43 [label="σ * E - (γ + μ) * I"];
+// 44 [label=":[:( σ * E ), :( (γ + μ) * I )]"];
+45 [color="orange" , label="SEIRmodel.seir_ode(dY, Y, p, t)"];
+4 -> 6 [label="var", color="orange"];
+10 -> 11 [label="val", color="orange"];
+20 -> 2 [label="destructure", color="orange"];
+20 -> 4 [label="comp", color="orange"];
+20 -> 10 [label="output", color="orange"];
+30 -> 31 [label="val", color="orange"];
+36 -> 37 [label="val", color="orange"];
+45 -> 30 [label="takes", color="orange"];
+45 -> 36 [label="output", color="orange"];
+
+6->11 [label="coccur", style=dashed, color="orange"];
+30->11 [label="coccur", style=dashed, color="orange"];
+10->18 [label="coccur", style=dashed, color="orange"];
+30->37 [label="coccur", style=dashed, color="orange"];
+
+}

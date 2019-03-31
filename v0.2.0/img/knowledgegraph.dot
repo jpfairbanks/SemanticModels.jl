@@ -1,0 +1,73 @@
+digraph G {
+  splines=false
+  #fontsize=10
+  #edge[weight=.2]
+  #ratio=0.25
+  #scale="10:1"
+  #size=5,2
+  pack="true"
+  #rankdir="LR"
+  edge [dir="none"]
+  node [shape="record", style="filled", fillcolor="#dddddd", penwidth=2.0]
+  ind -> epi
+  inf-> ind
+  thirty -> inf
+  twenty -> mort
+  mort -> ind
+  mort -> rate [style="dashed"]
+  inf -> rate [style="dashed"]
+  birth -> rate [style="dashed"]
+  birth -> ind
+
+  rate -> personper
+  person   -> unit
+  personper-> unit
+  second   -> unit
+  dollars -> unit
+
+  node [color="#5DADE2"]
+  weather [label="NOAA\nWeather"]
+  cost    [label="Vaccination\nCost"]
+  fed  [label="Fed\nForecast"]
+  demo [label="Census\nDemographics"]
+  epi  [label="SIR", color="#5DADE2"]
+  ode  [label="ODESolver"]
+
+
+  rate [label="{Transition\nRate}", color="#66AA55"]
+  unit [label="Unit", color="#66AA55"]
+  personper [label="Person/s", color="#66AA55"]
+  person [label="Person", color="#66AA55"]
+  second [label="second (s)", color="#66AA55"]
+  dollars [label="$", color="#66AA55"]
+
+  inf [label="Infection\nRate", color="#66AA55"]
+  mort [label="Mortality\nRate", color="#66AA55"]
+  birth [label="Birth\nRate",color="#66AA55"]
+  twenty [label="0.2 Persons/s", color="#DD1133"]
+  thirty [label="0.3 Persons/s", color="#DD1133"]
+
+  ind [label="Individual\nContact\nModel",color="#5DADE2", pos="0,1"]
+  temp [label="Temperature", color="#5DADE2"]
+  age  [label="Age", color="#5DADE2"]
+  dGDP [label="Economic Growth", color="#5DADE2"]
+  cases [label="Flu\nCases", color="#5DADE2"]
+  prices [label="Vacc\nPrice", color="#5DADE2"]
+
+  temp -> inf
+  age -> mort
+  demo -> birth
+  dGDP -> prices
+  epi -> cases
+  prices -> regres
+  cases  -> regres
+
+  weather -> temp
+  demo-> age
+  fed -> dGDP
+
+  ode -> epi
+  regres -> cost
+  dollars -> cost
+  regres [label="Regression"]
+}
