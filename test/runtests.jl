@@ -19,15 +19,17 @@ using Plots
 #  end
 #end
 
-examples = ["agentbased.jl",
-            "agentgraft.jl",
-            "modelmacro.jl",
-            "monomial_regression.jl",
-            "multivariate_regression.jl",
-            "polynomial_regression.jl",
-            "workflow.jl",
-            "pseudo_polynomial_regression.jl",
-            "odegraft.jl",
+#examples = ["agentbased.jl",
+#            "agentgraft.jl",
+#            "modelmacro.jl",
+#            "monomial_regression.jl",
+#            "multivariate_regression.jl",
+#            "polynomial_regression.jl",
+#            "workflow.jl",
+#            "pseudo_polynomial_regression.jl",
+#            "odegraft.jl",
+#            ]
+examples = ["pseudo_polynomial_regression.jl",
             ]
 @testset "Test all examples" begin
   for ex in examples
