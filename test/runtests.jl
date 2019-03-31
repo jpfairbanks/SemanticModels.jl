@@ -9,15 +9,15 @@ using GLM
 using DataFrames
 using Plots
 
-tests = ["parse.jl",
-         "cassette.jl",
-         "transform/ode.jl"]
-
-for test in tests
-  @testset "Running $test" begin
-    include(test)
-  end
-end
+#tests = ["parse.jl",
+#         "cassette.jl",
+#         "transform/ode.jl"]
+#
+#for test in tests
+#  @testset "Running $test" begin
+#    include(test)
+#  end
+#end
 
 examples = ["agentbased.jl",
             "agentgraft.jl",
@@ -37,6 +37,7 @@ examples = ["agentbased.jl",
         @test true == true
       catch err
         println(err)
+        @info "Error running " file=ex
         @test true == false
       end
   end
