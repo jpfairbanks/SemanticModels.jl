@@ -15,7 +15,7 @@ RUN julia -e 'ENV["JUPYTER"]="jupyter"; using Pkg; Pkg.add("IJulia")'
 RUN julia --project -e 'using Pkg; Pkg.develop("SemanticModels");'
 
 RUN julia --project -e 'using Pkg; \
-          Pkg.add(["DifferentialEquations", "LsqFit", "Polynomials", "Test"]); \
+          Pkg.add(["DifferentialEquations", "LsqFit", "Polynomials", "Printf", "Statistics", "Test"]); \
           pkg"precompile";'
 
 ## Install nlp example pip packages
