@@ -162,5 +162,6 @@ include("SimpleModels.jl")
 include("ExpODEModels.jl")
 include("ExpStateModels.jl")
 include("MonomialRegressionModels.jl")
+include("functors.jl")
 
 end

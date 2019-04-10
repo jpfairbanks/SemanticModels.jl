@@ -11,7 +11,8 @@ using Plots
 
 tests = ["parse.jl",
          "cassette.jl",
-         "transform/ode.jl"]
+         "transform/ode.jl",
+         "modeltools/functors.jl"]
 
 for test in tests
   @testset "Running $test" begin
