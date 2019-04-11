@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usetikzlibrary{cd}
+\begin{document}
+
+\begin{figure}
+  \centering
+\begin{subfigure}[t]{0.47\textwidth}
+\begin{center}
+$$
+f(a,b)  = 2(ab)
+$$
+  \begin{tikzcd}
+  \mathbb{Z}\times\mathbb{Z}
+      \arrow[d, "\pi_1" description, bend right=50]
+      \arrow[d, blue, "ab" description]
+      \arrow[d, "\pi_2" description,
+  bend left=50] \\ \mathbb{Z} \arrow[loop right, "2\cdot"]
+\end{tikzcd}
+\end{center}
+\end{subfigure}
+~ %
+\begin{subfigure}[t]{0.47\textwidth}
+$$
+g(a,b)  = 2(a/b)
+$$
+  \begin{tikzcd}
+    \mathbb{Z}\times\mathbb{Z}
+        \arrow[d, bend right=30, "\pi_1" description]
+        \arrow[r, blue, "a/b"]
+        \arrow[d, bend left=30, "\pi_2" description] & 
+      \mathbb{R}\oplus\text{Error} \arrow[loop right, "2\cdot"]  \\
+    \mathbb{Z} &    %
+  \end{tikzcd}
+\end{subfigure}
+\caption{A simple program transformation}
+\end{figure}
+\end{document}
+%
+%
+%
+% \begin{tikzcd}
+%   \mathbb{Z}\times\mathbb{Z} \arrow[dd, "ab" description] \arrow[dd, "\pi_2", bend left=49] \arrow[dd, "\pi_1" description, bend right=49] &
+%   \mathbb{Z} \arrow[loop right, "2\cdot"]
+% \end{tikzcd}
+% \begin{tikzcd}
+%   \mathbb{Z}\times\mathbb{Z} \arrow[dd, "ab" description] \arrow[dd, "\pi_2", bend left=49] \arrow[dd, "\pi_1" description, bend right=49] &  &            &  & \mathbb{Z}\times\mathbb{Z} \arrow[dd, "ab^{-1}" description] \arrow[dd, "\pi_2", bend left=49] \arrow[dd, "\pi_1" description, bend right=49]                                \\
+
+%  &  &              &                                                                                                                                               &  &                               \\
+
+%   \mathbb{Z} \arrow[loop right, "2\cdot"'] & &  & \mathbb{R}\oplus \text{Error} \arrow[loop right, "2\cdot"'] &  
+% \end{tikzcd}

@@ -1,0 +1,76 @@
+\documentclass{article}
+% \documentclass[usenames,dvipsnames]{beamer}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+\usepackage{subcaption}
+\usepackage{fancyvrb}
+
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Int}{\mathbb{R}}
+\newcommand{\Cross}[2]{{#1}\times {#2}}
+\newcommand{\ZxZ}{\Cross{\Int{}}{\Int{}}}
+\newcommand{\RxR}{\Cross{\Real{}}{\Real{}}}
+\newcommand{\Rthree}{\Real{} \times \Real{} \times \Real{}}
+\newcommand{\Zthree}{\Cross{\Int{}}{\Int{}}\times \Int{}}
+
+\begin{document}
+
+\begin{figure}
+  \centering
+\begin{subfigure}[t]{0.47\textwidth}
+\begin{center}
+  \begin{Verbatim}[commandchars=\\\{\}]
+    ex = quote
+        G = 6.754
+        function force(m1, m2, r)
+            G * ( m1{\color{orange}+}m2 ) / \textcolor{blue}{dbl}(r)
+        end
+        \textcolor{blue}{dbl}(a) = 2a
+        x=3; y = 1.6; r = 2.1;
+        F = force(x,y,r)
+    end
+  \end{Verbatim}
+
+  \begin{tikzcd}
+  \Rthree{}
+      \arrow[r, "\pi_{12}" description, bend left=50]
+      \arrow[dr, "force" description]
+      % \arrow[dr, "\pi_2" description, bend left=50]
+      \arrow[dr, "\pi_3" description, bend right=50]
+    & \Real \times \Real \arrow[ d, color=orange, "+" description] \arrow[d, "/" description, bend left=50] 
+  \\ & \Real \arrow[blue, loop right,distance=5em, "dbl"] \arrow[loop right,distance=2em, "G\times"]
+\end{tikzcd}
+\end{center}
+\end{subfigure}
+~\hspace{1em} %
+\begin{subfigure}[t]{0.47\textwidth}
+  \begin{center}
+  \begin{Verbatim}[commandchars=\\\{\}]
+    ex = quote
+        G = 6.754
+        function force(m1, m2, r)
+            G * ( m1\textcolor{orange}{*}m2 ) / \textcolor{blue}{sqr}(r)
+        end
+        \textcolor{blue}{sqr}(a) = a*a
+        x=3; y = 1.6; r = 2.1;
+        F = force(x,y,r)
+    end
+  \end{Verbatim}
+
+  \begin{tikzcd}
+  \Rthree{}
+      \arrow[r, "\pi_{12}" description, bend left=50]
+      \arrow[dr, "force" description]
+      % \arrow[dr, "\pi_2" description, bend left=50]
+      \arrow[dr, "\pi_3" description, bend right=50]
+    & \Real \times \Real \arrow[orange, d, "\times" description] \arrow[d, "/" description, bend left=50]
+  \\ & \Real \arrow[blue, loop right,distance=5em, "sqr"] \arrow[loop right,distance=2em, "G\times"]
+  \end{tikzcd}
+\end{center}
+\end{subfigure}
+\caption{A simple program transformation}
+\end{figure}
+\end{document}
