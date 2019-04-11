@@ -10,7 +10,7 @@ import SemanticModels.ModelTools: head
 import SemanticModels.ModelTools.Transformations: Transformation
 
 export FunctorTransformation, Functor, ob, morph, Extension, Method,
-    PreimageExtension, transmorph
+    PreimageExtension, transmorph, head
 
 head(x::Symbol) = nothing
 abstract type FunctorTransformation <: Transformation end

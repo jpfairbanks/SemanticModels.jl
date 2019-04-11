@@ -6,14 +6,14 @@ using SemanticModels
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.FunctorTransforms
 
-@testset "Method" begin
-mth = Method(+, (Int,Int))
+@testset "FunctorTransforms.Method" begin
+mth = FunctorTransforms.Method(+, (Int,Int))
 @test nameof(mth.func) == :(+)
 @test mth.args[1] == Int
 @test mth.args[2] == Int
 @test mth.ret == nothing
 println(mth)
-mth = Method(+, (Int,Int), Int)
+mth = FunctorTransforms.Method(+, (Int,Int), Int)
 @test nameof(mth.func) == :(+)
 @test mth.args[1] == Int
 @test mth.args[2] == Int
@@ -35,7 +35,7 @@ end
     pix = PreimageExtension(ex) do def
         if def[:name] == :force;
             def[:body] = MacroTools.postwalk(def[:body]) do x
-                if head(x) == :call
+                if FunctorTransforms.head(x) == :call
                     if x.args[1] == :(+)
                         x.args[1] = :(*)
                     end
