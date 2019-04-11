@@ -1,5 +1,7 @@
 \documentclass{article}
 % \documentclass[usenames,dvipsnames]{beamer}
+\usepackage[vcentering]{geometry}
+\geometry{papersize={6in,3.5in},total={6in,3.5in},showcrop}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[dvipsnames]{xcolor}
@@ -17,6 +19,7 @@
 \newcommand{\Zthree}{\Cross{\Int{}}{\Int{}}\times \Int{}}
 
 \begin{document}
+\thispagestyle{empty}
 
 \begin{figure}
   \centering
@@ -71,6 +74,6 @@
   \end{tikzcd}
 \end{center}
 \end{subfigure}
-\caption{A simple program transformation}
+% \caption{A simple program transformation}
 \end{figure}
 \end{document}

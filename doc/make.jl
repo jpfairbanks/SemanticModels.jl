@@ -50,6 +50,7 @@ pages       = Any[
     "ModelTools" =>"modeltools.md",
     "Example" => "example.md",
     "Theory" =>"theory.md",
+    "Category of Programs" =>"category.md",
     "Dubstep" => "dubstep.md",
     "Knowledge Graphs" => "graph.md",
     "Knowledge Extraction" => "extraction.md",
