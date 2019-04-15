@@ -1,0 +1,85 @@
+\documentclass{article}
+% \documentclass[usenames,dvipsnames]{beamer}
+\usepackage[vcentering]{geometry}
+\geometry{papersize={8in,12in},total={8in,12in},showcrop}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+\usepackage{subcaption}
+\usepackage{fancyvrb}
+
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Int}{\mathbb{R}}
+\newcommand{\Cross}[2]{{#1}\times {#2}}
+\newcommand{\ZxZ}{\Cross{\Int{}}{\Int{}}}
+\newcommand{\RxR}{\Cross{\Real{}}{\Real{}}}
+\newcommand{\Rthree}{\Real{} \times \Real{} \times \Real{}}
+\newcommand{\Zthree}{\Cross{\Int{}}{\Int{}}\times \Int{}}
+
+\begin{document}
+\thispagestyle{empty}
+\centering
+\tikzcdset{
+  % arrow style=tikz,
+  % diagrams={>={Straight Barb[scale=0.8]}}
+  % arrow = mapsto
+  cramped
+}
+
+\begin{figure}
+  \large
+  \begin{subfigure}{0.9\textwidth}
+    \caption{The Free Monoid over $\Sigma=\{a,b\}$, (List($\Sigma$), $\circ$, ())}
+  \begin{tikzcd}
+    &&&&\epsilon \ar[dll, "a"] \ar[drr, "b"]&&&&\\
+    &&a \ar[dl, "a"] \ar[dr, "b"] &&&& b \ar[dl, "a"] \ar[dr, "b"] &&\\
+    &aa\ar[ddl, "a"] \ar[dd, "b"]&&ab\ar[ddl, "a"] \ar[dd, "b"]&&ba\ar[ddl, "a"] \ar[dd, "b"]&&bb\ar[ddl, "a"] \ar[dd, "b"]\\\\
+    aaa&aab&aba&abb&baa&bab&bba&bbb\\
+  \end{tikzcd}
+  \end{subfigure}
+
+  \begin{subfigure}{0.9\textwidth}
+    \caption{The Monoid over \{a,b\} with $bb=b$}
+  \begin{tikzcd}
+    % &&&&b \ar[d, "a"] \ar[loop right, "b"]&&&&\\
+    &&&&1 \ar[dll, "a"] \ar[dr, "b"]&&&\\
+    &&a \ar[dl, "a"] \ar[dr, "b"] &&& b \ar[d, "a"] \ar[loop right, "b"] &&\\
+    &aa\ar[ddl, "a"] \ar[dd, "b"]&&ab\ar[dd, "a"] \ar[loop right, "b"]&&ba\ar[ddl, "a"] \ar[dd, "b"]&
+   \\\\
+    aaa&aab&&aba&bab&bab&\\
+  \end{tikzcd}
+  \end{subfigure}
+
+  % \begin{tikzcd}
+  %   &&&&1 \ar[dll, "x"] \ar[drr, "1"]&&&&\\
+  %   &&x \ar[dl, "x"] \ar[dr, "1"] &&&& 1 \ar[dl, "x"] \ar[dr, "1"] &&\\
+  %   &x^2\ar[ddl, "x"] \ar[dd, "1"]&&x+1\ar[ddl, "x"] \ar[dd, "1"]&&x\ar[ddl, "x"] \ar[dd, "1"]&&11\ar[ddl, "x"] \ar[dd, "1"]\\\\
+  %   x^3&x^2+1&x^2+x&x+1&x^2&x+1&x&111\\
+  % \end{tikzcd}
+
+  % The monoid over $\{x,1\}$ where $1+1=1$
+
+  % \begin{tikzcd}
+  %   &&&&1 \ar[d, "x"] &&&&\\
+  %   &&&&x \ar[dll, "x"] \ar[drr, "1"]&&&&\\
+  %   &&x^2 \ar[dl, "x"] \ar[dr, "1"] &&&& x+1 \ar[dl, "x"] \ar[dr, "1"] &&\\
+  %   &x^3\ar[ddl, "x"] \ar[dd, "1"]&&x^2+1\ar[ddl, "x"] \ar[dd, "1"]&&x^2+x\ar[ddl, "x"] \ar[dd, "1"]&&x+1\ar[ddl, "x"] \ar[dd, "1"]\\\\
+  %   x^4&x^3+1&x^3+x^2&x^2+1&x^3+x&x^2+x+1&x^2+1&x+1\\
+  % \end{tikzcd}
+
+  % The monoid over $\{x,1\}$ where $11=1$
+  \begin{subfigure}{0.9\textwidth}
+    \caption{The Action of Monoid over \{a,b\} with $bb=1$ over polynomials}
+  \begin{tikzcd}
+    &&&&1 \ar[d, "x"]   \ar[loop right, "1"]&&&\\
+    &&&&x \ar[dll, "x"] \ar[dr, "1"]&&&\\
+    &&x^2 \ar[dl, "x"]  \ar[dr, "1"] &&& x+1  \ar[d, "x"] \ar[loop right, "1"] &&\\
+    &x^3\ar[ddl, "x"]   \ar[dd, "1"] &&   x^2+1\ar[dd, "x"] \ar[loop right, "1"] && x^2+x \ar[ddl, "x"] \ar[dd, "1"]& \\\\
+    x^4 & x^3+1 && x^3+x & x^3+x^2 & x^2+x+1 & \\
+  \end{tikzcd}
+  \end{subfigure}
+
+\end{figure}
+\end{document}
