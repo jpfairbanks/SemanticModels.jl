@@ -125,7 +125,7 @@ function main(nsteps)
 
     sam = StateModel([:S, :I, :R], a, T, zeros(Float64,3))
     newsam = step!(deepcopy(sam), nsteps)
-    @show newsam.agents
+    #@show newsam.agents
     counts = describe(newsam)
     return newsam, counts
 end
