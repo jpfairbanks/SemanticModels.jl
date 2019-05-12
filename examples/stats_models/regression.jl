@@ -1,4 +1,3 @@
-
 using SemanticModels
 using Random
 using MultivariateStats
@@ -67,131 +66,97 @@ for op in (+, -, *, /)
     end
 end
 
-function transform_col_vector(op, vec_a::Array, vec_b::Array)
-
-    if length(vec_a) == length(vec_b)
-
-        output_types = map(var_type_check, [x for x in vec_a], [x for x in vec_b])
-        numeric_results = broadcast(op, [x.value for x in vec_a], [x.value for x in vec_b])
-        typed_results = [i(j) for (i,j) in zip(output_types, numeric_results)]
-        #output_types[i](numeric_results[i]) for i in range](1:length(vec_a))]
-        return typed_results
-    else
-        return "Error: dimensions mismatch"
-    end
-end
-
-function regress(vec_a::Array{IndepVar{Float64}, 2}, vec_b::Array{IndepVar{Float64}, 2}, orig_x::Array{IndepVar{Float64}, 2}, orig_y::Array{DepVar{Float64}, 2}, op)
-
+function regress(vec_a::Array{IndepVar{T}}, vec_b::Array{IndepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 1: op(IV, IV) yields IV_mod; regress orig_y on IV_mod")
-    IV_mod = transform_col_vector(op, vec_a, vec_b)
 
-    x_mod_vals = [x.value for x in IV_mod]
+    IV_mod = @eval broadcast($op, $vec_a, $vec_b)
+    IV_mod_vals = [x.value for x in IV_mod]
     y_values = [y.value for y in orig_y]
 
-    if all([x == 0 for x in x_mod_vals])
+    if all([x == 0 for x in IV_mod_vals])
         println("Error: subtracting IV from itself yields 0; matrix is not positive definite; cannot regress.")
-        return false, IV_mod
+        return false, IV_mod_vals
     else
-        reg_coef = llsq(x_mod_vals, y_values; bias=false)
-        return true, IV_mod, reg_coef
+        reg_coef = llsq(IV_mod_vals, y_values; bias=false)
+        return true, IV_mod_vals, reg_coef
     end
-
 end
 
-function regress(vec_a::Array{DepVar{Float64},2}, vec_b::Array{IndepVar{Float64}, 2}, orig_x::Array{IndepVar{Float64}, 2}, orig_y::Array{DepVar{Float64}, 2}, op)
-
+function regress(vec_a::Array{DepVar{T}}, vec_b::Array{IndepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 2: (DV, IV) yields (unexpected) DV_mod; cannot regress orig_y on DV_mod")
-    accidental_DV_mod = transform_col_vector(op, vec_a, vec_b)
+    accidental_DV_mod = @eval broadcast($op, $vec_a, $vec_b)
 
     println(accidental_DV_mod)
-    return false, accidental_DV_mod
-
+    return false, accidental_DV_mod, NaN
 end
 
-function regress(vec_a::Array{IndepVar{Float64},2}, vec_b::Array{DepVar{Float64}, 2}, orig_x::Array{IndepVar{Float64}, 2}, orig_y::Array{DepVar{Float64}, 2}, op)
-
+function regress(vec_a::Array{IndepVar{T}}, vec_b::Array{DepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 2: (IV, DV) yields (unexpected) DV_mod; cannot regress orig_y on DV_mod")
-    accidental_DV_mod = transform_col_vector(op, vec_a, vec_b)
-
+    accidental_DV_mod = @eval broadcast($op, $vec_a, $vec_b)
     println(accidental_DV_mod)
-    return false, accidental_DV_mod
-
+    return false, accidental_DV_mod, NaN
 end
 
-function regress(vec_a::Array{DepVar{Float64},2}, vec_b::Array{DepVar{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{DepVar{T}}, vec_b::Array{DepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 3: (DV, DV) yields DV_mod; regress DV_mod on orig_x")
-    DV_mod = transform_col_vector(op, vec_a, vec_b)
-
-    y_mod_vals = [x.value for x in DV_mod]
+    DV_mod = @eval broadcast($op, $vec_a, $vec_b)
+    
+    y_mod_vals = [y.value for y in DV_mod]
     x_values = [x.value for x in orig_x]
 
     reg_coef = llsq(x_values, y_mod_vals; bias=false)
     return true, DV_mod, reg_coef
-
 end
 
-function regress(vec_a::Array{DepVar{Float64},2}, vec_b::Array{Other{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{DepVar{T}}, vec_b::Array{Other{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 4: (DV, Other) yields DV_mod; regress DV_mod on orig_x")
-    DV_mod = transform_col_vector(op, vec_a, vec_b)
+    DV_mod =  @eval broadcast($op, $vec_a, $vec_b)
 
-    y_mod_vals = [x.value for x in DV_mod]
+    y_mod_vals = [y.value for y in DV_mod]
     x_values = [x.value for x in orig_x]
 
     reg_coef = llsq(x_values, y_mod_vals; bias=false)
     return true, DV_mod, reg_coef
-
 end
 
-function regress(vec_a::Array{Other{Float64},2}, vec_b::Array{DepVar{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{Other{T}}, vec_b::Array{DepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 4: (Other, DV) yields DV_mod; regress DV_mod on orig_x")
-    DV_mod = transform_col_vector(op, vec_a, vec_b)
+    DV_mod = @eval broadcast($op, $vec_a, $vec_b)
 
-    y_mod_vals = [x.value for x in DV_mod]
+    y_mod_vals = [y.value for y in DV_mod]
     x_values = [x.value for x in orig_x]
 
     reg_coef = llsq(x_values, y_mod_vals; bias=false)
     return true, DV_mod, reg_coef
 end
 
-function regress(vec_a::Array{IndepVar{Float64},2}, vec_b::Array{Other{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{IndepVar{T}}, vec_b::Array{Other{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 5: (IV, Other) yields IV_mod; regress orig_y on IV_mod")
-    IV_mod = transform_col_vector(op, vec_a, vec_b)
+    IV_mod = @eval broadcast($op, $vec_a, $vec_b)
 
     x_mod_vals = [x.value for x in IV_mod]
     y_values = [y.value for y in orig_y]
 
     reg_coef = llsq(x_mod_vals, y_values; bias=false)
-
     return true, IV_mod, reg_coef
-
 end
 
-function regress(vec_a::Array{Other{Float64},2}, vec_b::Array{IndepVar{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{Other{T}}, vec_b::Array{IndepVar{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 5: (Other, IV) yields IV_mod; regress orig_y on IV_mod")
-    IV_mod = transform_col_vector(op, vec_a, vec_b)
+    IV_mod = @eval broadcast($op, $vec_a, $vec_b)
 
     x_mod_vals = [x.value for x in IV_mod]
     y_values = [y.value for y in orig_y]
 
     reg_coef = llsq(x_mod_vals, y_values; bias=false)
-
     return true, IV_mod, reg_coef
-
 end
 
-function regress(vec_a::Array{Other{Float64},2}, vec_b::Array{Other{Float64},2}, orig_x::Array{IndepVar{Float64},2}, orig_y::Array{DepVar{Float64},2}, op)
-
+function regress(vec_a::Array{Other{T}}, vec_b::Array{Other{T}}, orig_x::Array{IndepVar{T}}, orig_y::Array{DepVar{T}}, op) where {T<:Number}
     println("Case 6: (Other, Other) yields other_mod; nothing to regress.")
-    other_mod = transform_col_vector(op, vec_a, vec_b)
+    other_mod = @eval broadcast($op, $vec_a, $vec_b)
 
-    return false, other_mod
-
+    return false, other_mod, NaN
 end
 
 function simulate_type_checked_univariate_reg(n=10)
@@ -201,14 +166,12 @@ function simulate_type_checked_univariate_reg(n=10)
     x_vals = rand(n,1)
     y_vals = rand(n,1)
     other_vals = rand(n,1)
-
-    sample_DV_col_vec = [DepVar(yi) for yi in y_vals]
-    sample_IV_col_vec = [IndepVar(xi) for xi in x_vals]
-    sample_other_col_vec = [Other(oi) for oi in other_vals]
+    
+    sample_DV_col_vec = DepVar.(y_vals)
+    sample_IV_col_vec = IndepVar.(x_vals)
+    sample_other_col_vec = Other.(other_vals)
 
     # convert/promote so !have to hardcode the var data type and array dimensions?
-
-    # subtraction doesn't work if we subtract the indep vec from itself
 
     counter = 1
 
@@ -233,7 +196,6 @@ function simulate_type_checked_univariate_reg(n=10)
     end
 end
 
-
-
-
 simulate_type_checked_univariate_reg(10)
+
+
