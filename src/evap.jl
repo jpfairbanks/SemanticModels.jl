@@ -25,8 +25,8 @@ function petpt(msalb, srad, tmax, tmin, xhlai, eo)
     eo = max(eo, 0.0001)
 end
 
-# op_ifelse(op::Operation, a, b) = (op) * a + (1-op) * b
-op_ifelse(op::Operation, a, b) = Operation(ifelse, [op, a,b])
+op_ifelse(op, a, b) = (op) * a + (1-op) * b
+# op_ifelse(op::Operation, a, b) = Operation(ifelse, [op, a,b])
 
 function petpt′(msalb, srad, tmax, tmin, xhlai, eo)
     td = (0.6*tmax)+(0.4*tmin)
@@ -221,16 +221,16 @@ function petasce′(canht, doy, msalb, meevp, srad, tdew, tmax, tmin, windht, wi
     else
         kcmax = kcmax
     end
-    fc = op_ifelse(kcb <= kcbmin, 0.0,((kcb-kcbmin)/(kcmax-kcbmin))^(1.0+(0.5*canht)))
+    fc = op_ifelse(kcb <= kcbmin, 0.0,((kcb-kcbmin)/(kcbmax-kcbmin))^(1.0+(0.5*canht)))
     fw = 1.0
     few = min((1.0-fc), fw)
     ke = max(0.0, min((1.0*(kcmax-kcb)), (few*kcmax)))
     eo = (kcb+ke)*refet
     eo = max(eo, 0.0001)
 end
-
-
 end
+
+using ModelingToolkit
 
 @variables msalb srad tmax tmin xhlai eo
 ptexpr = Evap.petpt′(msalb, srad, tmax, tmin, xhlai, eo)
@@ -256,7 +256,6 @@ asceex = Evap.petasce′(canht, doy, msalb, meevp, srad, tdew,
 
 @show asceval = Symbolic.apply(asceex, valsASCE)
 
-
 # using autodiff
 
 # function petptfunc(x)
@@ -275,7 +274,9 @@ function gradsweep(m, dim::Int, x, perturbations)
     mgrad = map(perturbations) do δ
         xarr = copy(x)
         xarr[dim] += δ
-        (input=tuple(xarr...), value=m(xarr...), gradient=ForwardDiff.gradient(t -> m(t...), xarr)[dim])
+        (input=tuple(xarr...),
+         value=m(xarr...),
+         gradient=ForwardDiff.gradient(t -> m(t...), xarr)[dim])
     end
     return mgrad
 end
@@ -284,6 +285,7 @@ x₀= [0.0,1,6,0,1,1]
 @show gradsweep(Evap.petpt, 1, x₀, 0:0.05:1)
 
 using Statistics
+using LinearAlgebra
 
 function linearity(m, dim::Int, x, perturbations)
     y = gradsweep(m, dim, x, perturbations)
@@ -292,17 +294,42 @@ function linearity(m, dim::Int, x, perturbations)
     return (dim=dim,ȳ = mean(yvals), ∇̄=mean(grads), σ_∇=std(grads)/mean(grads))
 end
 
+function linearity(m, x₀)
+    ForwardDiff.hessian(x->m(x...), x₀) |> diag
+end
+
+
 lintests = map(1:6) do i
     linearity(Evap.petpt, i, x₀, 0:0.05:1)
 end
 @show lintests
+@show linearity(Evap.petpt, x₀)
 
-lintests2 = map(1:6) do i
-    linearity(Evap.petpt, i, [0.0,2,6,0,1,1], 0:0.05:1)
-end
-@show lintests2
+valsASCE = (canht = 1, doy=15,
+            msalb=1, meevp=0.2, srad=1,
+            tdew=24, tmax=6, tmin=0,
+            windht=10, windrun=2,
+            xhlai=1, xlat=0.36, xelev=200,
+            eo=1)
+@show Evap.petasce′(valsASCE...)
+ascehess = linearity(Evap.petasce′, collect(valsASCE))
+@show ascehess
+# lintests2 = map(1:6) do i
+#     linearity(Evap.petpt, i, [0.0,2,6,0,1,1], 0:0.05:1)
+# end
+# @show lintests2
 
-lintests3 = map(1:6) do i
-    linearity(Evap.petpt, i, [1.0,1,1,1,1,1], 0:0.05:1)
-end
-@show lintests3
+# lintests3 = map(1:6) do i
+#     linearity(Evap.petpt, i, [1.0,1,1,1,1,1], 0:0.05:1)
+# end
+# @show lintests3
+curvatur = map(1:50) do i
+    x = collect(valsASCE) .+ randn(Float64, 14)
+    y = try
+        linearity(Evap.petasce′, x) ./ x
+    catch ex ;
+        @info "failure"
+    end
+end |>
+    y-> filter(x->x!=nothing, y) |>
+    mean 
