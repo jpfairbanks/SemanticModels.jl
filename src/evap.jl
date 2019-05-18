@@ -332,4 +332,27 @@ curvatur = map(1:50) do i
     end
 end |>
     y-> filter(x->x!=nothing, y) |>
-    mean 
+    mean
+
+@show curvatur
+
+@show expand_derivatives(
+    Differential(msalb)(
+        Symbolic.apply(ptexpr,
+                       (msalb=msalb,
+                        xhlai=1,
+                        tmin=0,
+                        tmax=6,
+                        srad=1,
+                        eo=1))))
+Dmsalb = Differential(msalb)
+@show dpetdmsalb = expand_derivatives(
+    Dmsalb(Symbolic.apply(ptexpr,
+                          (msalb=msalb,
+                           xhlai=1,
+                           tmin=0,
+                           tmax=tmax,
+                           srad=1,
+                           eo=1))))
+@show Symbolic.apply(dpetdmsalb,
+                     (msalb=1, tmax=4))
