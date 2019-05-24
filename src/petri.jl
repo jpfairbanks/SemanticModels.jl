@@ -206,5 +206,48 @@ function PetriNet(d::WiringDiagram, mapping)
     edges = map(boxes(d)) do box
         PetriEdge(box.value, box.input_ports[1], box.output_ports[1],())
     end
-    
+end
+# can we represent a petrinet as a presentation?
+# This is like a database schema where you have Ob representing tables
+# and Homs representing foreign keys. The equations are the business rules
+# preserved by the DB.
+# How do we represent a specific petri net?
+# As a Petri-Instance, ie. a functor from Petri to what?
+@present Petri(FreeCategory) begin
+  # Primitive concepts.
+  Node::Ob
+  Symb::Ob
+  Input::Ob
+  Position::Ob
+  
+  name::Hom(Node, Symb)
+  output::Hom(Node, Node)
+  slot::Hom(Input, Position)
+  source::Hom(Input, Node) # the place a connection came from
+  target::Hom(Input, Node) # the place a connection goes to
+
+  # Defined concepts.
+  # second_level_manager := compose(manager, manager)
+  # third_level_manager := compose(manager, manager, manager)
+  
+  # Abbreviations (no syntactic term for LHS).
+  # boss = manager
+  
+  # Managers work in the same department as their employees.
+  # compose(boss, works_in) == works_in
+  # The secretary of a department works in that department.
+  # compose(secretary, works_in) == id(Department)
+end
+
+
+struct Instance{C, D}
+    index::C
+    image::D
+end
+
+inst = Instance(Petri, p)
+
+import Base: getindex, setindex
+function getindex(inst::Instance{Presentation{Symbol},PetriNets.PetriNet}}, obj::Catlab.Doctrines.FreeCategory.Ob{:generator})
+    instance.index
 end
