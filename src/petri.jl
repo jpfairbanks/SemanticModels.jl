@@ -1,164 +1,102 @@
+# +
 module PetriNets
 
-
 abstract type AbstractNode end
-
-struct Constant{T} <: AbstractNode
-    value::T
-end
-
-struct Sink <: AbstractNode
-    name
-    op::Function
-    inputs::Vector{AbstractNode}
-end
-
-struct Box{T}
-    ready::Bool
-    value::T
-end
 
 const Option{T} = Union{T, Missing}
 
 mutable struct Node <: AbstractNode
     name::Any
-    op::Function
-    inputs::Vector{AbstractNode}
-    outputs::Union{Any, Missing}
+    value::Int32
+end
+
+struct Transition <: AbstractNode
+    name::Any
+    inputs::Vector{Node}
+    outputs::Vector{Node}
 end
 
 struct PetriNet
-    nodes::Vector{AbstractNode}
+    nodes::Vector{Node}
+    transitions::Vector{Transition}
 end
 
 name(n::AbstractNode) = n.name
-name(c::Constant) = Symbol("C$(value(c))")
 
-function value(n::Node)
-    return n.outputs
+function ready(n::Node)
+    return value(n) > 0
 end
 
-function value(n::Constant)
+function ready(n::Transition)
+    return length(filter(x->ready(x) == false, n.inputs)) == 0
+end
+
+function value(n::Node)
     return n.value
 end
 
 clear(n::Node) = begin
-    n.outputs = missing
+    n.value = 0
     return
 end
 
-clear(c::Constant) = nothing
-clear(s::Sink) = nothing
-
-tupler(inputs::Vector{AbstractNode}) = Node(gensym(:tupler), tuple, inputs, missing)
-
-run!(c::Constant) = c.value
-function run!(n::Node)
-    @show name(n)
-    invals = map(n.inputs) do i
-        value(i)
+function run!(n::Transition)
+    #@show name(n)
+    if ready(n)
+        #@info "Decrease inputs"
+        map(n.inputs) do i
+            i.value -= 1
+        end
+        #@info "Increase outputs"
+        map(n.outputs) do i
+            i.value += 1
+        end
     end
-
-    if any(ismissing, invals)
-        @info "Waiting for a dependency"
-        return missing
-    end
-
-    if !ismissing(value(n))
-        @info "Waiting for output to clear"
-        return missing
-    end
-    @info "Firing node $(name(n)), $(invals)"
-    n.outputs = n.op(invals...)
-
-    @info "Clearing out deps"
-    map(n.inputs) do i
-        clear(i)
-    end
-
-    return n.outputs
-
 end
-
-function run!(n::Sink)
-    @show name(n)
-    invals = map(n.inputs) do i
-        value(i)
-    end
-
-    if any(ismissing, invals)
-        @info "Waiting for a dependency"
-        return missing
-    end
-
-    @info "Firing node $(name(n)), $(invals)"
-    y = n.op(invals...)
-
-    @info "Clearing out deps"
-    map(n.inputs) do i
-        clear(i)
-    end
-
-    return y
-
-end
-
-nv(p) = length(p.nodes)
 
 function run!(p::PetriNet)
-    for (i, n) in enumerate(p.nodes)
-        value = run!(n)
-        if !ismissing(value) && i == nv(p)
-            @show name(n), value
+    run = true
+    while run
+        run = false
+        for n in p.transitions
+            while ready(n) == true
+                run = true
+                run!(n)
+            end
         end
-
     end
 end
 
-
-n1 = Node(:A,
-          x->x+1,
-          [Constant(1)],
-          missing)
-n2 = Node(:B,
-          x->2x,
-          [n1],
-          missing)
-n3 = Node(:C,
-          +,
-          [n2, Constant(1)],
-          missing
-          )
-# n4 = Node(:D,
-#           ( x... )->begin println(+(x...))
-#           return missing
-#           end,
-#           [n2, Constant(1)],
-#           missing
-#           )
-n4 = Sink(:D, println, [n3])
-
-@show n1
-@show n4
-
 end
 
-name = PetriNets.name
 
-n1 = PetriNets.n1
-n2 = PetriNets.n2
-n3 = PetriNets.n3
-n4 = PetriNets.n4
-# for i in 1:3
-#     PetriNets.run!(n1)
-# end
+# +
+n1 = PetriNets.Node(:n1, 10)
+n2 = PetriNets.Node(:n2, 1)
+n3 = PetriNets.Node(:n3, 0)
+n4 = PetriNets.Node(:n4, 0)
+n5 = PetriNets.Node(:n5, 0)
+n6 = PetriNets.Node(:n6, 0)
+n7 = PetriNets.Node(:n7, 1)
+n8 = PetriNets.Node(:n8, 0)
 
-p = PetriNets.PetriNet([n1,n2,n3, n4])
-for i in 1:10
-    PetriNets.run!(p)
-end
+t1 = PetriNets.Transition(:t1, [n1], [n3])
+t2 = PetriNets.Transition(:t2, [n2], [n3])
+t3 = PetriNets.Transition(:t3, [n3], [n4,n5])
+t4 = PetriNets.Transition(:t4, [n4], [n6])
+t5 = PetriNets.Transition(:t5, [n5], [n6])
+t6 = PetriNets.Transition(:t6, [n6], [n8])
+t7 = PetriNets.Transition(:t7, [n7], [n8])
 
-using Catlab
+pn = PetriNets.PetriNet([n1,n2,n3,n4,n5,n6,n7,n8], [t1, t2, t3, t4, t5, t6, t7])
+
+PetriNets.run!(pn)
+@show n8
+# -
+
+import TikzPictures
+using Catlab.Graphics
+using Catlab.Doctrines
 using Catlab.WiringDiagrams
 import Catlab.WiringDiagrams.WiringDiagramCore: boxes, WiringDiagram
 
@@ -180,7 +118,7 @@ end
 composel(x::Vector{Vector{WiringDiagram}}) = foldl.(compose, x)
 composel(x::Vector{WiringDiagram}) = foldl(compose, x)
 
-WiringDiagram(p::PetriNets.PetriNet, mapping) = composel(boxes(p, mapping)) |> composel
+WiringDiagram(p::PetriNets.PetriNet, mappi lng) = composel(boxes(p, mapping)) |> composel
 
 
 mapping = Dict(:A=>A,
@@ -199,8 +137,6 @@ struct PetriEdge
     output
     meta
 end
-
-
 
 function PetriNet(d::WiringDiagram, mapping)
     edges = map(boxes(d)) do box
@@ -229,10 +165,10 @@ end
   # Defined concepts.
   # second_level_manager := compose(manager, manager)
   # third_level_manager := compose(manager, manager, manager)
-  
+
   # Abbreviations (no syntactic term for LHS).
   # boss = manager
-  
+
   # Managers work in the same department as their employees.
   # compose(boss, works_in) == works_in
   # The secretary of a department works in that department.
