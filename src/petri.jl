@@ -21,8 +21,16 @@ struct PetriNet
     transitions::Vector{Transition}
 end
 
+struct PetriError <: Exception
+    msg::AbstractString
+end
+
 name(n::AbstractNode) = n.name
 
+"""    ready(t::Tuple{Node,Bool})
+
+check that the node is ready, the bool is used to indicate inhibitor arc
+"""
 function ready(t::Tuple{Node,Bool})
     n = t[1]
     b = t[2]
@@ -46,10 +54,11 @@ function run!(n::Transition)
     #@show name(n)
     if ready(n)
         if length(findall(i->!xor(i[1] in n.outputs, i[2]), n.inputs)) == length(n.inputs)
-            error(string("Infinite loop detected at transition ", name(n)))
+            throw(PetriError("Infinite loop detected at transition $(name(n))"))
         end
         #@info "Decrease inputs"
         map(n.inputs) do i
+            # if you know that i is ready, and it is empty, then it must be an inhibitor.
             i[1].value -= i[1].value > 0 ? 1 : 0
         end
         #@info "Increase outputs"
@@ -96,6 +105,7 @@ t7 = PetriNets.Transition(:t7, [(n7,true)], [n8])
 pn1 = PetriNets.PetriNet([n1,n2,n3,n4,n5,n6,n7,n8], [t1, t2, t3, t4, t5, t6, t7])
 PetriNets.run!(pn1)
 @show n8
+@assert pn1.nodes[end].value == 23 "pn1 did not compute correctly"
 
 
 n9 = PetriNets.Node(:n9, 1)
@@ -113,7 +123,12 @@ n13 = PetriNets.Node(:n13, 0)
 n14 = PetriNets.Node(:n14, 0)
 t9 = PetriNets.Transition(:t9, [(n12, true), (n13, false)], [n12,n14])
 pn3 = PetriNets.PetriNet([n12, n13], [t9])
-PetriNets.run!(pn3)
+try
+    PetriNets.run!(pn3)
+catch PetriError
+    @warn "pn3 has an infinite loop, this warning is benign"
+end
+
 # -
 
 import TikzPictures
