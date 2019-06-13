@@ -34,29 +34,11 @@ end
 function model(::Type{MMModel}, expr::Expr)
     matches = callsites(expr, :ODEProblem)
     @show matches
-    # params(x) = x.args[2].args[4:end]
-    # states(x) = structured(x, x.args[1].args[3])
-    # fluxes(x) = structured(x, x.args[1].args[2], false)
-    # equations(x) = x.args[2].args[3].args |>
-    #     y -> filter(y) do z
-    #         typeof(z) == Expr
-    #     end
-
     funcs = [funker(expr, rhs) for rhs in matches]
-    @show funcs
     dump(funcs[1].args[2])
     vars = map(funcs) do x
         rs = eval(x.args[2])
-        # (rxns = rs,
-        #  vars = rs.syms,
-        #  eqns=equations(x),
-        #  params=params(x))
-        #  eqns=equations(x),
-        #  params=params(x))
     end
-    # vars = map(x->(state=states(x),
-    #                flux=fluxes(x),
-    #                params=params(x)), funcs)
     tdomain = map(m->findassign(expr, m.args[4]), matches)
     initial = map(m->findassign(expr, m.args[3]), matches)
     params = map(matches) do x
