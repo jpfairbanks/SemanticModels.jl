@@ -1,40 +1,5 @@
 using Petri
-
-function main(β, γ, μ)
-
-    g = Graph(6)
-    g.names[:] = [:S, :T1, :I, :T2, :R, :T3]
-
-    add_edge(g, :S,  :T1)
-    add_edge(g, :I,  :T1)
-    add_edge(g, :T1, :S)
-    add_edge(g, :T1, :I)
-    add_edge(g, :I,  :T2)
-    add_edge(g, :T2, :R)
-    add_edge(g, :R,  :T3)
-    add_edge(g, :T3, :S)
-
-    Δ = [
-        T1 => (x,y) -> (x-1, y+1),
-        T2 => (x,y) -> (x-1, y+1),
-        T3 => (x,y) -> (x-1, y+1),
-    ]
-
-    ϕ = [
-        T1 => (x,y) -> x>0,
-        T2 => (x) -> x>0,
-        T3 => (x) -> x>0,
-    ]
-
-    Λ = [
-        T1 => (x,y) -> β*x*y/n,
-        T2 => (x) -> γ*x/n,
-        T3 => (x) -> μ*x/n
-    ]
-
-    m = Petri.Model(g, Δ, ϕ, Λ)
-    soln = solve(m)
-end
+using DiffEqBase
 
 macro grounding(ex)
     return ()
