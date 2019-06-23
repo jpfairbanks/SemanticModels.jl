@@ -149,3 +149,101 @@ function main()
     (p, soln)
 end
 p, soln = main()
+
+mutable struct SEIRState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+end
+function SEIRmain()
+    @grounding begin
+        S => Noun(Susceptible, ontology=Snowmed)
+        E => Noun(Exposed, ontology=ICD9)
+        I => Noun(Infectious, ontology=ICD9)
+        R => Noun(Recovered, ontology=ICD9)
+        λ₁ => Verb(exposure)
+        λ₂ => Verb(infection)
+        λ₃ => Verb(recovery)
+        λ₄ => Verb(loss_of_immunity)
+    end
+    @variables S, E, I, R, β, γ, μ, η
+    N = +(S,E,I,R)
+    ϕ = [(S > 0) * (I > 0),
+         E > 0,
+         I > 0,
+         R > 0]
+
+    Δ = [(S~S-1, E~E+1),
+         (E~E-1, I~I+1),
+        (I~I-1, R~R+1),
+        (R~R-1, S~S+1)]
+
+    Λ = [β*S*I/N,
+        η*E,
+        γ*I,
+        μ*R]
+
+    m = Petri.Model(Δ, Λ, ϕ)
+    p = Petri.Problem(m, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 50)
+    soln = Petri.solve(p)
+    (p, soln)
+end
+p, soln = SEIRmain()
+
+
+mutable struct SEIRDState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+    D::T
+    ψ::F
+end
+function SEIRDmain()
+    @grounding begin
+        S => Noun(Susceptible, ontology=Snowmed)
+        E => Noun(Exposed, ontology=ICD9)
+        I => Noun(Infectious, ontology=ICD9)
+        R => Noun(Recovered, ontology=ICD9)
+        D => Noun(Dead, ontology=ICD9)
+        λ₁ => Verb(exposure)
+        λ₂ => Verb(infection)
+        λ₃ => Verb(recovery)
+        λ₄ => Verb(loss_of_immunity)
+        λ₅ => Verb(death)
+    end
+    @variables S, E, I, R, β, γ, μ, η, D, ψ
+    N = +(S,E,I,R)
+    ϕ = [(S > 0) * (I > 0),
+         E > 0,
+         I > 0,
+         R > 0,
+         I > 0]
+
+    Δ = [(S~S-1, E~E+1),
+         (E~E-1, I~I+1),
+         (I~I-1, R~R+1),
+         (R~R-1, S~S+1),
+         (I~I-1, D~D+1)]
+
+    Λ = [β*S*I/N,
+         η*E,
+         γ*I,
+         μ*R,
+         ψ*I]
+
+    m = Petri.Model(Δ, Λ, ϕ)
+    p = Petri.Problem(m, SEIRDState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12, 0, 0.1), 150)
+    soln = Petri.solve(p)
+    (p, soln)
+end
+p, soln = SEIRDmain()
