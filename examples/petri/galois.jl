@@ -146,5 +146,6 @@ function main()
     m = Petri.Model(Δ, Λ, ϕ)
     p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 50)
     soln = Petri.solve(p)
+    (p, soln)
 end
-main()
+p, soln = main()
