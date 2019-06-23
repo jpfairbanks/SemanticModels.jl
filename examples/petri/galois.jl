@@ -11,9 +11,10 @@ end
 
 Model(δ::D, λ::L, ϕ::P) where {D,L,P} = Model{Any,D,L,P}(missing, δ, λ, ϕ)
 
-struct Problem{M<:Model, S}
+struct Problem{M<:Model, S, N}
     m::M
     initial::S
+    steps::N
 end
 
 sample(rates) = begin
@@ -27,7 +28,7 @@ end
 
 function solve(p::Problem)
     state = p.initial
-    for i in 1:10
+    for i in 1:p.steps
         state = step(p, state)
     end
     state
@@ -104,55 +105,6 @@ macro grounding(ex)
     return ()
 end
 
-macro reaction(ex)
-    :( tuple($ex) )
-end
-
-
-function main(β, γ, μ)
-    @grounding begin
-        S => Noun(Susceptible, ontology=Snowmed)
-        I => Noun(Infectious, ontology=ICD9)
-        R => Noun(Recovered, ontology=ICD9)
-        λ₁ => Verb(infection)
-        λ₂ => Verb(recovery)
-        λ₃ => Verb(loss_of_immunity)
-    end
-
-    g = @reaction begin
-        ( S , I ) -> 2I,
-        I -> R,
-        R -> S
-    end
-
-    # β, 1S + 1I -> 0S + 2I
-    # γ, 0R + 1I -> 0I + 1R
-    # μ, 1R + 0S -> 1S + 0R
-
-    Δ = [
-        (S,I) -> (S-1, I+1),
-        (I,R) -> (I-1, R+1),
-        (R,S) -> (R-1, S+1),
-    ]
-
-    ϕ = [
-        (S, I) -> x > 0 && I > 0,
-        (I) -> x > 0,
-        (R) -> x > 0,
-    ]
-
-    Λ = [
-        (S,I) -> begin n = +(S,I,R); β*S*I/n end,
-        (I) -> begin γ*I end,
-        (R) -> begin μ*R end
-    ]
-    m = Petri.Model(g, Δ, ϕ, Λ)
-    @show m
-    # d = convert(ODEProblem, m)
-    # soln = solve(m) #discrete
-    # soln = solve(d) #continuos
-end
-
 mutable struct SIRState{T,F}
     S::T
     I::T
@@ -168,7 +120,15 @@ function show(io::IO, s::SIRState)
 end
 
 
-function main′()
+function main()
+    @grounding begin
+        S => Noun(Susceptible, ontology=Snowmed)
+        I => Noun(Infectious, ontology=ICD9)
+        R => Noun(Recovered, ontology=ICD9)
+        λ₁ => Verb(infection)
+        λ₂ => Verb(recovery)
+        λ₃ => Verb(loss_of_immunity)
+    end
     @variables S, I, R, β, γ, μ
     N = +(S,I,R)
     ϕ = [(S > 0) * (I > 0),
@@ -184,7 +144,7 @@ function main′()
         μ*R]
 
     m = Petri.Model(Δ, Λ, ϕ)
-    p = Petri.Problem(m, SIRState(10, 1, 0, 0.5, 0.25, 0.05))
+    p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 50)
     soln = Petri.solve(p)
 end
-main′()
+main()
