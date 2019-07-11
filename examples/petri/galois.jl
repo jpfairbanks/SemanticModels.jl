@@ -230,7 +230,6 @@ function main()
         λ₅ => Verb(death)
     end
     @variables D, ψ
-    N = +(S,E,I,R)
     ϕ = [I > 0]
 
     Δ = [(I~I-1, D~D+1)]
