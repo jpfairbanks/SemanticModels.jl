@@ -17,27 +17,26 @@ using DifferentialEquations
 
 # +
 function sis_ode(du, u, parms, t)
-    beta = parms[1]
-    gamma = parms[2]
-    susceptible = init[1]
-    infected_ind = init[2]
+    β, γ = parms
+    
+    S, I = u
 
-    du[1] = -beta * susceptible * infected_ind + gamma * infected_ind
-    du[2] = beta * susceptible * infected_ind - parms[2] * init[2]
-
+    dS = -β * S * I +  γ * I
+    dI = β * S * I - γ * I
+    du = [dS,dI]
+    
 end
 # -
 
-parms = [0.1,0.05]
-init = [0.99,0.01,0.0]
-tspan = (0.0,200.0)
 
-sis_prob = ODEProblem(sis_ode, init, tspan,parms)
+function main()
+    parms = [0.1,0.05]
+    init = [0.99,0.01]
+    tspan = (0.0,200.0)
 
-sis_sol = solve(sis_prob);
+    sis_prob = ODEProblem(sis_ode, init, tspan,parms)
 
-#Visualization
-using Plots
-plot(sis_sol,xlabel="Time",ylabel="Number")
+    sis_sol = solve(sis_prob);
+end
 
 end
