@@ -1,15 +1,20 @@
+# -*- coding: utf-8 -*-
+# + {}
 module Petri
 using ModelingToolkit
 import ModelingToolkit: Constant, Variable
 
-struct Model{G,D,L,P}
-    g::G
-    Δ::D
-    Λ::L
-    Φ::P
+struct Model{G,S,D,L,P}
+    g::G  # grounding
+    S::S  # states
+    Δ::D  # transition function
+    Λ::L  # transition rate
+    Φ::P  # if state should happen
 end
 
-Model(δ::D, λ::L, ϕ::P) where {D,L,P} = Model{Any,D,L,P}(missing, δ, λ, ϕ)
+#Model(δ::D, λ::L, ϕ::P) where {D,L,P} = Model{Any,Any,D,L,P}(missing, missing, δ, λ, ϕ)
+
+Model(s::S, δ::D, λ::L, ϕ::P) where {S,D,L,P} = Model{Any,S,D,L,P}(missing, s, δ, λ, ϕ)
 
 struct Problem{M<:Model, S, N}
     m::M
@@ -19,11 +24,35 @@ end
 
 sample(rates) = begin
     s = cumsum(rates)
+    @show s
+    @show s[end]
     r = rand()*s[end]
+    @show r
     nexti = findfirst(s) do x
         x >= r
     end
     return nexti
+end
+
+function rewrite!(m::Model, S, Δ, Λ, Φ)
+    vars = map(m.S) do s
+        s.op
+    end
+    @show 
+    for i in 1:length(S)
+        s = S[i]
+        found = findfirst(vars .== s.op)
+        if typeof(found) == Nothing
+            push!(m.S, s)
+            push!(m.Δ, Δ[i])
+            push!(m.Λ, Λ[i])
+            push!(m.Φ, Φ[i])
+        else
+            m.Δ[found] = Δ[i] == Nothing ? m.Δ[found] : Δ[i]
+            m.Λ[found] = Λ[i] == Nothing ? m.Λ[found] : Λ[i]
+            m.Φ[found] = Φ[i] == Nothing ? m.Φ[found] : Φ[i]
+        end
+    end
 end
 
 function solve(p::Problem)
@@ -94,6 +123,7 @@ function apply(op::Function, expr::Operation, data)
 end
 
 end
+# -
 
 # using Petri
 import Base.show
@@ -114,12 +144,38 @@ mutable struct SIRState{T,F}
     μ::F
 end
 
+mutable struct SEIRState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+end
+
+
+mutable struct SEIRDState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+    D::T
+    ψ::F
+end
+
 function show(io::IO, s::SIRState)
     t = (S=s.S, I=s.I, R=s.R, β=s.β, γ=s.γ, μ=s.μ)
     print(io, "$t")
 end
 
 
+# +
 function main()
     @grounding begin
         S => Noun(Susceptible, ontology=Snowmed)
@@ -142,24 +198,53 @@ function main()
     Λ = [β*S*I/N,
         γ*I,
         μ*R]
+    
+    m = Petri.Model([S,I,R], Δ, Λ, ϕ)
+    p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 1)
+    Petri.solve(p)
+    #convert(Base.Expr, Petri.solve(p))
+    
+    @grounding begin
+        E => Noun(Exposed, ontology=ICD9)
+        λ₄ => Verb(exposure)
+    end
+    @variables E, η
+    N = +(S,E,I,R)
+    ϕ = [(S > 0) * (I > 0),
+         E > 0]
 
-    m = Petri.Model(Δ, Λ, ϕ)
-    p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 50)
-    soln = Petri.solve(p)
-    (p, soln)
-end
-p, soln = main()
+    Δ = [(S~S-1, E~E+1),
+         (E~E-1, I~I+1)]
 
-mutable struct SEIRState{T,F}
-    S::T
-    I::T
-    R::T
-    β::F
-    γ::F
-    μ::F
-    E::T
-    η::F
+    Λ = [β*S*I/N,
+        η*E]
+
+    Petri.rewrite!(m, [S, E], Δ, Λ, ϕ)
+    m
+    p = Petri.Problem(m, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 1)
+    Petri.solve(p)
+    
+    
+    @grounding begin
+        D => Noun(Dead, ontology=ICD9)
+        λ₅ => Verb(death)
+    end
+    @variables D, ψ
+    N = +(S,E,I,R)
+    ϕ = [I > 0]
+
+    Δ = [(I~I-1, D~D+1)]
+
+    Λ = [ψ*I]
+
+    Petri.rewrite!(m, [D], Δ, Λ, ϕ)
+    p = Petri.Problem(m, SEIRDState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12, 0, 0.1), 1)
+    Petri.solve(p)
+
 end
+main()
+# -
+
 function SEIRmain()
     @grounding begin
         S => Noun(Susceptible, ontology=Snowmed)
@@ -196,18 +281,6 @@ end
 p, soln = SEIRmain()
 
 
-mutable struct SEIRDState{T,F}
-    S::T
-    I::T
-    R::T
-    β::F
-    γ::F
-    μ::F
-    E::T
-    η::F
-    D::T
-    ψ::F
-end
 function SEIRDmain()
     @grounding begin
         S => Noun(Susceptible, ontology=Snowmed)
