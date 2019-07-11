@@ -3,6 +3,8 @@
 module Petri
 using ModelingToolkit
 import ModelingToolkit: Constant, Variable
+using MacroTools
+import MacroTools: postwalk
 
 struct Model{G,S,D,L,P}
     g::G  # grounding
@@ -23,10 +25,10 @@ end
 
 sample(rates) = begin
     s = cumsum(rates)
-    @show s
-    @show s[end]
+    #@show s
+    #@show s[end]
     r = rand()*s[end]
-    @show r
+    #@show r
     nexti = findfirst(s) do x
         x >= r
     end
@@ -41,7 +43,7 @@ function rewrite!(m::Model, m2::Model, f::Dict)
     vars = map(m.S) do s
         s.op
     end
-    @show 
+    @show
     for i in 1:length(m2.S)
         s = m2.S[i]
         found = findfirst(vars .== (haskey(f, s) ? f[s].op : s.op))
@@ -67,14 +69,14 @@ function solve(p::Problem)
 end
 
 function step(p::Problem, state)
-    @show state
+    #@show state
     n = length(p.m.Δ)
     rates = map(p.m.Λ) do λ
         apply(λ, state)
     end
-    @show rates
+    #@show rates
     nexti = sample(rates)
-    @show nexti
+    #@show nexti
     if apply(p.m.Φ[nexti], state)
         newval = apply(p.m.Δ[nexti], state)
         eqns = p.m.Δ[nexti]
@@ -83,6 +85,29 @@ function step(p::Problem, state)
             # rhs = eqns[i].rhs
             setproperty!(state, lhs.op.name, newval[i])
         end
+    end
+    state
+end
+
+eval(m::Model) = Model(m.g, m.S, eval.(m.Δ), eval.(m.Λ), eval.(m.Φ))
+
+function step(p::Problem{Model{T,
+                               Array{Operation,1},
+                               Array{Function,1},
+                               Array{Function,1},
+                               Array{Function,1}},
+                         S, N} where {T,S,N},
+              state)
+    # @show state
+    n = length(p.m.Δ)
+    rates = map(p.m.Λ) do λ
+        λ(state)
+    end
+    # @show rates
+    nexti = sample(rates)
+    # @show nexti
+    if p.m.Φ[nexti](state)
+        p.m.Δ[nexti](state)
     end
     state
 end
@@ -123,6 +148,58 @@ function apply(op::Function, expr::Operation, data)
         apply(a, data)
     end
     return op(anses...)
+end
+
+function funcbody(ex::Equation, ctx=:state)
+    return ex.lhs.op.name => funcbody(ex.rhs, ctx)
+end
+
+function funcbody(ex::Operation, ctx=:state)
+    args = Symbol[]
+    body = postwalk(convert(Expr, ex)) do x
+        # @show x, typeof(x);
+        if typeof(x) == Expr && x.head == :call
+            if length(x.args) == 1
+                var = x.args[1]
+                push!(args, var)
+                return :($ctx.$var)
+            end
+        end
+        return x
+    end
+    return body, Set(args)
+end
+
+funckit(fname, args, body) = quote $fname($(collect(args)...)) = $body end
+funckit(fname::Symbol, arg::Symbol, body) = quote $fname($arg) = $body end
+function funckit(p::Petri.Problem, ctx=:state)
+    # @show "Λs"
+    λf = map(p.m.Λ) do λ
+        body, args = funcbody(λ, ctx)
+        fname = gensym("λ")
+        q = funckit(fname, ctx, body)
+        return q
+    end
+    # @show "Δs"
+    δf = map(p.m.Δ) do δ
+        q = quote end
+        map(δ) do f
+            vname, vfunc = funcbody(f, ctx)
+            body, args = vfunc
+            qi = :(state.$vname = $body)
+            push!(q.args, qi)
+        end
+        sym = gensym("δ")
+        :($sym(state) = $(q) )
+    end
+
+    # @show "Φs"
+    ϕf = map(p.m.Φ) do ϕ
+        body, args = funcbody(ϕ, ctx)
+        fname = gensym("ϕ")
+        q = funckit(fname, ctx, body)
+    end
+    return Model(p.m.S, δf, λf, ϕf)
 end
 
 end
@@ -201,11 +278,10 @@ function main()
     Λ = [β*S*I/N,
         γ*I,
         μ*R]
-    
+
     m = Petri.Model([S,I,R], Δ, Λ, ϕ)
-    p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 1)
-    Petri.solve(p)
-    
+    p = Petri.Problem(m, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
+
 
     @grounding begin
         E => Noun(Exposed, ontology=ICD9)
@@ -223,10 +299,10 @@ function main()
         η*E]
     m2 = Petri.Model([S,E], Δ, Λ, ϕ)
     f = Dict(S => S)
-    Petri.rewrite!(m, m2, f)
+    m′ = deepcopy(m)
+    Petri.rewrite!(m′, m2, f)
     m
-    p = Petri.Problem(m, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 1)
-    Petri.solve(p)
+    p2 = Petri.Problem(m′, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 150)
 
     @grounding begin
         D => Noun(Dead, ontology=ICD9)
@@ -240,9 +316,41 @@ function main()
     Λ = [ψ*I]
 
     m3 = Petri.Model([D], Δ, Λ, ϕ)
-    Petri.rewrite!(m, m3)
-    p = Petri.Problem(m, SEIRDState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12, 0, 0.1), 1)
-    Petri.solve(p)
+    m′′ = deepcopy(m′)
+    Petri.rewrite!(m′′, m3)
+    p3 = Petri.Problem(m′′, SEIRDState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12, 0, 0.1), 150)
+
+    return p, p2, p3
 
 end
-main()
+p, p2, p3 = main()
+
+@show "SIR"
+
+Petri.solve(p)
+@time Petri.solve(p)
+
+mf = Petri.eval(Petri.funckit(p))
+pf = Petri.Problem(mf, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
+Petri.solve(pf)
+@time Petri.solve(pf)
+
+@show "SEIR"
+
+Petri.solve(p2)
+@time Petri.solve(p2)
+
+mf2 = Petri.eval(Petri.funckit(p2))
+pf2 = Petri.Problem(mf2, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 150)
+Petri.solve(pf2)
+@time Petri.solve(pf2)
+
+@show "SEIRD"
+
+Petri.solve(p3)
+@time Petri.solve(p3)
+
+mf3 = Petri.eval(Petri.funckit(p3))
+pf3 = Petri.Problem(mf3, SEIRDState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12, 0, 0.1), 150)
+Petri.solve(pf3)
+@time Petri.solve(pf3)
