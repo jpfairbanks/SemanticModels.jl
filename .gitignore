@@ -275,3 +275,5 @@ doc/src/img/*.dot.png
 *__pycache__/
 examples/*.dot
 examples/*.dot.svg
+doc/src/img/petri/*.png
+/doc/workflow.slides.html
