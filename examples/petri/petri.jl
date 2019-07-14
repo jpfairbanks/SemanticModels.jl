@@ -17,6 +17,8 @@ end
 
 Model(s::S, δ::D, λ::L, ϕ::P) where {S,D,L,P} = Model{Any,S,D,L,P}(missing, s, δ, λ, ϕ)
 
+Model(s::S, δ::D) where {S<:Vector,D<:Vector{Tuple{Operation, Operation}}} = Model(s, δ, [],[])
+
 struct Problem{M<:Model, S, N}
     m::M
     initial::S
@@ -221,7 +223,6 @@ solve(p::DPOProblem) = pushout(p.rule.r, p.c′)
 """    pushout(m1::Model, m2::Model)
 
 compute the CT pushout of two models.
-
 """
 function pushout(m1::Model, m2::Model)
     states = union(m1.S, m2.S)
@@ -231,6 +232,20 @@ function pushout(m1::Model, m2::Model)
     return Model(states, Δ, Λ, Φ)
 end
 
+"""
+    dropdown(l::Model, c::Model, l′::Model)
+
+compute c′ given l, c, l′, the formula for petrinets is
+
+T_{c'} = T_{l'} \\setdiff f(T_l) \\cup a(T_c)
+"""
+function dropdown(l::Model, c::Model, l′::Model)
+    states = union(l′.S, c.S)
+    Δ = union(setdiff(l′.Δ, l.Δ), c.Δ)
+    Λ = union(setdiff(l′.Λ, l.Λ), c.Λ)
+    Φ = union(setdiff(l′.Φ, l.Φ), c.Φ)
+    return Model(states, Δ, Λ, Φ)
+end
 
 end
 # -
