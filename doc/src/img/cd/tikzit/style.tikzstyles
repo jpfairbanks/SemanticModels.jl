@@ -11,4 +11,4 @@
 \tikzstyle{transition}=[fill={rgb,255: red,56; green,152; blue,38}, draw=black, shape=rectangle, tikzit category=rect]
 
 % Edge styles
-\tikzstyle{new edge style 0}=[->]
+\tikzstyle{new edge style 0}=[->, ultra thick]
