@@ -27,3 +27,5 @@ The desired algorithm is
 1. relabel the transitions so that the transitions in the image of $\hom{c}{c'}$ and $\hom{c}{r}$ match.
 1. $S_{r'} = S_r \cup S_{c'}$
 1. $T_{r'} = T_r \cup T_{c'}$
+
+This algorithm works (not yet proven) for applying a pushout. However, modelers often have $l,c,r$ and $l'$ instead of $c'$. So the last step of the algorithm for DPO rewriting for model augmentation requires the inference of $c'$ from $(l,c,r)$ and $l'$
