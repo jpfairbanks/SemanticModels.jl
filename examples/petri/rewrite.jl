@@ -61,7 +61,7 @@ function funckit(m::Petri.Model, ctx=:state)
                     @show "adding guard"
                     if sym == :-=
                         return quote
-                            $var > 0 && $e
+                            ($var > 0 || return nothing ) && $e
                         end
                     end
                     return e
