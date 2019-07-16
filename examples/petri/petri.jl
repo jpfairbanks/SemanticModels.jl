@@ -117,6 +117,27 @@ function step(p::Problem{Model{T,
     state
 end
 
+function step(p::Petri.Problem{Petri.Model{T,
+                               Array{Operation,1},
+                               Array{Function,1},
+                               Array{Function,1},
+                               Missing},
+                         S, N} where {T,S,N},
+              state)
+    # @show state
+    n = length(p.m.Δ)
+    rates = map(p.m.Λ) do λ
+        λ(state)
+    end
+    # @show rates
+    nexti = sample(rates)
+    if nexti == nothing
+        return state
+    end
+    # @show nexti
+    p.m.Δ[nexti](state)
+    state
+end
 function apply(expr::Equation, data)
     rhs = expr.rhs
     apply(rhs, data)
@@ -270,6 +291,13 @@ mutable struct SIRState{T,F}
     β::F
     γ::F
     μ::F
+end
+
+mutable struct ParamSIR{T, P}
+    S::T
+    I::T
+    R::T
+    params::P
 end
 
 mutable struct SEIRState{T,F}

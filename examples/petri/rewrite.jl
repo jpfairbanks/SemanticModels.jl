@@ -50,7 +50,7 @@ l′ = Petri.pushout(l, c′)
 @test Petri.dropdown(l,c,l′).Δ == c′.Δ
 @test Petri.pushout(r, c′).Δ == seirs.Δ
 
-function funckit(m::Petri.Model, ctx=:state)
+function Δ(m::Petri.Model, ctx=:state)
     function updateblock(exp, sym)
         return postwalk(exp) do x
             if typeof(x) == Expr && x.head == :call
@@ -94,7 +94,7 @@ function funckit(m::Petri.Model, ctx=:state)
                     end
                 end
                 if length(x.args) >= 1 && x.args[1] == :(+)
-                    @show x
+                    # @show x
                     return quote
                         $(x.args[2:end]...)
                     end
@@ -150,7 +150,7 @@ function funckit(m::Petri.Model, ctx=:state)
 end
 
 @show "SIR"
-funckit(l, :state)
+Δ(l, :state)
 # @show "IR"
 # funckit(c, :state)
 @show "SEIR"
@@ -163,7 +163,7 @@ funckit(l, :state)
 @show "SEIRS"
 # funckit(seirs, :state)
 
-exprs = funckit(sirs, :state)
+exprs = Δ(sirs, :state)
 m = Petri.Model([S, I, R], exprs, [
     quote
     λ_2(state) = state.γ * state.I
@@ -221,4 +221,82 @@ end
 test_1()
 test_2()
 
-exprs2 = funckit(Petri.Model([S,I,R], [(2S+I, 3I)]))
+exprs2 = Δ(Petri.Model([S,I,R], [(2S+I, 3I)]))
+
+function Λ(m::Petri.Model{G, S, D, L, B}) where {G, S, D, L, B}
+    head(x) = try
+        x.head
+    catch
+        nothing
+    end
+    function ratecomp(exp, ctx)
+
+        args = Dict{Symbol, Int}()
+        postwalk(convert(Expr, exp)) do x
+            if typeof(x) == Expr && x.head == :call
+                if length(x.args) == 1
+                    var = x.args[1]
+                    args[var] = 1
+                    return :($ctx.$var)
+                end
+                if x.args[1] == :(*)
+                    args[var] = x.args[2]
+                end
+            end
+        return x
+        end
+        return args
+    end
+
+    δf = map(enumerate(m.Δ)) do (i, δ)
+        # input states are used to calc the rates
+        parents = δ[1]
+
+        # exp1 = convert(Expr, parents)
+        ctx = :state
+        rates = ratecomp(parents, ctx)
+        q = :(*())
+        map(collect(keys(rates))) do s
+            r = rates[s]
+            push!(q.args, :($ctx.$s / $r))
+        end
+        term = :($ctx.params[$i])
+        push!(q.args, term)
+
+        sym = gensym("λ")
+        @show MacroTools.striplines(q)
+        :($sym(state) = $(q) )
+    end
+end
+
+Λ(sir)
+
+function funckit(m::Petri.Model)
+    return Petri.Model(m.g, m.S, Δ(m), Λ(m), missing)
+end
+
+function Petri.eval(m::Petri.Model{G, Z, D, L, Missing}) where {G, Z, D, L}
+    Petri.Model(m.g, m.S, eval.(m.Δ), eval.(m.Λ), missing)
+end
+
+
+
+sir′ = funckit(sir)
+m = sir′
+m′ = Petri.eval(m)
+@show m′
+@show typeof(m′)
+p = Petri.Problem(m′, ParamSIR(100, 1, 0, [0.15, 0.55/101]), 250)
+soln = Petri.solve(p)
+@test soln.S <= 10
+@test soln.S + soln.I + soln.R == 101
+
+m′ = Petri.eval(funckit(sirs))
+@show m′
+@show typeof(m′)
+p = Petri.Problem(m′, ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15 ]), 250)
+sirs_soln = Petri.solve(p)
+@test sirs_soln.S >= 10
+@test sirs_soln.S + sirs_soln.I + sirs_soln.R == 101
+@show soln
+@show sirs_soln
