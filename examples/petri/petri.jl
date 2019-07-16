@@ -107,6 +107,9 @@ function step(p::Problem{Model{T,
     end
     # @show rates
     nexti = sample(rates)
+    if nexti == nothing
+        return state
+    end
     # @show nexti
     if p.m.Φ[nexti](state)
         p.m.Δ[nexti](state)
