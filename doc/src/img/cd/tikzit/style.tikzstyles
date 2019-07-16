@@ -9,6 +9,7 @@
 \tikzstyle{green}=[fill={rgb,255: red,56; green,152; blue,38}, draw=black, shape=circle, tikzit category=obj]
 \tikzstyle{red}=[fill={rgb,255: red,203; green,60; blue,51}, draw=black, shape=circle, tikzit category=obj]
 \tikzstyle{transition}=[fill={rgb,255: red,56; green,152; blue,38}, draw=black, shape=rectangle, tikzit category=rect]
+\tikzstyle{olog}=[fill=white, draw=black, shape=rectangle]
 
 % Edge styles
 \tikzstyle{new edge style 0}=[->, ultra thick]
