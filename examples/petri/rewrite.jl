@@ -57,11 +57,11 @@ function funckit(m::Petri.Model, ctx=:state)
                 if length(x.args) == 1
                     var = x.args[1]
                     # push!(args, var)
-                    e = Expr(sym, var, 1)
+                    e = Expr(sym, :($ctx.$var), 1)
                     @show "adding guard"
                     if sym == :-=
                         return quote
-                            ($var > 0 || return nothing ) && $e
+                            ($ctx.$var > 0 || return nothing ) && $e
                         end
                     end
                     return e
@@ -78,7 +78,6 @@ function funckit(m::Petri.Model, ctx=:state)
                         @show branch.args[1]
                         if branch.head == :&&
                             @info "&& found"
-                            dump(branch)
                             op = branch.args[2]
                             @show op
                             op.args[end] = x.args[2]
@@ -106,6 +105,12 @@ function funckit(m::Petri.Model, ctx=:state)
         end
     end
 
+    head(x) = try
+        x.head
+    catch
+        nothing
+    end
+
     δf = map(m.Δ) do δ
         q = quote end
         # input states get decremented
@@ -114,7 +119,22 @@ function funckit(m::Petri.Model, ctx=:state)
 
         exp1 = convert(Expr, parents)
         decrements = updateblock(exp1, :-=)
-
+        if decrements.head == :block
+            steps = postwalk(MacroTools.striplines, decrements).args
+            checks = Expr[]
+            events = Expr[]
+            map(steps) do s
+                @show s
+                postwalk(s) do x
+                    if head(x) == :&&
+                        push!(checks, x.args[1])
+                        push!(events, x.args[2])
+                    end
+                    return x
+                end
+            end
+            decrements = quote $(checks...); $(events...)  end
+        end
 
         exp2 = convert(Expr, children)
         increments = updateblock(exp2, :+=)
@@ -160,7 +180,7 @@ m = Petri.Model([S, I, R], exprs, [
                 )
 
 p = Petri.Problem(Petri.eval(m), SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
-# @show Petri.solve(p)
+@show Petri.solve(p)
 
 # @show Petri.funckit(Petri.Problem(l, missing, 10), :state)
 function test_1()
