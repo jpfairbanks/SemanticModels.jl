@@ -58,7 +58,7 @@ function funckit(m::Petri.Model, ctx=:state)
                     var = x.args[1]
                     # push!(args, var)
                     e = Expr(sym, :($ctx.$var), 1)
-                    @show "adding guard"
+                    # @show "adding guard"
                     if sym == :-=
                         return quote
                             ($ctx.$var > 0 || return nothing ) && $e
@@ -67,27 +67,26 @@ function funckit(m::Petri.Model, ctx=:state)
                     return e
                 end
                 if length(x.args) >= 1 && x.args[1] == :(*)
-                    @show x
                     op = x
                     try
-                        @info "trying"
-                        @show x
+                        # @info "trying"
+                        # @show x
                         branch = x.args[3].args[2]
-                        @show branch
-                        @show branch.head
-                        @show branch.args[1]
+                        # @show branch
+                        # @show branch.head
+                        # @show branch.args[1]
                         if branch.head == :&&
-                            @info "&& found"
+                            # @info "&& found"
                             op = branch.args[2]
-                            @show op
+                            # @show op
                             op.args[end] = x.args[2]
-                            @show x
+                            # @show x
                             return x.args[3]
                         end
                     catch
-                        @info "catching: there was no branch"
-                        @show changevalue = x.args[2]
-                        @show statename = x.args[3].args[1]
+                        # @info "catching: there was no branch"
+                        changevalue = x.args[2]
+                        statename = x.args[3].args[1]
                         # e = Expr(sym, statename, changevalue)
                         # return e
                         x.args[3].args[2] = changevalue
@@ -111,20 +110,12 @@ function funckit(m::Petri.Model, ctx=:state)
         nothing
     end
 
-    δf = map(m.Δ) do δ
-        q = quote end
-        # input states get decremented
-        parents = δ[1]
-        children = δ[2]
-
-        exp1 = convert(Expr, parents)
-        decrements = updateblock(exp1, :-=)
+    function poolconditions(decrements)
         if decrements.head == :block
             steps = postwalk(MacroTools.striplines, decrements).args
             checks = Expr[]
             events = Expr[]
             map(steps) do s
-                @show s
                 postwalk(s) do x
                     if head(x) == :&&
                         push!(checks, x.args[1])
@@ -135,6 +126,16 @@ function funckit(m::Petri.Model, ctx=:state)
             end
             decrements = quote $(checks...); $(events...)  end
         end
+        return decrements
+    end
+    δf = map(m.Δ) do δ
+        q = quote end
+        # input states get decremented
+        parents = δ[1]
+        children = δ[2]
+
+        exp1 = convert(Expr, parents)
+        decrements = updateblock(exp1, :-=) |> poolconditions
 
         exp2 = convert(Expr, children)
         increments = updateblock(exp2, :+=)
