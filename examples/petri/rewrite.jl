@@ -299,5 +299,5 @@ sirs_soln = Petri.solve(p)
 @show soln
 @show sirs_soln
 
-m′ = Petri.eval(funckit(ir))
-@code_native m′.Δ[1](ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15 ]))
+m′ = Petri.eval(funckit(seirs))
+@code_native m′.Δ[1](ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15, 0.1 ]))

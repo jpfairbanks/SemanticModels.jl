@@ -300,6 +300,14 @@ mutable struct ParamSIR{T, P}
     params::P
 end
 
+mutable struct ParamSEIR{T, P}
+    S::T
+    E::T
+    I::T
+    R::T
+    params::P
+end
+
 mutable struct SEIRState{T,F}
     S::T
     I::T

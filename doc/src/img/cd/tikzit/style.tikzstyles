@@ -11,6 +11,7 @@
 \tikzstyle{transition}=[fill={rgb,255: red,56; green,152; blue,38}, draw=black, shape=rectangle, tikzit category=rect]
 \tikzstyle{olog}=[fill=white, draw=black, shape=rectangle]
 \tikzstyle{new style 1}=[fill={rgb,255: red,64; green,99; blue,216}, draw=black, shape=rectangle, tikzit category=rect]
+\tikzstyle{purple_box}=[fill={rgb,255: red,149; green,88; blue,178}, draw=black, shape=rectangle]
 
 % Edge styles
 \tikzstyle{new edge style 0}=[->, ultra thick]
