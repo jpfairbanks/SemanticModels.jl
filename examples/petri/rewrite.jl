@@ -269,8 +269,6 @@ function Λ(m::Petri.Model{G, S, D, L, B}) where {G, S, D, L, B}
     end
 end
 
-Λ(sir)
-
 function funckit(m::Petri.Model)
     return Petri.Model(m.g, m.S, Δ(m), Λ(m), missing)
 end
@@ -294,9 +292,12 @@ soln = Petri.solve(p)
 m′ = Petri.eval(funckit(sirs))
 @show m′
 @show typeof(m′)
-p = Petri.Problem(m′, ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15 ]), 250)
+p = Petri.Problem(m′, ParamSIR(100, 1, 0, [0.15, 0.55/101, 0.15]), 250)
 sirs_soln = Petri.solve(p)
 @test sirs_soln.S >= 10
 @test sirs_soln.S + sirs_soln.I + sirs_soln.R == 101
 @show soln
 @show sirs_soln
+
+m′ = Petri.eval(funckit(ir))
+@code_native m′.Δ[1](ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15 ]))
