@@ -38,4 +38,4 @@ uploadreveal: reveal.js
 
 upload: slides.slides.html workflow.slides.html
 	scp -r $^ jpfnet:public/doc/slides/act/
-	scp -r reveal.js jpfnet:public/doc/slides/act/
+	# scp -r reveal.js jpfnet:public/doc/slides/act/
