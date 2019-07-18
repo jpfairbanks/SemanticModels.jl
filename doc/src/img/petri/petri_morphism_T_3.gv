@@ -1,0 +1,15 @@
+digraph G {
+rankdir=LR;
+
+subgraph cluster_0 {
+  a [label="A" shape=circle];
+  b [label="B" shape=circle];
+  c [label="C" shape=circle];
+  alpha [label=<&#945;> shape=square];
+}
+
+a -> alpha;
+b -> alpha;
+alpha -> c;
+
+}

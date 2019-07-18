@@ -30,10 +30,12 @@ open: slides.slides.html workflow.slides.html
 	open $^
 
 uploadimages:
-	scp -r src/img jpfnet:public/doc/slides/ufdsi/src/
+	# scp -r src/img jpfnet:public/doc/slides/ufdsi/src/
+	scp -r src/img jpfnet:public/doc/slides/act/src/img
 
 uploadreveal: reveal.js
 	scp -r $^ jpfnet:public/doc/slides/ufdsi/
 
 upload: slides.slides.html workflow.slides.html
-	scp -r $^ jpfnet:public/doc/slides/ufdsi
+	scp -r $^ jpfnet:public/doc/slides/act/
+	# scp -r reveal.js jpfnet:public/doc/slides/act/
