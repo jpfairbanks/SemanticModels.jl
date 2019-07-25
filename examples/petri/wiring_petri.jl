@@ -16,7 +16,7 @@ import Base: ∘
 ⊚(a,b) = b ∘ a
 
 function writesvg(f::Union{IO,AbstractString}, d::WiringDiagram)
-    write(f, to_graphviz(d)
+    write(f, to_graphviz(d, labels=true)
           |>g->run_graphviz(g, format="svg")
           )
 end
@@ -50,8 +50,8 @@ function petri_model(d::WiringDiagram)
         outvars = output_ports(box)
         homname = box.value
         push!(homnames, homname)
-        δ_in  =  length(invars)  > 1 ? +(OpVar.( invars)...) : invars[1]
-        δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : outvars[1]
+        δ_in  =  length(invars)  > 1 ? +(OpVar.( invars)...) : OpVar.(invars[1])
+        δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : OpVar.(outvars[1])
         return (δ_in, δ_out)
     end
     return vars, simplify(transitions), homnames
@@ -74,9 +74,9 @@ fatal = WiringDiagram(Hom(:die,  I, D))
 rip   = WiringDiagram(Hom(:rest, D, D))
 
 sir    = si    ⊚ (rec   ⊗ rec)
-seir   = se    ⊚ (rec   ⊗ prog)
+seir   = se    ⊚ (prog  ⊗ rec)
 seirs  = seir  ⊚ (wan   ⊗ wan)
-seird  = seir  ⊚ (fatal ⊗ rec)
+seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
 seirds = seird ⊚ (rip   ⊗ wan)
 
 

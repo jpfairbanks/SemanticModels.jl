@@ -31,11 +31,11 @@ open: slides.slides.html workflow.slides.html
 
 uploadimages:
 	# scp -r src/img jpfnet:public/doc/slides/ufdsi/src/
-	scp -r src/img jpfnet:public/doc/slides/act/src/img
+	scp -r src/ jpfnet:public/doc/slides/juliacon2019/
 
 uploadreveal: reveal.js
 	scp -r $^ jpfnet:public/doc/slides/ufdsi/
 
-upload: slides.slides.html workflow.slides.html
-	scp -r $^ jpfnet:public/doc/slides/act/
+upload: slides.slides.html
+	scp -r $^ jpfnet:public/doc/slides/juliacon2019/
 	# scp -r reveal.js jpfnet:public/doc/slides/act/
