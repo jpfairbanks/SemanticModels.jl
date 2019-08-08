@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 using Catlab
 using MacroTools
 import MacroTools: postwalk, striplines
@@ -78,6 +79,9 @@ seir   = se    ⊚ (prog  ⊗ rec)
 seirs  = seir  ⊚ (wan   ⊗ wan)
 seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
 seirds = seird ⊚ (rip   ⊗ wan)
+
+
+petri_model(sir)
 
 
 models = [sir, seir, seirs, seird, seirds]

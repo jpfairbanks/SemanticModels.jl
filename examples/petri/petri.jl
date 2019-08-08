@@ -5,6 +5,7 @@ using ModelingToolkit
 import ModelingToolkit: Constant, Variable
 using MacroTools
 import MacroTools: postwalk
+using Catlab.WiringDiagrams
 
 struct Model{G,S,D,L,P}
     g::G  # grounding
@@ -18,6 +19,30 @@ end
 Model(s::S, δ::D, λ::L, ϕ::P) where {S,D,L,P} = Model{Any,S,D,L,P}(missing, s, δ, λ, ϕ)
 
 Model(s::S, δ::D) where {S<:Vector,D<:Vector{Tuple{Operation, Operation}}} = Model(s, δ, [],[])
+
+wirenames(d::WiringDiagram) = foldr(union,
+    map(box->union(input_ports(box), output_ports(box)),
+        boxes(d)))
+
+OpVar(s::Symbol) = Operation(Variable(s), [])
+
+function Model(d::WiringDiagram)
+    # TODO design Multiple Dispatch Lens API
+    vars = wirenames(d)
+    symvars = OpVar.(vars)
+    byvar = Dict{Symbol, Operation}()
+    homnames = Vector{Symbol}()
+    transitions = map(enumerate(boxes(d))) do (i, box)
+        invars = input_ports(box)
+        outvars = output_ports(box)
+        homname = box.value
+        push!(homnames, homname)
+        δ_in  =  length(invars)  > 1 ? +(OpVar.( invars)...) : OpVar.(invars[1])
+        δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : OpVar.(outvars[1])
+        return (δ_in, δ_out)
+    end
+    return Model(symvars, unique(transitions))
+end
 
 struct Problem{M<:Model, S, N}
     m::M
