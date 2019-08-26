@@ -69,8 +69,11 @@ function main()
     return p, p2, p3
 
 end
+# -
+
 p, p2, p3 = main()
 
+# +
 @show "SIR"
 
 Petri.solve(p)
@@ -81,6 +84,7 @@ pf = Petri.Problem(mf, SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
 Petri.solve(pf)
 @time Petri.solve(pf)
 
+# +
 @show "SEIR"
 
 Petri.solve(p2)
@@ -91,6 +95,7 @@ pf2 = Petri.Problem(mf2, SEIRState(100, 1, 0, 0.5, 0.15, 0.05, 0, 0.12), 150)
 Petri.solve(pf2)
 @time Petri.solve(pf2)
 
+# +
 @show "SEIRD"
 
 Petri.solve(p3)

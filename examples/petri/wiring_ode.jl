@@ -168,4 +168,4 @@ seirs  = seir  ⊚ (wan   ⊗ wan)
 seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
 seirds = seird ⊚ (rip   ⊗ wan)
 
-odeTemplate(seirds)
+odeTemplate(sir)

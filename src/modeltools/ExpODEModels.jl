@@ -52,6 +52,10 @@ function model(::Type{ExpODEModel}, expr::Expr)
     return ExpODEModel(expr, matches, funcs, vars, tdomain, initial)
 end
 
+function model(::Type{ExpODEModel}, d::WiringDiagram)
+    return model(ExpODEModel, odeTemplate(d))
+end
+
 function show(io::IO, m::ExpODEModel)
     write(io, "ExpODEModel(\n  calls=$(repr(m.calls)),\n  funcs=$(repr(m.funcs)),\n  variables=$(repr(m.variables)),\n  domains=$(repr(m.domains)),  values=$(repr(m.values))\n)")
 end
