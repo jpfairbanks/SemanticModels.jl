@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # + {}
-module PetriModel
+module PetriModels
+import Base: show
 using Petri
 using ModelingToolkit
 import ModelingToolkit: Constant, Variable
@@ -11,19 +12,21 @@ using Catlab.WiringDiagrams
 using SemanticModels.ModelTools
 import SemanticModels.ModelTools: model
 
+export PetriModel, model, rewrite!, Span, DPOProblem, solve, pushout, dropdown
+
 struct PetriModel <: AbstractModel
     model::Petri.Model
 end
 
-wirenames(d::WiringDiagram) = foldr(union,
-    map(box->union(input_ports(box), output_ports(box)),
-        boxes(d)))
-
 OpVar(s::Symbol) = Operation(Variable(s), [])
+
+function model(::Type{PetriModel}, m::Petri.Model)
+    return PetriModel(m)
+end
 
 function model(::Type{PetriModel}, d::WiringDiagram)
     # TODO design Multiple Dispatch Lens API
-    vars = wirenames(d)
+    vars = ModelTools.WiringDiagrams.wirenames(d)
     symvars = OpVar.(vars)
     byvar = Dict{Symbol, Operation}()
     homnames = Vector{Symbol}()
@@ -36,7 +39,7 @@ function model(::Type{PetriModel}, d::WiringDiagram)
         δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : OpVar.(outvars[1])
         return (δ_in, δ_out)
     end
-    return PetriModel(Petri.Model(symvars, unique(transitions)))
+    return model(PetriModel, Petri.Model(symvars, unique(transitions)))
 end
 
 function rewrite!(pm::PetriModel, pm2::PetriModel)
@@ -113,69 +116,4 @@ function dropdown(pl::PetriModel, pc::PetriModel, pl′::PetriModel)
     return PetriModel(Petri.Model(states, Δ, Λ, Φ))
 end
 
-end
-# -
-
-# using Petri
-import Base.show
-using DiffEqBase
-using ModelingToolkit
-# using DiffEqBiological
-
-macro grounding(ex)
-    return ()
-end
-
-mutable struct SIRState{T,F}
-    S::T
-    I::T
-    R::T
-    β::F
-    γ::F
-    μ::F
-end
-
-mutable struct ParamSIR{T, P}
-    S::T
-    I::T
-    R::T
-    params::P
-end
-
-mutable struct ParamSEIR{T, P}
-    S::T
-    E::T
-    I::T
-    R::T
-    params::P
-end
-
-mutable struct SEIRState{T,F}
-    S::T
-    I::T
-    R::T
-    β::F
-    γ::F
-    μ::F
-    E::T
-    η::F
-end
-
-
-mutable struct SEIRDState{T,F}
-    S::T
-    I::T
-    R::T
-    β::F
-    γ::F
-    μ::F
-    E::T
-    η::F
-    D::T
-    ψ::F
-end
-
-function show(io::IO, s::SIRState)
-    t = (S=s.S, I=s.I, R=s.R, β=s.β, γ=s.γ, μ=s.μ)
-    print(io, "$t")
 end

@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-# + {}
 using Catlab
 using MacroTools
 import MacroTools: postwalk, striplines
 using ModelingToolkit
 import ModelingToolkit: Constant
 using Test
-
-include("petri.jl")
-# -
+using Petri
+using SemanticModels.ModelTools.PetriModels
 
 using Catlab.WiringDiagrams
 using Catlab.Doctrines
@@ -43,11 +41,11 @@ seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
 seirds = seird ⊚ (rip   ⊗ wan)
 
 
-Petri.Model(sir)
+model(PetriModel, sir)
 
 
 models = [sir, seir, seirs, seird, seirds]
-nets   = Petri.Model.(models)
+nets   = model.(PetriModel, models)
 
 modelnames = ["sir",
          "seir",
@@ -56,7 +54,7 @@ modelnames = ["sir",
          "seirds",
          ]
 map(zip(nets, modelnames)) do (net, name)
-    Δ = reverse(net.Δ)
+    Δ = reverse(net.model.Δ)
     println("Model: $name\n  Connections:")
     println("    $Δ\n")
     Δ

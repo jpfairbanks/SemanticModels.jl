@@ -1,5 +1,60 @@
 # -*- coding: utf-8 -*-
-include("petri.jl")
+using Petri
+using ModelingToolkit
+import ModelingToolkit: Constant, Variable
+
+mutable struct SIRState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+end
+
+mutable struct ParamSIR{T, P}
+    S::T
+    I::T
+    R::T
+    params::P
+end
+
+mutable struct ParamSEIR{T, P}
+    S::T
+    E::T
+    I::T
+    R::T
+    params::P
+end
+
+mutable struct SEIRState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+end
+
+
+mutable struct SEIRDState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+    E::T
+    η::F
+    D::T
+    ψ::F
+end
+
+macro grounding(ex)
+    return ()
+end
 
 # +
 function main()

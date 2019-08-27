@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-include("petri.jl")
-
 using ModelingToolkit
 using MacroTools
 import MacroTools: postwalk
+using Petri
+using SemanticModels.ModelTools.PetriModels
 using Test
 
 # SIR  <- IR  -> SEIR
