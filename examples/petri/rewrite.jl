@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 include("petri.jl")
 
 using ModelingToolkit
@@ -5,34 +6,100 @@ using MacroTools
 import MacroTools: postwalk
 using Test
 
-@variables S, E, I, R
-
 # SIR  <- IR  -> SEIR
 #  |       |      |
 #  v       v      v
 # SIRS <- IRS -> SEIRS
 
-ir = Petri.Model([S, I, R],
-                 [(I, R)])
+# +
+using Catlab.WiringDiagrams
+using Catlab.Doctrines
+import Catlab.Doctrines.⊗
+import Catlab.Graphics: to_graphviz
+import Catlab.Graphics.Graphviz: run_graphviz
+⊗(a::WiringDiagram, b::WiringDiagram) = otimes(a,b)
+import Base: ∘
+∘(a::WiringDiagram, b::WiringDiagram) = compose(b, a)
+⊚(a,b) = b ∘ a
+S, E, I, R, D= Ob(FreeSymmetricMonoidalCategory, :S, :E, :I, :R, :D)
+
+inf  = WiringDiagram(Hom(:infection, S ⊗ I, I⊗I))
+expo = WiringDiagram(Hom(:exposure, S⊗I, E⊗I))
+rec  = WiringDiagram(Hom(:recovery, I,   R))
+wan  = WiringDiagram(Hom(:waning,   R,   S))
+
+sir_wire  = inf ⊚ (rec ⊗ rec)
+
+sir = Petri.Model(sir_wire)
+
+dump(sir)
+
+# +
+@variables S, E, I, R
+
+dump(S)
+# -
 
 sir = Petri.Model([S, I, R],
                  [(I, R), (S+I, 2I)],
                  )
 
+ir = Petri.Model([S, I, R],
+                 [(I, R)])
+
 seir = Petri.Model([S, I, R],
                  [(I, R), (S+I, I+E), (E, I)],
                  )
 
+# +
 irs = Petri.Model([S, I, R],
                  [(I, R), (R, S)],
                  )
 
+dump(sir)
+dump(irs)
+# -
+
 sirs = Petri.Model([S, I, R],
-                 [(I, R), (S+I, 2I), (R, S)],
+                 [(I, R), (S+I, 2*I), (R, S)],
                  )
 
+# +
+function Base.union(l1::Array{Operation}, l2::Array{Operation})
+    out = Array(l1)
+    for op in l2
+        if !any(x->isequal(op, x), out) append!(out, op) end
+    end
+    return out
+end
+
+function Base.union(l1::Array{Tuple{Operation,Operation}}, l2::Array{Tuple{Operation,Operation}})
+    out = Array(l1)
+    for op in l2
+        if !any(x->isequal(op, x), out) append!(out, [op]) end
+    end
+    return out
+end
+
+function pushout(m1::Petri.Model, m2::Petri.Model)
+    states = union(m1.S, m2.S)
+    @show states
+    Δ = union(m1.Δ, m2.Δ)
+    Λ = union(m1.Λ, m2.Λ)
+    Φ = union(m1.Φ, m2.Φ)
+    return Petri.Model(states, Δ, Λ, Φ)
+end
+# -
+
 rule = Petri.Span(sir, ir, seir)
-sirs′ = Petri.pushout(irs, sir)
+#dump(sir.S[3])
+#dump(irs.S[1])
+#@show union(irs.S, sir.S)
+#@show union(irs.Δ, sir.Δ)
+#@test isequal(sir.S[3], irs.S[1])
+#@test isequal(sir.Δ[1], irs.Δ[1])
+sirs′ = pushout(irs, sir)
+#@test isequal(sirs′.Δ, sirs.Δ)
 @test sirs′.Δ == sirs.Δ
 # seirs = Petri.pushout(irs, seir)
 seirs = Petri.solve(Petri.DPOProblem(rule, irs))
