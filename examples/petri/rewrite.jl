@@ -30,7 +30,7 @@ wan  = WiringDiagram(Hom(:waning,   R,   S))
 
 sir_wire  = inf ⊚ (rec ⊗ rec)
 
-sir = Petri.Model(sir_wire)
+sir = model(PetriModel, sir_wire)
 
 dump(sir)
 
@@ -40,70 +40,35 @@ dump(sir)
 dump(S)
 # -
 
-sir = Petri.Model([S, I, R],
+sir = model(PetriModel, Petri.Model([S, I, R],
                  [(I, R), (S+I, 2I)],
-                 )
+                 ))
 
-ir = Petri.Model([S, I, R],
-                 [(I, R)])
+ir = model(PetriModel, Petri.Model([S, I, R],
+                 [(I, R)]))
 
-seir = Petri.Model([S, I, R],
+seir = model(PetriModel, Petri.Model([S, I, R],
                  [(I, R), (S+I, I+E), (E, I)],
-                 )
+                 ))
 
 # +
-irs = Petri.Model([S, I, R],
+irs = model(PetriModel, Petri.Model([S, I, R],
                  [(I, R), (R, S)],
-                 )
+                 ))
 
 dump(sir)
 dump(irs)
 # -
 
-sirs = Petri.Model([S, I, R],
+sirs = model(PetriModel, Petri.Model([S, I, R],
                  [(I, R), (S+I, 2*I), (R, S)],
-                 )
+                 ))
 
-# +
-function Base.union(l1::Array{Operation}, l2::Array{Operation})
-    out = Array(l1)
-    for op in l2
-        if !any(x->isequal(op, x), out) append!(out, op) end
-    end
-    return out
-end
-
-function Base.union(l1::Array{Tuple{Operation,Operation}}, l2::Array{Tuple{Operation,Operation}})
-    out = Array(l1)
-    for op in l2
-        if !any(x->isequal(op, x), out) append!(out, [op]) end
-    end
-    return out
-end
-
-function pushout(m1::Petri.Model, m2::Petri.Model)
-    states = union(m1.S, m2.S)
-    @show states
-    Δ = union(m1.Δ, m2.Δ)
-    Λ = union(m1.Λ, m2.Λ)
-    Φ = union(m1.Φ, m2.Φ)
-    return Petri.Model(states, Δ, Λ, Φ)
-end
-# -
-
-rule = Petri.Span(sir, ir, seir)
-#dump(sir.S[3])
-#dump(irs.S[1])
-#@show union(irs.S, sir.S)
-#@show union(irs.Δ, sir.Δ)
-#@test isequal(sir.S[3], irs.S[1])
-#@test isequal(sir.Δ[1], irs.Δ[1])
-sirs′ = pushout(irs, sir)
-#@test isequal(sirs′.Δ, sirs.Δ)
-@test sirs′.Δ == sirs.Δ
-# seirs = Petri.pushout(irs, seir)
-seirs = Petri.solve(Petri.DPOProblem(rule, irs))
-@test all(Set(seirs.Δ) .== Set([(S+I, I+E),
+rule = PetriModels.Span(sir, ir, seir)
+sirs′ = PetriModels.pushout(irs, sir)
+@test sirs′.model.Δ == sirs.model.Δ
+seirs = PetriModels.solve(PetriModels.DPOProblem(rule, irs))
+@test all(Set(seirs.model.Δ) .== Set([(S+I, I+E),
                              (E, I),
                              (I, R),
                              (R, S)]))
@@ -112,10 +77,10 @@ c = ir
 r = seir
 c′ = irs
 
-l′ = Petri.pushout(l, c′)
-@test l′.Δ == sirs.Δ
-@test Petri.dropdown(l,c,l′).Δ == c′.Δ
-@test Petri.pushout(r, c′).Δ == seirs.Δ
+l′ = PetriModels.pushout(l, c′)
+@test l′.model.Δ == sirs.model.Δ
+@test PetriModels.dropdown(l,c,l′).model.Δ == c′.model.Δ
+@test PetriModels.pushout(r, c′).model.Δ == seirs.model.Δ
 
 function Δ(m::Petri.Model, ctx=:state)
     function updateblock(exp, sym)
@@ -217,7 +182,7 @@ function Δ(m::Petri.Model, ctx=:state)
 end
 
 @show "SIR"
-Δ(l, :state)
+Δ(l.model, :state)
 # @show "IR"
 # funckit(c, :state)
 @show "SEIR"
@@ -230,7 +195,7 @@ end
 @show "SEIRS"
 # funckit(seirs, :state)
 
-exprs = Δ(sirs, :state)
+exprs = Δ(sirs.model, :state)
 m = Petri.Model([S, I, R], exprs, [
     quote
     λ_2(state) = state.γ * state.I
@@ -247,43 +212,61 @@ m = Petri.Model([S, I, R], exprs, [
                     quote b_3(state) = state.R > 0 end]
                 )
 
-p = Petri.Problem(Petri.eval(m), SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
-@show Petri.solve(p)
+# +
+mutable struct SIRState{T,F}
+    S::T
+    I::T
+    R::T
+    β::F
+    γ::F
+    μ::F
+end
+
+mutable struct ParamSIR{T, P}
+    S::T
+    I::T
+    R::T
+    params::P
+end
+# -
+
+p = Petri.Problem(eval(m), SIRState(100, 1, 0, 0.5, 0.15, 0.05), 150)
+#@show Petri.solve(p)
 
 # @show Petri.funckit(Petri.Problem(l, missing, 10), :state)
 function test_1()
     no_transitions = Tuple{Operation, Operation}[]
     @variables A, B, C, D
     states = [A, B, C, D]
-    l = Petri.Model(states, [(A, B)])
-    c = Petri.Model(states, no_transitions)
-    r = Petri.Model(states, [(A, B + C)])
-    rule = Petri.Span(l, c, r)
-    c′ = Petri.Model(states, [(B, A)])
-    r′ = Petri.solve(Petri.DPOProblem(rule, c′))
-    @test r′.Δ == [(A, B+C), (B, A)]
+    l = model(PetriModel, Petri.Model(states, [(A, B)]))
+    c = model(PetriModel, Petri.Model(states, no_transitions))
+    r = model(PetriModel, Petri.Model(states, [(A, B + C)]))
+    rule = PetriModels.Span(l, c, r)
+    c′ = model(PetriModel, Petri.Model(states, [(B, A)]))
+    r′ = PetriModels.solve(PetriModels.DPOProblem(rule, c′))
+    @test r′.model.Δ == [(A, B+C), (B, A)]
 
-    l′ = Petri.pushout(l, c′)
-    @test l′.Δ == [(A, B), (B, A)]
-    @test Petri.dropdown(l,c,l′).Δ == [(B, A)]
+    l′ = PetriModels.pushout(l, c′)
+    @test l′.model.Δ == [(A, B), (B, A)]
+    @test PetriModels.dropdown(l,c,l′).model.Δ == [(B, A)]
 end
 
 function test_2()
     no_transitions = Tuple{Operation, Operation}[]
     @variables A, B, C, D
     states = [A, B, C, D]
-    l = Petri.Model(states, [(A, B), (B,C)])
-    c = Petri.Model(states, no_transitions)
-    r = Petri.Model(states, [(A, C)])
-    rule = Petri.Span(l, c, r)
-    c′ = Petri.Model(states, [(C, D)])
-    r′ = Petri.solve(Petri.DPOProblem(rule, c′))
-    @test r′.Δ == [(A, C), (C, D)]
+    l = model(PetriModel, Petri.Model(states, [(A, B), (B,C)]))
+    c = model(PetriModel, Petri.Model(states, no_transitions))
+    r = model(PetriModel, Petri.Model(states, [(A, C)]))
+    rule = PetriModels.Span(l, c, r)
+    c′ = model(PetriModel, Petri.Model(states, [(C, D)]))
+    r′ = PetriModels.solve(PetriModels.DPOProblem(rule, c′))
+    @test r′.model.Δ == [(A, C), (C, D)]
 
-    l′ = Petri.pushout(l, c′)
-    @test l′.Δ == [(A, B), (B, C), (C, D)]
-    @test Petri.dropdown(l,c,l′).Δ == [(C, D)]
-    @test Petri.pushout(rule.r, c′).Δ == [(A, C), (C, D)]
+    l′ = PetriModels.pushout(l, c′)
+    @test l′.model.Δ == [(A, B), (B, C), (C, D)]
+    @test PetriModels.dropdown(l,c,l′).model.Δ == [(C, D)]
+    @test PetriModels.pushout(rule.r, c′).model.Δ == [(A, C), (C, D)]
 end
 test_1()
 test_2()
@@ -346,9 +329,9 @@ end
 
 
 
-sir′ = funckit(sir)
+sir′ = funckit(sir.model)
 m = sir′
-m′ = Petri.eval(m)
+m′ = eval(m)
 @show m′
 @show typeof(m′)
 p = Petri.Problem(m′, ParamSIR(100, 1, 0, [0.15, 0.55/101]), 250)
@@ -356,7 +339,7 @@ soln = Petri.solve(p)
 @test soln.S <= 10
 @test soln.S + soln.I + soln.R == 101
 
-m′ = Petri.eval(funckit(sirs))
+m′ = eval(funckit(sirs.model))
 @show m′
 @show typeof(m′)
 p = Petri.Problem(m′, ParamSIR(100, 1, 0, [0.15, 0.55/101, 0.15]), 250)
@@ -366,5 +349,5 @@ sirs_soln = Petri.solve(p)
 @show soln
 @show sirs_soln
 
-m′ = Petri.eval(funckit(seirs))
+m′ = Petri.eval(funckit(seirs.model))
 # @code_native m′.Δ[1](ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15, 0.1 ]))
