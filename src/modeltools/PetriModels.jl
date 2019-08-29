@@ -82,6 +82,16 @@ end
 
 solve(p::DPOProblem) = pushout(p.rule.r, p.c′)
 
+function equnion(a::Vector, b::Vector)
+    x = copy(a)
+    for item in b
+        if !any(item2 -> isequal(item2, item), x)
+            push!(x, item)
+        end
+    end
+    return x
+end
+
 
 """    pushout(m1::Model, m2::Model)
 
@@ -90,10 +100,10 @@ compute the CT pushout of two models.
 function pushout(pm::PetriModel, pm2::PetriModel)
     m = pm.model
     m2 = pm2.model
-    states = union(m.S, m2.S)
-    Δ = union(m.Δ, m2.Δ)
-    Λ = union(m.Λ, m2.Λ)
-    Φ = union(m.Φ, m2.Φ)
+    states = equnion(m.S, m2.S)
+    Δ = equnion(m.Δ, m2.Δ)
+    Λ = equnion(m.Λ, m2.Λ)
+    Φ = equnion(m.Φ, m2.Φ)
     return PetriModel(Petri.Model(states, Δ, Λ, Φ))
 end
 
