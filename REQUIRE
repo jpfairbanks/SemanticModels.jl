@@ -14,3 +14,7 @@ JSON
 Latexify
 Unitful
 Plots
+MacroTools
+Catlab
+ModelingToolkit
+Petri

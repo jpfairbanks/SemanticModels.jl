@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=none] (0) at (-1.775, 3.75) {};
+		\node [style=blue] (1) at (-1.775, 3.75) {A};
+		\node [style=purple] (2) at (0.775, 3.75) {B};
+		\node [style=green] (3) at (0.5, 4.25) {C};
+		\node [style=red] (4) at (0.25, 3.75) {D};
+	\end{pgfonlayer}
+\end{tikzpicture}

@@ -1,0 +1,21 @@
+digraph G {
+  // landscape=true
+  node[shape="box"]
+  edge[dir="none"]
+  SIS
+  SIR
+  SIRS
+  SEIS
+  SEIR
+  SEIRS
+  SIRD
+  SEIRD
+
+  SIS -> SIR -> SIRS
+  SIS -> SEIS
+  SIR -> SEIR
+  SEIS -> SEIR ->SEIRS
+  SIRS ->SEIRS
+  SIRD -> SEIRD
+  SIR -> SIRD
+}

@@ -1,0 +1,35 @@
+digraph G {
+rankdir=LR;
+
+subgraph cluster_input {
+  color=red
+  node [shape=plain]
+  1
+  2
+  3
+}
+
+{
+  a [label="A" shape=circle];
+  b [label="B" shape=circle];
+  c [label="C" shape=circle];
+  d [label="D" shape=circle];
+  alpha [label=<&#945;> shape=square];
+}
+
+subgraph cluster_output {
+  color=red
+  node [shape=plain]
+  4
+  5
+}
+1 -> a
+2 -> b
+3 -> b
+a -> alpha;
+b -> alpha;
+alpha -> c;
+alpha -> d;
+c -> 4;
+d -> 5;
+}
