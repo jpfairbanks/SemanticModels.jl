@@ -16,3 +16,5 @@
 % Edge styles
 \tikzstyle{new edge style 0}=[->, ultra thick]
 \tikzstyle{Functor}=[->, double, thick]
+\tikzstyle{new edge style 1}=[<->, thick]
+\tikzstyle{thick blank}=[-, ultra thick]
