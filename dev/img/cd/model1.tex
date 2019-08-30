@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{tikz-cd}
+\usetikzlibrary{cd}
+\begin{document}
+\Large
+\begin{figure}
+\begin{subfigure}{0.3\textwidth}
+$ f(a,b) = 2\cdot(a * b) $
+\end{subfigure}~
+\begin{subfigure}{0.7\textwidth}
+\begin{tikzcd}
+  Z\times Z \arrow[d, "*", olive] \arrow[d, bend right, "\pi_1"] \arrow[d, bend left, "\pi_2"]
+  \\ Z \arrow[loop right, "2\cdot", blue]
+ \end{tikzcd}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+$ g(a,b) = 2\cdot(a/b) $
+\end{subfigure}~
+\begin{subfigure}{0.7\textwidth}
+\begin{tikzcd}
+  Z\times Z \arrow[r, "/", olive] \arrow[d, bend right, "\pi_1"] \arrow[d, bend left, "\pi_2"]
+    & R\oplus \texttt{Error} \arrow[loop right, "2\times", blue] \\
+  D
+\end{tikzcd}
+\end{subfigure}
+\end{figure}
+
+Action of $T_x, T_1$ on polynomials.
+
+\begin{tikzcd}
+  && & 1\ar[d, "T_x"]\ar[loop right, "T_1"]&& \\
+  && & x\ar[dl, "T_x"]\ar[dr, "T_1"]&& \\
+  && x^2 \ar[dl, "T_x"]\ar[d, "T_1"] && x+1\ar[d, "T_x"]\ar[loop right, "T_1"]& \\
+  & x^3 \ar[d, "T_1"]  & x^2 + 1 \ar[d, "T_x"]\ar[loop right, "T_1"]&& x^2 + x \ar[dl, "T_x"]\ar[dr, "T_1"] &\\
+  &x^3+1 & x^3+x & x^3+x^2 && x^2 + x + 1
+\end{tikzcd}
+\end{document}

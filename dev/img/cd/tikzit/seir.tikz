@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=blue] (35) at (21.5, 0) {S};
+		\node [style=transition] (36) at (27.25, 3) {$T_1$};
+		\node [style=blue] (37) at (29.75, 3) {I};
+		\node [style=transition] (38) at (32, 2) {$T_2$};
+		\node [style=blue] (39) at (32.5, 0) {R};
+		\node [style=transition] (40) at (22.25, 2.25) {$T_0$};
+		\node [style=blue] (41) at (24.5, 3) {E};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=new edge style 0] (36) to (37);
+		\draw [style=new edge style 0, bend left=15] (37) to (38);
+		\draw [style=new edge style 0, bend left=15, looseness=0.75] (38) to (39);
+		\draw [style=new edge style 0, in=-120, out=90] (35) to (40);
+		\draw [style=new edge style 0, in=-180, out=30] (40) to (41);
+		\draw [style=new edge style 0] (41) to (36);
+	\end{pgfonlayer}
+\end{tikzpicture}

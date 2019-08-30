@@ -1,0 +1,13 @@
+digraph G {
+rankdir=LR;
+
+{
+  a [label="A" shape=circle];
+  c [label="C" shape=circle];
+  alpha [label=<&#945;> shape=square];
+}
+
+a -> alpha [label="2"];
+alpha -> c;
+
+}
