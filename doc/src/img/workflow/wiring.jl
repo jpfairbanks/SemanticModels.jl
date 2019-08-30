@@ -48,9 +48,9 @@ ops = WiringDiagram.([
 ])
 
 # this is a hack, because I don't know how to make a bare wire
-idLib = WiringDiagram(Hom(:id, Lib,Lib))
-idCode = WiringDiagram(Hom(:id, C,C))
-idMach = WiringDiagram(Hom(:id, Mach, Mach))
+idLib = id(Ports([Lib]))
+idCode = id(Ports([C]))
+idMach = id(Ports([Mach]))
 
 derv, impl, genr, runi = ops
 
@@ -59,7 +59,7 @@ flow = ((derv ⊗ idLib) ⊚ impl) ⊚ genr ⊗ idMach ⊚ runi
 
 # model of rewrite rules as a wiring diagram
 
-Model, Span = Ob(FreeCartesianCategory, :Model, :Rule)
+Model, Span = Ob(FreeSymmetricMonoidalCategory, :Model, :Rule)
 spanner = Hom(:construct, Model ⊗ Model ⊗ Model, Span) |> WiringDiagram
 dpo = Hom(:rewrite, Span ⊗ Model, Model ⊗ Model) |> WiringDiagram
 # deleter = Hom(:discard, Model, ()) |> WiringDiagram
@@ -67,10 +67,11 @@ dpo = Hom(:rewrite, Span ⊗ Model, Model ⊗ Model) |> WiringDiagram
 # rewrite = (spanner ⊗ WiringDiagram(Hom(:id, Model, Model))) ⊚ dpo ⊚
 #     to_wiring_diagram(otimes(delete(Model),
 #            delete(Model)))
-rewrite = (spanner ⊗ WiringDiagram(Hom(:id, Model, Model))) ⊚ dpo
 
-id_model = WiringDiagram(Hom(:id, Model, Model))
-delete_model = to_wiring_diagram(delete(Model))
+id_model = id(Ports([Model]))
+rewrite = (spanner ⊗ id_model) ⊚ dpo
+
+delete_model = delete(Ports([Model]))
 rewritetwice = (( (spanner ⊗ id_model) ⊚ dpo ) ⊗
     (id_model ⊗ id_model) ⊚
     (delete_model ⊗ spanner) ⊗ id_model) ⊚
@@ -105,9 +106,9 @@ rewritemoduleleft = WiringDiagram(Hom(:dpol, Model⊗Model⊗Model⊗Model, Mode
 
 rw2mod = ((M3) ⊗ rewritemodule) ⊚ rewritemodule
 
-X, Y, β, R = Ob(FreeCartesianCategory, :X, :Y, :β, :R)
+X, Y, β, R = Ob(FreeSymmetricMonoidalCategory, :X, :Y, :β, :R)
 p = Hom(:p, X, Y) |> WiringDiagram
-id_wire(x) = WiringDiagram(Hom(:id, x, x))
+id_wire(x) = id(Ports([x]))
 fit = Hom(:fit, X⊗Y, β) |> WiringDiagram
 predict = Hom(:predict, X⊗β, Y) |> WiringDiagram
 genloss = Hom(:loss, Y⊗Y, R) |> WiringDiagram

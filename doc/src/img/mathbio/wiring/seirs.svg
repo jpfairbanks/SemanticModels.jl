@@ -39,34 +39,34 @@
 <!-- n2p2 -->
 <!-- n2p1&#45;&gt;n2p2 -->
 <!-- n3 -->
-<!-- waning -->
+<!-- recovery -->
 <g id="n3" class="node">
 <title>n3</title>
-<polygon fill="none" stroke="#000000" points="26.5,-51 26.5,-75 80.5,-75 80.5,-51 26.5,-51"/>
-<text text-anchor="start" x="31.3174" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">waning</text>
+<polygon fill="none" stroke="#000000" points="21.5,-51 21.5,-75 84.5,-75 84.5,-51 21.5,-51"/>
+<text text-anchor="start" x="26.1587" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">recovery</text>
 </g>
 <!-- n3&#45;&gt;n2p1 -->
-<!-- S -->
+<!-- R -->
 <g id="e3" class="edge">
 <title>n3:s&#45;&gt;n2p1:n</title>
 <path fill="none" stroke="#000000" d="M53.5,-51C53.5,-30.024 62.8484,-24.5671 64.3091,-6.0159"/>
 <polygon fill="#000000" stroke="#000000" points="66.0585,-6.063 64.5,-1 62.561,-5.9298 66.0585,-6.063"/>
-<text text-anchor="middle" x="67.1689" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">S</text>
+<text text-anchor="middle" x="67.5552" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">R</text>
 </g>
 <!-- n4 -->
 <!-- waning -->
 <g id="n4" class="node">
 <title>n4</title>
-<polygon fill="none" stroke="#000000" points="103.5,-51 103.5,-75 157.5,-75 157.5,-51 103.5,-51"/>
-<text text-anchor="start" x="108.3174" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">waning</text>
+<polygon fill="none" stroke="#000000" points="104.5,-51 104.5,-75 158.5,-75 158.5,-51 104.5,-51"/>
+<text text-anchor="start" x="109.3174" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">waning</text>
 </g>
 <!-- n4&#45;&gt;n2p2 -->
 <!-- S -->
 <g id="e4" class="edge">
 <title>n4:s&#45;&gt;n2p2:n</title>
-<path fill="none" stroke="#000000" d="M130.5,-51C130.5,-30.651 127.9935,-24.3273 127.5627,-6.3889"/>
-<polygon fill="#000000" stroke="#000000" points="129.3081,-5.9793 127.5,-1 125.8083,-6.02 129.3081,-5.9793"/>
-<text text-anchor="middle" x="134.1689" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">S</text>
+<path fill="none" stroke="#000000" d="M131.5,-51C131.5,-30.651 128.9935,-24.3273 128.5627,-6.3889"/>
+<polygon fill="#000000" stroke="#000000" points="130.3081,-5.9793 128.5,-1 126.8083,-6.02 130.3081,-5.9793"/>
+<text text-anchor="middle" x="135.1689" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">S</text>
 </g>
 <!-- n5 -->
 <!-- progression -->
@@ -94,8 +94,8 @@
 <!-- R -->
 <g id="e6" class="edge">
 <title>n6:s&#45;&gt;n4:n</title>
-<path fill="none" stroke="#000000" d="M133.5,-125C133.5,-104.651 130.9935,-98.3273 130.5627,-80.3889"/>
-<polygon fill="#000000" stroke="#000000" points="132.3081,-79.9793 130.5,-75 128.8083,-80.02 132.3081,-79.9793"/>
+<path fill="none" stroke="#000000" d="M133.5,-125C133.5,-104.6713 131.829,-98.3122 131.5418,-80.3845"/>
+<polygon fill="#000000" stroke="#000000" points="133.2888,-79.9862 131.5,-75 129.7889,-80.0135 133.2888,-79.9862"/>
 <text text-anchor="middle" x="137.5552" y="-95.8" font-family="Serif" font-size="14.00" fill="#000000">R</text>
 </g>
 <!-- n7&#45;&gt;n5 -->

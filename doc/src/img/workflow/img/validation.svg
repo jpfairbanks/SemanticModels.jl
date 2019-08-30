@@ -12,132 +12,87 @@
 <!-- n1p1 -->
 <!-- n1p2 -->
 <!-- n1p1&#45;&gt;n1p2 -->
-<!-- n3 -->
+<!-- n5 -->
 <!-- fit -->
-<g id="n3" class="node">
-<title>n3</title>
+<g id="n5" class="node">
+<title>n5</title>
 <polygon fill="none" stroke="#000000" points="36,-199 36,-223 84,-223 84,-199 36,-199"/>
 <text text-anchor="start" x="54.5552" y="-206.8" font-family="Serif" font-size="14.00" fill="#000000">fit</text>
 </g>
-<!-- n1p1&#45;&gt;n3 -->
+<!-- n1p1&#45;&gt;n5 -->
 <!-- X -->
-<g id="e1" class="edge">
-<title>n1p1:s&#45;&gt;n3:n</title>
+<g id="e3" class="edge">
+<title>n1p1:s&#45;&gt;n5:n</title>
 <path fill="none" stroke="#000000" d="M12,-273C12,-247.4354 43.3775,-249.8918 47.5448,-228.0487"/>
 <polygon fill="#000000" stroke="#000000" points="49.2939,-228.137 48,-223 45.808,-227.8226 49.2939,-228.137"/>
 <text text-anchor="middle" x="44.6689" y="-243.8" font-family="Serif" font-size="14.00" fill="#000000">X</text>
 </g>
 <!-- n1p3 -->
 <!-- n1p2&#45;&gt;n1p3 -->
-<!-- n1p2&#45;&gt;n3 -->
+<!-- n1p2&#45;&gt;n5 -->
 <!-- Y -->
-<g id="e2" class="edge">
-<title>n1p2:s&#45;&gt;n3:n</title>
+<g id="e4" class="edge">
+<title>n1p2:s&#45;&gt;n5:n</title>
 <path fill="none" stroke="#000000" d="M72,-273C72,-252.6875 72,-246.3002 72,-228.3811"/>
 <polygon fill="#000000" stroke="#000000" points="73.7501,-228 72,-223 70.2501,-228 73.7501,-228"/>
 <text text-anchor="middle" x="77.6689" y="-243.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
 </g>
 <!-- n1p4 -->
 <!-- n1p3&#45;&gt;n1p4 -->
-<!-- n7 -->
-<!-- id -->
-<g id="n7" class="node">
-<title>n7</title>
-<polygon fill="none" stroke="#000000" points="120,-199 120,-223 144,-223 144,-199 120,-199"/>
-<text text-anchor="start" x="126.5518" y="-206.8" font-family="Serif" font-size="14.00" fill="#000000">id</text>
-</g>
-<!-- n1p3&#45;&gt;n7 -->
-<!-- X -->
-<g id="e3" class="edge">
-<title>n1p3:s&#45;&gt;n7:n</title>
-<path fill="none" stroke="#000000" d="M132,-273C132,-252.6875 132,-246.3002 132,-228.3811"/>
-<polygon fill="#000000" stroke="#000000" points="133.7501,-228 132,-223 130.2501,-228 133.7501,-228"/>
-<text text-anchor="middle" x="136.6689" y="-243.8" font-family="Serif" font-size="14.00" fill="#000000">X</text>
-</g>
-<!-- n8 -->
-<!-- id -->
-<g id="n8" class="node">
-<title>n8</title>
-<polygon fill="none" stroke="#000000" points="177,-199 177,-223 201,-223 201,-199 177,-199"/>
-<text text-anchor="start" x="183.5518" y="-206.8" font-family="Serif" font-size="14.00" fill="#000000">id</text>
-</g>
-<!-- n1p4&#45;&gt;n8 -->
-<!-- Y -->
-<g id="e4" class="edge">
-<title>n1p4:s&#45;&gt;n8:n</title>
-<path fill="none" stroke="#000000" d="M192,-273C192,-252.651 189.4935,-246.3273 189.0627,-228.3889"/>
-<polygon fill="#000000" stroke="#000000" points="190.8081,-227.9793 189,-223 187.3083,-228.02 190.8081,-227.9793"/>
-<text text-anchor="middle" x="195.6689" y="-243.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
-</g>
-<!-- n2p1 -->
-<!-- n5 -->
+<!-- n3 -->
 <!-- predict -->
-<g id="n5" class="node">
-<title>n5</title>
+<g id="n3" class="node">
+<title>n3</title>
 <polygon fill="none" stroke="#000000" points="93,-125 93,-149 145,-149 145,-125 93,-125"/>
 <text text-anchor="start" x="97.9897" y="-132.8" font-family="Serif" font-size="14.00" fill="#000000">predict</text>
 </g>
-<!-- n3&#45;&gt;n5 -->
-<!-- β -->
-<g id="e5" class="edge">
-<title>n3:s&#45;&gt;n5:n</title>
-<path fill="none" stroke="#000000" d="M60,-199C60,-170.6912 100.4297,-178.0556 105.4834,-154.2059"/>
-<polygon fill="#000000" stroke="#000000" points="107.2476,-154.1484 106,-149 103.7647,-153.8027 107.2476,-154.1484"/>
-<text text-anchor="middle" x="100.2759" y="-169.8" font-family="Serif" font-size="14.00" fill="#000000">β</text>
+<!-- n1p3&#45;&gt;n3 -->
+<!-- X -->
+<g id="e1" class="edge">
+<title>n1p3:s&#45;&gt;n3:n</title>
+<path fill="none" stroke="#000000" d="M132,-273C132,-219.6111 132,-205.0126 132,-154.0481"/>
+<polygon fill="#000000" stroke="#000000" points="133.7501,-154 132,-149 130.2501,-154 133.7501,-154"/>
+<text text-anchor="middle" x="136.6689" y="-206.8" font-family="Serif" font-size="14.00" fill="#000000">X</text>
 </g>
 <!-- n4 -->
 <!-- loss -->
 <g id="n4" class="node">
 <title>n4</title>
-<polygon fill="none" stroke="#000000" points="126,-51 126,-75 174,-75 174,-51 126,-51"/>
-<text text-anchor="start" x="137.5518" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">loss</text>
+<polygon fill="none" stroke="#000000" points="134,-51 134,-75 182,-75 182,-51 134,-51"/>
+<text text-anchor="start" x="145.5518" y="-58.8" font-family="Serif" font-size="14.00" fill="#000000">loss</text>
+</g>
+<!-- n1p4&#45;&gt;n4 -->
+<!-- Y -->
+<g id="e2" class="edge">
+<title>n1p4:s&#45;&gt;n4:n</title>
+<path fill="none" stroke="#000000" d="M192,-273C192,-186.1878 170.851,-164.3844 170.0248,-80.1116"/>
+<polygon fill="#000000" stroke="#000000" points="171.7744,-79.9914 170,-75 168.2744,-80.0085 171.7744,-79.9914"/>
+<text text-anchor="middle" x="186.6689" y="-169.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
+</g>
+<!-- n2p1 -->
+<!-- n3&#45;&gt;n4 -->
+<!-- Y -->
+<g id="e5" class="edge">
+<title>n3:s&#45;&gt;n4:n</title>
+<path fill="none" stroke="#000000" d="M119,-125C119,-101.6192 142.1409,-100.3214 145.5759,-80.2185"/>
+<polygon fill="#000000" stroke="#000000" points="147.3392,-80.1254 146,-75 143.8507,-79.8418 147.3392,-80.1254"/>
+<text text-anchor="middle" x="143.6689" y="-95.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
 </g>
 <!-- n4&#45;&gt;n2p1 -->
 <!-- R -->
 <g id="e6" class="edge">
 <title>n4:s&#45;&gt;n2p1:n</title>
-<path fill="none" stroke="#000000" d="M150,-51C150,-30.6875 150,-24.3002 150,-6.3811"/>
-<polygon fill="#000000" stroke="#000000" points="151.7501,-6 150,-1 148.2501,-6 151.7501,-6"/>
-<text text-anchor="middle" x="155.0552" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">R</text>
+<path fill="none" stroke="#000000" d="M158,-51C158,-30.6875 158,-24.3002 158,-6.3811"/>
+<polygon fill="#000000" stroke="#000000" points="159.7501,-6 158,-1 156.2501,-6 159.7501,-6"/>
+<text text-anchor="middle" x="163.0552" y="-21.8" font-family="Serif" font-size="14.00" fill="#000000">R</text>
 </g>
-<!-- n5&#45;&gt;n4 -->
-<!-- Y -->
+<!-- n5&#45;&gt;n3 -->
+<!-- β -->
 <g id="e7" class="edge">
-<title>n5:s&#45;&gt;n4:n</title>
-<path fill="none" stroke="#000000" d="M119,-125C119,-103.0846 135.1472,-99.2863 137.6702,-80.2017"/>
-<polygon fill="#000000" stroke="#000000" points="139.43,-80.1007 138,-75 135.9371,-79.8792 139.43,-80.1007"/>
-<text text-anchor="middle" x="136.6689" y="-95.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
-</g>
-<!-- n6 -->
-<!-- id -->
-<g id="n6" class="node">
-<title>n6</title>
-<polygon fill="none" stroke="#000000" points="167,-125 167,-149 191,-149 191,-125 167,-125"/>
-<text text-anchor="start" x="173.5518" y="-132.8" font-family="Serif" font-size="14.00" fill="#000000">id</text>
-</g>
-<!-- n6&#45;&gt;n4 -->
-<!-- Y -->
-<g id="e8" class="edge">
-<title>n6:s&#45;&gt;n4:n</title>
-<path fill="none" stroke="#000000" d="M179,-125C179,-103.3622 164.5525,-99.0738 162.2951,-80.1468"/>
-<polygon fill="#000000" stroke="#000000" points="164.0334,-79.8916 162,-75 160.5391,-80.092 164.0334,-79.8916"/>
-<text text-anchor="middle" x="178.6689" y="-95.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
-</g>
-<!-- n7&#45;&gt;n5 -->
-<!-- X -->
-<g id="e9" class="edge">
-<title>n7:s&#45;&gt;n5:n</title>
-<path fill="none" stroke="#000000" d="M132,-199C132,-178.6875 132,-172.3002 132,-154.3811"/>
-<polygon fill="#000000" stroke="#000000" points="133.7501,-154 132,-149 130.2501,-154 133.7501,-154"/>
-<text text-anchor="middle" x="136.6689" y="-169.8" font-family="Serif" font-size="14.00" fill="#000000">X</text>
-</g>
-<!-- n8&#45;&gt;n6 -->
-<!-- Y -->
-<g id="e10" class="edge">
-<title>n8:s&#45;&gt;n6:n</title>
-<path fill="none" stroke="#000000" d="M189,-199C189,-178.1082 180.5015,-172.5026 179.1736,-153.9993"/>
-<polygon fill="#000000" stroke="#000000" points="180.9225,-153.9362 179,-149 177.4246,-154.0577 180.9225,-153.9362"/>
-<text text-anchor="middle" x="190.6689" y="-169.8" font-family="Serif" font-size="14.00" fill="#000000">Y</text>
+<title>n5:s&#45;&gt;n3:n</title>
+<path fill="none" stroke="#000000" d="M60,-199C60,-170.6912 100.4297,-178.0556 105.4834,-154.2059"/>
+<polygon fill="#000000" stroke="#000000" points="107.2476,-154.1484 106,-149 103.7647,-153.8027 107.2476,-154.1484"/>
+<text text-anchor="middle" x="100.2759" y="-169.8" font-family="Serif" font-size="14.00" fill="#000000">β</text>
 </g>
 </g>
 </svg>

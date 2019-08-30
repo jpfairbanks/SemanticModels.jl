@@ -6,8 +6,8 @@ import MacroTools: postwalk, striplines
 using ModelingToolkit
 import ModelingToolkit: Constant
 using Test
-
-include("petri.jl")
+using Petri
+#include("petri.jl")
 # -
 
 using Catlab.WiringDiagrams
@@ -34,20 +34,17 @@ si    = WiringDiagram(Hom(:infection,   S⊗I, I⊗I))
 se    = WiringDiagram(Hom(:exposure,    S⊗I, E⊗I))
 prog  = WiringDiagram(Hom(:progression, E,   I))
 fatal = WiringDiagram(Hom(:die,  I, D))
-rip   = WiringDiagram(Hom(:rest, D, D))
+rip   = id(Ports([D]))
 
 sir    = si    ⊚ (rec   ⊗ rec)
 seir   = se    ⊚ (prog  ⊗ rec)
-seirs  = seir  ⊚ (wan   ⊗ wan)
-seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
+seirs  = seir  ⊚ (rec   ⊗ wan)
+seird  = seir  ⊚ (fatal ⊗ id(Ports([R])))
 seirds = seird ⊚ (rip   ⊗ wan)
 
 
-Petri.Model(sir)
-
 
 models = [sir, seir, seirs, seird, seirds]
-nets   = Petri.Model.(models)
 
 modelnames = ["sir",
          "seir",
@@ -55,12 +52,6 @@ modelnames = ["sir",
          "seird",
          "seirds",
          ]
-map(zip(nets, modelnames)) do (net, name)
-    Δ = reverse(net.Δ)
-    println("Model: $name\n  Connections:")
-    println("    $Δ\n")
-    Δ
-end
 
 function writesvg(f::Union{IO,AbstractString}, d::WiringDiagram)
     write(f, to_graphviz(d, labels=true)
@@ -80,3 +71,12 @@ catch e
     error("Could not write images, does ./img exist?\n $e")
 end
 println("Model Drawings are in ./img")
+
+Petri.Model(sir)
+nets   = Petri.Model.(models)
+map(zip(nets, modelnames)) do (net, name)
+    Δ = reverse(net.Δ)
+    println("Model: $name\n  Connections:")
+    println("    $Δ\n")
+    Δ
+end
