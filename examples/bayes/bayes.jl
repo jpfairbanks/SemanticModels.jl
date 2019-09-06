@@ -22,6 +22,25 @@ println(bn2.cpds[1])
 
 typeof(bn2.dag)
 
-LightGraphs.dfs_tree(bn2.dag, a:)
+# +
+
+verticesList = []
+edgeList = collect(LightGraphs.edges(bn2.dag))
+for edge in edgeList;
+    if !(edge.src in verticesList);
+        push!(verticesList, edge.src)
+    end
+    
+    if !(edge.dst in verticesList);
+        push!(verticesList, edge.dst)
+    end
+    
+end
+
+println(verticesList)
+# -
+
+println(fieldnames(LightGraphs.SimpleGraphs.SimpleEdge{Int64}))
+
 
 
