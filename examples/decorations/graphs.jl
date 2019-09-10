@@ -2,10 +2,6 @@
 using LightGraphs
 import Catlab.Doctrines: dom, codom
 
-n = 3
-g = smallgraph(:house)
-h = StarGraph(n)
-
 ⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
 ⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
 ⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
@@ -111,18 +107,6 @@ verify(m::GraphMorph) = begin
         Edge(u,v) in E
     end |> all
 end
-# -
-
-f = FinSetMorph([5,3,4])
-F = GraphMorph(h, g, f)
-@assert verify(F) == true
-@assert FinSetMorph([5,4,3,2,1])(g) |>
-    adjacency_matrix |>
-    collect == [0 1 1 0 0;
-                1 0 1 1 0;
-                1 1 0 0 1;
-                0 1 0 0 1;
-                0 0 1 1 0]
 
 # +
 struct Decorated{M,T}
@@ -235,10 +219,26 @@ function pushout(a::AbstractGraph, b::AbstractGraph, f::AbstractVector{Int}, g::
     end |> Graph
 end
 
+n = 3
+house = smallgraph(:house)
+= StarGraph(n)
+
+f = FinSetMorph([5,3,4])
+F = GraphMorph(h, g, f)
+@assert verify(F) == true
+@assert FinSetMorph([5,4,3,2,1])(g) |>
+    adjacency_matrix |>
+    collect == [0 1 1 0 0;
+                1 0 1 1 0;
+                1 1 0 0 1;
+                0 1 0 0 1;
+                0 0 1 1 0]
+
 # +
 H  = pushout(g, h, vertices(g), [5, 6, 4])
 
-H′ = pushout(Span(Decorated(FinSetMorph(collect(vertices(g))), g),
+f = Span(Decorated(FinSetMorph(collect(vertices(g))), g)
+H′ = pushout(,
              Decorated(FinSetMorph([5,6,4]), h)))
 
 @assert H == H′.d
