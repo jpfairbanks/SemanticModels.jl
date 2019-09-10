@@ -1,11 +1,16 @@
+# -*- coding: utf-8 -*-
 using LightGraphs
 import Catlab.Doctrines: dom, codom
 
 n = 3
-g = HouseGraph()
-h = star_graph(n)
+g = smallgraph(:house)
+h = StarGraph(n)
 
-"""    Morph
+⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
+⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
+⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
+
+"""    AbstractMorph
 
 an abstract type for representing morphisms. The essential API for subtypes of Morph are
 
@@ -15,8 +20,9 @@ an abstract type for representing morphisms. The essential API for subtypes of M
 
 where T is the type of the objects in the category. See FinSetMorph for an example.
 """
-abstract type Morph end
+abstract type AbstractMorph end
 
+# +
 """    FinSetMorph{T,F}
 
 morphisms in the category of Finite Sets. The objects are of type UnitRange{Int}.
@@ -25,7 +31,7 @@ from a list of numbers. For example, `FinSetMorph([1,3,2,3])` is the morphism th
 `1->1, 2->3, 3->2, 4->3` on domain `1:4` with codomain `1:3`. When you define a morphism from
 a list of integers, the codomain is inferred from the largest element of the list. The domain must always be the `1:l` where `l` is the length of the input list.
 """
-struct FinSetMorph{T,F} <: Morph
+struct FinSetMorph{T,F} <: AbstractMorph
     codom::T
     fun::F
 end
@@ -36,28 +42,11 @@ dom(m::FinSetMorph) = 1:length(m.fun)
 codom(m::FinSetMorph) = m.codom
 func(m::FinSetMorph) = i->m.fun[i]
 
-⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
-⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
-
 ⊔(f::FinSetMorph, g::FinSetMorph) = begin
     Y = codom(f)⊔codom(g)
     #TODO: not sure which version of this is right
     h = ⊔(f.fun, g.fun) #.+ length(codom(f)))
     FinSetMorph(Y, h)
-end
-
-"""    GraphMorph{T,F} <: Morph
-
-morphisms in the category of Finite Graphs. The objects must be a subtype of AbstractGraph.
-
-You can take a `FinSetMorph` and lift it to a graph homomorphism. This is the functor that
-takes the finite set `1:n`, to the empty graph with `n` vertices.
-
-"""
-struct GraphMorph{T, F} <: Morph
-    dom::T
-    codom::T
-    fun::F
 end
 
 """    f(g::AbstractGraph)
@@ -73,6 +62,21 @@ function (f::FinSetMorph)(g::G) where G <: AbstractGraph
         s,t = e.src, e.dst
         Edge(ϕ(s), ϕ(t))
     end |> Graph
+end
+
+# +
+"""    GraphMorph{T,F} <: Morph
+
+morphisms in the category of Finite Graphs. The objects must be a subtype of AbstractGraph.
+
+You can take a `FinSetMorph` and lift it to a graph homomorphism. This is the functor that
+takes the finite set `1:n`, to the empty graph with `n` vertices.
+
+"""
+struct GraphMorph{T, F} <: AbstractMorph
+    dom::T
+    codom::T
+    fun::F
 end
 
 """    GraphMorph(g::AbstractGraph, f::FinSetMorph)
@@ -107,7 +111,7 @@ verify(m::GraphMorph) = begin
         Edge(u,v) in E
     end |> all
 end
-
+# -
 
 f = FinSetMorph([5,3,4])
 F = GraphMorph(h, g, f)
@@ -120,34 +124,121 @@ F = GraphMorph(h, g, f)
                 0 1 0 0 1;
                 0 0 1 1 0]
 
+# +
+struct Decorated{M,T}
+    f::M
+    d::T
+end
+
+dom(m::Decorated) = dom(m.f)
+codom(m::Decorated) = codom(m.f)
+decoration(m::Decorated) = m.d
+undecorate(m::Decorated) = m.f
+
+# +
+abstract type AbstractSpan end
+
+leftob(s::AbstractSpan) = codom(left(s))
+
+rightob(s::AbstractSpan) = codom(right(s))
+
+function apexob(s::AbstractSpan)
+    a = dom(left(s))
+    b = dom(right(s))
+    a == b || error("Inconsistent span")
+    return a
+end
+
+# +
+struct Span{F,G} <: AbstractSpan
+    f::F
+    g::G
+end
+
+function left(s::Span)
+    return s.f
+end
+
+function right(s::Span)
+    return s.g
+end
+
+function undecorate(s::Span{T,T}) where T <: Decorated
+    return Span(undecorate(left(s)), undecorate(right(s)))
+end
+
+# +
+struct DoublePushout{S<:AbstractSpan, T<:NTuple{3,AbstractMorph}}
+    rule::S
+    morphs::T
+    application::S
+end
+
+# TODO DPO CONSTRUCTOR TO SOLVE UNKNOWN DOUBLEPUSHOUT
+
+# +
+abstract type AbstractCospan end
+
+leftob(s::AbstractCospan) = codom(left(s))
+
+rightob(s::AbstractCospan) = codom(right(s))
+
+function apexob(s::AbstractCospan)
+    a = dom(left(s))
+    b = dom(right(s))
+    a == b || error("Inconsistent cospan")
+    return a
+end
+
+struct Cospan{F,G} <: AbstractCospan
+    f::F
+    g::G
+end
+
+function left(s::Cospan)
+    return s.f
+end
+
+function right(s::Cospan)
+    return s.g
+end
+
+function undecorate(s::Cospan{T,T}) where T <: Decorated
+    return Cospan(undecorate(left(s)), undecorate(right(s)))
+end
+
+# +
+"""    pushout(s::AbstractSpan)
+
+treat f,g as a graph decorated span and compute the pushout that is, (f⊔g)(a⊔b).
+"""
+function pushout(s::AbstractSpan)
+    F = ⊔(left(s),right(s))
+    G = ⊔(leftob(s),rightob(s))
+    return Cospan(F, G)
+end
+
+function pushout(s::Span{T, T}) where T <: Decorated
+    cs = pushout(undecorate(s))
+    D = ⊔(decoration(left(s)), decoration(right(s)))
+    return Decorated(cs, cs.f(D))
+end
+# -
+
+# explicit pushout definition for testing and verification of span implementation
 function pushout(a::AbstractGraph, b::AbstractGraph, f::AbstractVector{Int}, g::AbstractVector{Int})
-    l = vcat(f,g)
-    G = blockdiag(a,b)
+    l = ⊔(f,g)
+    G = ⊔(a,b)
     map(edges(G)) do e
         s,t = e.src, e.dst
         return Edge(l[s], l[t])
     end |> Graph
 end
 
-# struct Cospan{F}
-#     left::F
-#     right::F
-# end
-
-⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
-
-"""    pushout(f::FinSetMorph, a::AbstractGraph, g::FinSetMorph, b::AbstractGraph)
-
-treat f,g as a graph decorated span and compute the pushout that is, (f⊔g)(a⊔b).
-"""
-function pushout(f::FinSetMorph, a::AbstractGraph, g::FinSetMorph, b::AbstractGraph)
-    F = ⊔(f,g)
-    G = ⊔(a,b)
-    F(G)
-end
-
-h′ = pushout(g, h, vertices(g), [5, 6, 7])
+# +
 H  = pushout(g, h, vertices(g), [5, 6, 4])
-H′ = pushout(FinSetMorph(collect(vertices(g))), g,
-             FinSetMorph([5,6,4]), h)
-@assert H == H′
+
+H′ = pushout(Span(Decorated(FinSetMorph(collect(vertices(g))), g),
+             Decorated(FinSetMorph([5,6,4]), h)))
+
+@assert H == H′.d
