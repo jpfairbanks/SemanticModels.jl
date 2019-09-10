@@ -8,7 +8,7 @@ import Catlab.Doctrines: dom, codom
 
 """    AbstractMorph
 
-an abstract type for representing morphisms. The essential API for subtypes of Morph are
+an abstract type for representing morphisms. The essential API for subtypes of AbstractMorph are
 
 1. dom(m)::T
 2. codom(m)::T
@@ -38,7 +38,11 @@ dom(m::FinSetMorph) = 1:length(m.fun)
 codom(m::FinSetMorph) = m.codom
 func(m::FinSetMorph) = i->m.fun[i]
 
-⊔(f::FinSetMorph, g::FinSetMorph) = begin
+"""    ⊔(f::FinSetMorph, g::FinSetMorph)
+
+the union of two morphisms in a finite set.
+"""
+function ⊔(f::FinSetMorph, g::FinSetMorph)
     Y = codom(f)⊔codom(g)
     #TODO: not sure which version of this is right
     h = ⊔(f.fun, g.fun) #.+ length(codom(f)))
@@ -109,17 +113,34 @@ verify(m::GraphMorph) = begin
 end
 
 # +
+"""    Decorated{M,T}
+
+a decoration applied to the objects of a morphism, where M is a type of morphism and type T is the category of the decoration
+"""
 struct Decorated{M,T}
     f::M
     d::T
 end
 
+# Get the domain or codomain of a decorated morphism
 dom(m::Decorated) = dom(m.f)
 codom(m::Decorated) = codom(m.f)
+# Get the decoration of a decorated morphism
 decoration(m::Decorated) = m.d
+# Remove the decoration of a decorated morphism, and return the original morphism
 undecorate(m::Decorated) = m.f
 
 # +
+"""    AbstractSpan
+
+an abstract type for representing spans. The essential API for subtypes of AbstractSpan are
+
+1. left(s)::M
+2. right(s)::M
+3. pushout(s)::C
+
+where M is the type of morphisms in the span, and C is the type of cospan that solves a pushout of span s. See Span for an example.
+"""
 abstract type AbstractSpan end
 
 leftob(s::AbstractSpan) = codom(left(s))
@@ -134,6 +155,10 @@ function apexob(s::AbstractSpan)
 end
 
 # +
+"""    Span{F,G} <: AbstractSpan
+
+a general span type where types F and G are types of morphisms in the span
+"""
 struct Span{F,G} <: AbstractSpan
     f::F
     g::G
@@ -147,6 +172,10 @@ function right(s::Span)
     return s.g
 end
 
+"""    undecorate(s::Span{T,T}) where T <: Decorated
+
+remove decorations of a span of decorated morphisms
+"""
 function undecorate(s::Span{T,T}) where T <: Decorated
     return Span(undecorate(left(s)), undecorate(right(s)))
 end
@@ -161,40 +190,59 @@ end
 # TODO DPO CONSTRUCTOR TO SOLVE UNKNOWN DOUBLEPUSHOUT
 
 # +
+"""    AbstractCospan
+
+an abstract type for representing cospans. The essential API for subtypes of AbstractCospan are
+
+1. left(c)::M
+2. right(c)::M
+3. pullback(c)::S
+
+where M is the type of morphisms in the cospan, and S is the type of span that solves the pullback defined by c. See Cospan for an example.
+"""
 abstract type AbstractCospan end
 
-leftob(s::AbstractCospan) = codom(left(s))
+leftob(c::AbstractCospan) = codom(left(c))
 
-rightob(s::AbstractCospan) = codom(right(s))
+rightob(c::AbstractCospan) = codom(right(c))
 
-function apexob(s::AbstractCospan)
-    a = dom(left(s))
-    b = dom(right(s))
+function apexob(c::AbstractCospan)
+    a = dom(left(c))
+    b = dom(right(c))
     a == b || error("Inconsistent cospan")
     return a
 end
 
+# +
+"""    Cospan{F,G} <: AbstractCospan
+
+a general cospan type where types F and G are types of morphisms in the cospan
+"""
 struct Cospan{F,G} <: AbstractCospan
     f::F
     g::G
 end
 
-function left(s::Cospan)
-    return s.f
+function left(c::Cospan)
+    return c.f
 end
 
-function right(s::Cospan)
+function right(c::Cospan)
     return s.g
 end
 
-function undecorate(s::Cospan{T,T}) where T <: Decorated
-    return Cospan(undecorate(left(s)), undecorate(right(s)))
+"""    undecorate(s::Copan{T,T}) where T <: Decorated
+
+remove decorations of a cospan of decorated morphisms
+"""
+function undecorate(c::Cospan{T,T}) where T <: Decorated
+    return Cospan(undecorate(left(c)), undecorate(right(c)))
 end
 
 # +
 """    pushout(s::AbstractSpan)
 
-treat f,g as a graph decorated span and compute the pushout that is, (f⊔g)(a⊔b).
+treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b)
 """
 function pushout(s::AbstractSpan)
     F = ⊔(left(s),right(s))
@@ -202,6 +250,10 @@ function pushout(s::AbstractSpan)
     return Cospan(F, G)
 end
 
+"""    pushout(s::Span{T, T}) where T <: Decorated
+
+treat f,g as a decorated span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b), with the decoration of (f⊔g)(d)
+"""
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
     D = ⊔(decoration(left(s)), decoration(right(s)))
@@ -218,6 +270,8 @@ function pushout(a::AbstractGraph, b::AbstractGraph, f::AbstractVector{Int}, g::
         return Edge(l[s], l[t])
     end |> Graph
 end
+
+# # Example
 
 n = 3
 a = smallgraph(:house)
@@ -237,8 +291,17 @@ F = GraphMorph(b, a, f)
 # +
 H  = pushout(a, b, vertices(a), [5, 6, 4])
 
-f = Decorated(FinSetMorph(collect(vertices(a))), a)
-g = Decorated(FinSetMorph([5,6,4]), h)
-H′ = pushout(Span(f, g))
+# Create a decorated morphism for a
+f = FinSetMorph(collect(vertices(a)))
+# Add graph a as decoration of morphism f
+dec_f = Decorated(f, a)
+# Create a decorated morphism for b
+g = FinSetMorph([5,6,4])
+# Add graph b as decoration of morphism g
+dec_g = Decorated(g, b)
+# Create the span of decorated morphisms
+s = Span(dec_f,dec_g)
+# Solve for the decorated cospan that solves the pushout defined by the span
+H′ = pushout(s)
 
 @assert H == decoration(H′)
