@@ -220,13 +220,13 @@ function pushout(a::AbstractGraph, b::AbstractGraph, f::AbstractVector{Int}, g::
 end
 
 n = 3
-house = smallgraph(:house)
-= StarGraph(n)
+a = smallgraph(:house)
+b = StarGraph(n)
 
 f = FinSetMorph([5,3,4])
-F = GraphMorph(h, g, f)
+F = GraphMorph(b, a, f)
 @assert verify(F) == true
-@assert FinSetMorph([5,4,3,2,1])(g) |>
+@assert FinSetMorph([5,4,3,2,1])(a) |>
     adjacency_matrix |>
     collect == [0 1 1 0 0;
                 1 0 1 1 0;
@@ -235,10 +235,10 @@ F = GraphMorph(h, g, f)
                 0 0 1 1 0]
 
 # +
-H  = pushout(g, h, vertices(g), [5, 6, 4])
+H  = pushout(a, b, vertices(a), [5, 6, 4])
 
-f = Span(Decorated(FinSetMorph(collect(vertices(g))), g)
-H′ = pushout(,
-             Decorated(FinSetMorph([5,6,4]), h)))
+f = Decorated(FinSetMorph(collect(vertices(a))), a)
+g = Decorated(FinSetMorph([5,6,4]), h)
+H′ = pushout(Span(f, g))
 
-@assert H == H′.d
+@assert H == decoration(H′)
