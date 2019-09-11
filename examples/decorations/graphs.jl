@@ -245,17 +245,17 @@ treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and
 """
 function pushout(s::Span{T,T}) where T <: FinSetMorph
     f_dict = Dict(a=>i for (i, a) in enumerate(left(s).fun))
-    r_len = length(rightob(s))
-    g′ = map(n->n in keys(f_dict) ? func(right(s))(f_dict[n]) : n+r_len, collect(leftob(s)))
+    g′ = map(n->n in keys(f_dict) ? func(right(s))(f_dict[n]) : n+length(rightob(s)), leftob(s))
     
     g_dict = Dict(a=>i for (i, a) in enumerate(right(s).fun))
-    f′ = map(n->n in keys(g_dict) ? g′[func(left(s))(g_dict[n])] : n, collect(rightob(s)))
+    f′ = map(n->n in keys(g_dict) ? g′[func(left(s))(g_dict[n])] : n, rightob(s))
 
-    u_dict = Dict(a=>i for (i, a) in enumerate(union(f′, g′)))
+    u = union(f′, g′)
+    u_dict = Dict(a=>i for (i, a) in enumerate(u))
     f′ = FinSetMorph(1:length(u), map(n->u_dict[n], f′))
     g′ = FinSetMorph(1:length(u), map(n->u_dict[n], g′))
 
-    return Cospan(g′, f′)
+    return Cospan(f′, g′)
 end
 
 """    pushout(s::Span{T, T}) where T <: Decorated
@@ -265,7 +265,7 @@ treat f,g as a decorated span and compute the pushout that is, the cospan of f=(
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
     D = decoration(left(s)) ⊔ decoration(right(s))
-    return Decorated(cs, (left(cs) ⊔ right(cs))(D))
+    return Decorated(cs, (right(cs) ⊔ left(cs))(D))
 end
 # -
 
