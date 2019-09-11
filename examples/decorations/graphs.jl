@@ -43,9 +43,8 @@ func(m::FinSetMorph) = i->m.fun[i]
 the union of two morphisms in a finite set.
 """
 function ⊔(f::FinSetMorph, g::FinSetMorph)
-    Y = codom(f)⊔codom(g)
-    #TODO: not sure which version of this is right
-    h = ⊔(f.fun, g.fun) #.+ length(codom(f)))
+    Y = codom(f) ⊔ codom(g)
+    h = f.fun ⊔ g.fun
     FinSetMorph(Y, h)
 end
 
@@ -228,7 +227,7 @@ function left(c::Cospan)
 end
 
 function right(c::Cospan)
-    return s.g
+    return c.g
 end
 
 """    undecorate(s::Copan{T,T}) where T <: Decorated
@@ -240,14 +239,23 @@ function undecorate(c::Cospan{T,T}) where T <: Decorated
 end
 
 # +
-"""    pushout(s::AbstractSpan)
+"""    pushout(s::Span{T,T}) where T <: FinSetMorph
 
 treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b)
 """
-function pushout(s::AbstractSpan)
-    F = ⊔(left(s),right(s))
-    G = ⊔(leftob(s),rightob(s))
-    return Cospan(F, G)
+function pushout(s::Span{T,T}) where T <: FinSetMorph
+    f_dict = Dict(a=>i for (i, a) in enumerate(left(s).fun))
+    r_len = length(rightob(s))
+    g′ = map(n->n in keys(f_dict) ? func(right(s))(f_dict[n]) : n+r_len, collect(leftob(s)))
+    
+    g_dict = Dict(a=>i for (i, a) in enumerate(right(s).fun))
+    f′ = map(n->n in keys(g_dict) ? g′[func(left(s))(g_dict[n])] : n, collect(rightob(s)))
+
+    u_dict = Dict(a=>i for (i, a) in enumerate(union(f′, g′)))
+    f′ = FinSetMorph(1:length(u), map(n->u_dict[n], f′))
+    g′ = FinSetMorph(1:length(u), map(n->u_dict[n], g′))
+
+    return Cospan(g′, f′)
 end
 
 """    pushout(s::Span{T, T}) where T <: Decorated
@@ -256,15 +264,15 @@ treat f,g as a decorated span and compute the pushout that is, the cospan of f=(
 """
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
-    D = ⊔(decoration(left(s)), decoration(right(s)))
-    return Decorated(cs, cs.f(D))
+    D = decoration(left(s)) ⊔ decoration(right(s))
+    return Decorated(cs, (left(cs) ⊔ right(cs))(D))
 end
 # -
 
 # explicit pushout definition for testing and verification of span implementation
 function pushout(a::AbstractGraph, b::AbstractGraph, f::AbstractVector{Int}, g::AbstractVector{Int})
-    l = ⊔(f,g)
-    G = ⊔(a,b)
+    l = f ⊔ g
+    G = a ⊔ b
     map(edges(G)) do e
         s,t = e.src, e.dst
         return Edge(l[s], l[t])
@@ -289,16 +297,16 @@ F = GraphMorph(b, a, f)
                 0 0 1 1 0]
 
 # +
-H  = pushout(a, b, vertices(a), [5, 6, 4])
+H  = pushout(a, b, 1:5, [5, 6, 4])
 
 # Create a decorated morphism for a
-f = FinSetMorph(collect(vertices(a)))
+g = FinSetMorph(1:5, [5,4])
 # Add graph a as decoration of morphism f
-dec_f = Decorated(f, a)
+dec_g = Decorated(g, a)
 # Create a decorated morphism for b
-g = FinSetMorph([5,6,4])
+f = FinSetMorph(1:3, [1,2])
 # Add graph b as decoration of morphism g
-dec_g = Decorated(g, b)
+dec_f = Decorated(f, b)
 # Create the span of decorated morphisms
 s = Span(dec_f,dec_g)
 # Solve for the decorated cospan that solves the pushout defined by the span
