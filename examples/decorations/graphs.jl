@@ -1,10 +1,50 @@
 # -*- coding: utf-8 -*-
 using LightGraphs
+using SemanticModels
+using SemanticModels.ModelTools.PetriModels
 import Catlab.Doctrines: dom, codom
+using MacroTools: prewalk, postwalk
+using ModelingToolkit
+using Petri
+
+# +
+import MacroTools.walk
+walk(x::Operation, inner, outer) = outer(Operation(x.op, map(inner, x.args)))
+
+dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
 
 ⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
 ⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
 ⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
+function ⊔(g::PetriModel, h::PetriModel)
+    dict = Dict(i => any(isequal.(i, g.model.S)) ? i : Operation(i.op, Expression[ModelingToolkit.Constant(2)]) for i in h.model.S)
+    newS = [dictReplace(n, dict) for n in h.model.S]
+    newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.model.Δ]
+    newΛ = [dictReplace(n, dict) for n in h.model.Λ]
+    newΦ = [dictReplace(n, dict) for n in h.model.Φ]
+    @show newS
+    @show newΔ
+    model(PetriModel, Petri.Model(union(g.model.S, newS), 
+                                  union(g.model.Δ, newΔ), 
+                                  union(g.model.Λ, newΛ),
+                                  union(g.model.Φ, newΦ)))
+end
+
+@variables S, I, R, I′
+
+sir = model(PetriModel, Petri.Model([S, I, R],
+                 [(S+I, 2I), (I,R)]))
+sii = model(PetriModel, Petri.Model([S, I, I′, R],
+                  [(S+I,  2I ),
+                   (S+I′, 2I′)]
+                 ))
+
+new = sir ⊔ sii
+
+println(new.model.S)
+
+println(new.model.Δ)
+# -
 
 """    AbstractMorph
 
@@ -25,7 +65,8 @@ morphisms in the category of Finite Sets. The objects are of type UnitRange{Int}
 func(m::FinSetMorph) is a function that takes `Int -> Int`. FinSetMorphs can be constructed
 from a list of numbers. For example, `FinSetMorph([1,3,2,3])` is the morphism that takes
 `1->1, 2->3, 3->2, 4->3` on domain `1:4` with codomain `1:3`. When you define a morphism from
-a list of integers, the codomain is inferred from the largest element of the list. The domain must always be the `1:l` where `l` is the length of the input list.
+a list of integers, the codomain is inferred from the largest element of the list. The domain
+must always be the `1:l` where `l` is the length of the input list.
 """
 struct FinSetMorph{T,F} <: AbstractMorph
     codom::T
@@ -50,7 +91,9 @@ end
 
 """    f(g::AbstractGraph)
 
-lift a finite set morphism (list of integers) to a graph homomorphism by its action on the vertex set. The graph `h = f(g)` is defined by taking the edges of `g` and relabeling their src and dst according to the function of `f`.
+lift a finite set morphism (list of integers) to a graph homomorphism by its action on the vertex
+set. The graph `h = f(g)` is defined by taking the edges of `g` and relabeling their src and dst
+according to the function of `f`.
 
 This method computes a valid graph homomorphism by definition.
 """
@@ -61,6 +104,20 @@ function (f::FinSetMorph)(g::G) where G <: AbstractGraph
         s,t = e.src, e.dst
         Edge(ϕ(s), ϕ(t))
     end |> Graph
+end
+
+function (f::FinSetMorph)(g::G) where G <: PetriModel
+    @show dom(f)
+    @show func(f)
+    @show g.model.S
+    @show g.model.Δ
+    #dom(f) == g.model.S || throw(DomainError(g.model.S, "dom(f) = $(dom(f)) but nv(g) = $(nv(g))"))
+    #ϕ = func(f)
+    g
+    #map(edges(g)) do e
+    #    s,t = e.src, e.dst
+    #    Edge(ϕ(s), ϕ(t))
+    #end |> Graph
 end
 
 # +
@@ -114,7 +171,8 @@ end
 # +
 """    Decorated{M,T}
 
-a decoration applied to the objects of a morphism, where M is a type of morphism and type T is the category of the decoration
+a decoration applied to the objects of a morphism, where M is a type of morphism and
+type T is the category of the decoration
 """
 struct Decorated{M,T}
     f::M
@@ -138,7 +196,8 @@ an abstract type for representing spans. The essential API for subtypes of Abstr
 2. right(s)::M
 3. pushout(s)::C
 
-where M is the type of morphisms in the span, and C is the type of cospan that solves a pushout of span s. See Span for an example.
+where M is the type of morphisms in the span, and C is the type of cospan that solves
+a pushout of span s. See Span for an example.
 """
 abstract type AbstractSpan end
 
@@ -197,7 +256,8 @@ an abstract type for representing cospans. The essential API for subtypes of Abs
 2. right(c)::M
 3. pullback(c)::S
 
-where M is the type of morphisms in the cospan, and S is the type of span that solves the pullback defined by c. See Cospan for an example.
+where M is the type of morphisms in the cospan, and S is the type of span that solves the
+pullback defined by c. See Cospan for an example.
 """
 abstract type AbstractCospan end
 
@@ -260,11 +320,14 @@ end
 
 """    pushout(s::Span{T, T}) where T <: Decorated
 
-treat f,g as a decorated span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b), with the decoration of (f⊔g)(d)
+treat f,g as a decorated span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b),
+with the decoration of (f⊔g)(d)
 """
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
     D = decoration(left(s)) ⊔ decoration(right(s))
+    @show D.model.S
+    @show D.model.Δ
     return Decorated(cs, (right(cs) ⊔ left(cs))(D))
 end
 # -
@@ -313,3 +376,36 @@ s = Span(dec_f,dec_g)
 H′ = pushout(s)
 
 @assert H == decoration(H′)
+
+@show collect(edges(decoration(H′)))
+
+# +
+
+
+@variables S, I, R, I′
+
+sir = model(PetriModel, Petri.Model([S, I, R],
+                 [(S+I, 2I), (I,R)]))
+sii = model(PetriModel, Petri.Model([S, I, I′, R],
+                  [(S+I,  2I ),
+                   (S+I′, 2I′)]
+                 ))
+
+f = FinSetMorph(1:3, [1, 2])
+dec_f = Decorated(f, sir)
+
+g = FinSetMorph(1:3, [1, 2])
+dec_g = Decorated(g, sii)
+
+s = Span(dec_f, dec_g)
+
+dump(sir.model.Δ[1][1])
+
+H = pushout(s)
+
+#@show typeof(H
+
+#@show collect(edges(decoration(H)))
+# -
+
+
