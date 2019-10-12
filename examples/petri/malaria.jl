@@ -3,6 +3,14 @@ using Petri
 using ModelingToolkit
 import ModelingToolkit: Constant
 import Base: ==, ∈
+using Catlab.Doctrines
+import Catlab.Doctrines: ⊗, compose
+using Catlab.WiringDiagrams
+using Catlab.Graphics
+
+function drawhom(hom, name::String, format="svg")
+    to_wiring_diagram(hom) |> to_graphviz |> g->Graphics.Graphviz.run_graphviz(g, format=format) |> t->write("$name.$format", t)
+end
 
 MAX_STATES = 20
 X = @variables(X[1:MAX_STATES])[1]
@@ -226,6 +234,12 @@ println("\nCreating food web processes σ, predation†")
 σ() = OpenModel([2,1], NullModel(2), [2,1])
 pdag(α,β,γ) = OpenModel([1,2], Model([1, 2], [(α*X[2] + β*X[1], γ*X[1])]), [1,2])
 
+# Catlab expressions for our variables
+Xob = Ob(FreeSymmetricMonoidalCategory, :X)
+bh = Hom(:b, Xob,Xob)
+dh = Hom(:d, Xob, Xob)
+ph = Hom(:p, Xob⊗Xob, Xob⊗Xob)
+pdagh = Hom(Symbol("p⋆"), Xob⊗Xob, Xob⊗Xob)
 
 println("\nbd = b⊗d")
 bd = otimes(b,d)
@@ -260,12 +274,15 @@ bipredation = compose(otimes(p(1,2,3),
                       otimes(eye(1),
                              p(1,2,3)))
 # t1 = otimes(otimes(eye(1), d), eye(1))
-println("\nfoodchain is (bipredation)⊚(bdb). A fish, a bigger fish, and biggest fish")
+println("\nfoodchain is (bipredation)⊚(bdd). A fish, a bigger fish, and biggest fish")
 foodchain = compose(bipredation, bdd)
 @show foodchain.dom
 @show foodchain.model.S
 @show foodchain.codom
 @show foodchain.model.Δ
+
+foodchainh = compose(compose(ph⊗id(Xob),id(Xob)⊗ph), bh⊗dh⊗dh)
+drawhom(foodchainh, "foodchain_wd")
 
 # # the first predator is the second predator (with two independent prey species)
 println("\npp† is (p⊗I)⊚(I⊗p†)")
@@ -276,6 +293,9 @@ foodstar = compose(ppdag, bdb)
 @show foodstar.model.S
 @show foodstar.codom
 @show foodstar.model.Δ
+
+foodstarh = compose(compose(ph⊗id(Xob),id(Xob)⊗pdagh), bh⊗dh⊗bh)
+drawhom(foodstarh, "foodstar_wd")
 end
 
 
