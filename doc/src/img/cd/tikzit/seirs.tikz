@@ -1,22 +1,24 @@
 \begin{tikzpicture}
 	\begin{pgfonlayer}{nodelayer}
-		\node [style=blue] (27) at (57, -1.25) {R};
-		\node [style=transition] (28) at (51.75, -2.5) {$T_3$};
-		\node [style=blue] (42) at (46, -1.25) {S};
-		\node [style=transition] (44) at (51.75, 2.25) {$T_1$};
-		\node [style=blue] (45) at (54.25, 2.25) {I};
-		\node [style=transition] (46) at (56.5, 1.25) {$T_2$};
-		\node [style=transition] (48) at (46.75, 1.5) {$T_0$};
-		\node [style=blue] (49) at (49, 2.25) {E};
+		\node [style=blue] (11) at (-1.5, 2) {S};
+		\node [style=blue] (12) at (0, 0) {I};
+		\node [style=blue] (13) at (0, -3.75) {R};
+		\node [style=transition] (14) at (1.25, 2) {};
+		\node [style=transition] (15) at (0, -2) {};
+		\node [style=transition] (37) at (-1.5, -1) {};
+		\node [style=transition] (52) at (4, 0) {};
+		\node [style=blue] (53) at (4, 2) {E};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
-		\draw [style=new edge style 0, in=0, out=-120, looseness=0.50] (27) to (28);
-		\draw [style=new edge style 0, in=-60, out=-180, looseness=0.50] (28) to (42);
-		\draw [style=new edge style 0] (44) to (45);
-		\draw [style=new edge style 0, bend left=15] (45) to (46);
-		\draw [style=new edge style 0, in=-180, out=30] (48) to (49);
-		\draw [style=new edge style 0] (49) to (44);
-		\draw [style=new edge style 0, bend left] (42) to (48);
-		\draw [style=new edge style 0, bend left, looseness=0.75] (46) to (27);
+		\draw [style=new edge style 0] (11) to (14);
+		\draw [style=new edge style 0, bend left=45] (12) to (14);
+		\draw [style=new edge style 0, bend left, looseness=1.25] (14) to (12);
+		\draw [style=new edge style 0] (12) to (15);
+		\draw [style=new edge style 0] (15) to (13);
+		\draw [style=new edge style 0, in=-90, out=180, looseness=0.75] (13) to (37);
+		\draw [style=new edge style 0] (37) to (11);
+		\draw [style=new edge style 0] (14) to (53);
+		\draw [style=new edge style 0] (53) to (52);
+		\draw [style=new edge style 0] (52) to (12);
 	\end{pgfonlayer}
 \end{tikzpicture}
