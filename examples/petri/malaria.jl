@@ -6,7 +6,7 @@ import Base: ==, ∈
 
 MAX_STATES = 20
 X = @variables(X[1:MAX_STATES])[1]
-STATELOOKUP = [(s,i) for (i,s) in enumerate(X)]
+STATELOOKUP = Dict(s.op.name=>i for (i,s) in enumerate(X))
 
 @variables S, I, R, Sm, Im
 # people recover from and then lose their immunity to malaria
