@@ -32,17 +32,14 @@ cpdC = fit(LinearGaussianCPD, data, :grasswet, [:rain,:sprinkler])
 bn2 = BayesNet([cpdA, cpdB, cpdC])
 
 # +
-println(fieldnames(Dict))
+
 
 vIDtoSymbol_dict = Dict()
-
-
 
 for entry in bn2.name_to_index;    
     vIDtoSymbol_dict[bn2.name_to_index[entry[1]]] = entry[1]
 end
 
-println(vIDtoSymbol_dict.keys)
 
 # +
 function bindvar(x)
@@ -58,27 +55,11 @@ vars = map(vertices(g)) do v
         mapping = (vIDtoSymbol_dict[v])
         mapping = Ob(FreeSymmetricMonoidalCategory, Symbol("M_$mapping"))
 end
+
+print(typeof(vars))
 I = Ob(FreeSymmetricMonoidalCategory, Symbol("I"))
 
 # +
-verticesList = []
-for edge in LightGraphs.edges(bn2.dag)
-    if !(edge.src in verticesList)
-        push!(verticesList, edge.src)
-    end   
-    if !(edge.dst in verticesList)
-        push!(verticesList, edge.dst)
-    end
-end
-
-
-for vertex in vertices(bn2.dag)
-    if size(inneighbors(bn2.dag, vertex),1) != 0
-        createHomConnections(vertex, outneighbors(bn2.dag, vertex), inneighbors(bn2.dag, vertex))
-
-    end
-end
-# + {}
 #discoverBaseHOM
 
 # base_hom = Hom(Symbol(vIDtoSymbol_dict[1]), vars[1], OUT)
@@ -103,50 +84,11 @@ to_graphviz(finalWiring, labels=true)
 
 # -
 
-function createHomConnections(vertex, outneighbors, inneighbors) 
-    retList = []
-    if size(outneighbors,1) > 0
-#         println("Multiple OutNeighbors")
-        for neighbor in outneighbors
-#             println("Creating Connection for " * string(vIDtoSymbol_dict[vertex])  * " to " * string(vIDtoSymbol_dict[neighbor]))
-            wiring_obj = Hom(Symbol(vIDtoSymbol_dict[neighbor]), vars[vertex], vars[neighbor])
-            push!(retList, WiringDiagram(wiring_obj))
-        end
-    end
-
-    return retList
-end
-
-# +
-base_hom = Hom(Symbol(vIDtoSymbol_dict[1]), vars[1], OUT)
-baseWiring = WiringDiagram(base_hom)
-
-
-
-for vertex in vertices(bn2.dag)
-    if size(outneighbors(bn2.dag, vertex),1) > 0
-        
-        temp = createHomConnections(vertex, outneighbors(bn2.dag, vertex), inneighbors(bn2.dag, vertex))
-        
-        println(temp)
-#         baseWiring = baseWiring ⊚ temp
-    end
-
-    
-end
-
-to_graphviz(baseWiring)
-# -
-
 function createWiring(vertices, dag, base_hom) 
     wiringObjList = []
     dependencyList = []
     retHom = base_hom
     for vertex in vertices
-#         println(vertex)
-#         println(inneighbors(dag, vertex))
-        
-        
         in_neighbors = inneighbors(dag, vertex)
         varsList = []
         if size(in_neighbors,1) > 0
@@ -158,10 +100,7 @@ function createWiring(vertices, dag, base_hom)
             push!(wiringObjList, wiring_obj)
             push!(dependencyList, inneighbors(dag, vertex))
         end
-            
-    
     end
-    
     return wiringObjList, dependencyList
 end
 
@@ -172,34 +111,6 @@ homList, depList = createWiring(outneighbors(bn2.dag, 1), bn2.dag, base_hom)
 homList = append!([base_hom], homList)
 depList = append!([[]], depList)
 
-@show typeof(homList[1]
-#=
-count = 0
-composeList = []
-for indxList in depList   
-    count += 1
-    
-    homTemp = []
-    if size(indxList, 1) > 0
-        
-        for indx in indxList
-             push!(homTemp, homList[indx])
-        end
-#         push!(homTemp, homList[count])
-        println(homTemp)
-        push!(composeList, foldl(⊚,homTemp))       
-    end  
-    
-end
-println(composeList)
-println(count)
-wiringDiagram = foldl(⊗,composeList)
-wiringDiagram = wiringDiagram ⊚ homList[count]
-
-
-
-to_graphviz(wiringDiagram, labels=true)
-=#
 
 # +
 function build(dict, y)

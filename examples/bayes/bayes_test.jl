@@ -18,6 +18,7 @@ Random.seed!(0) # seed the random number generator to 0, for a reproducible demo
 using BayesNets
 using Pkg
 using LightGraphs
+using Catlab.WiringDiagrams
 
 import Catlab.Graphics: to_graphviz
 include("bayesUtil.jl")
@@ -36,11 +37,27 @@ cpdC = fit(LinearGaussianCPD, data, :grasswet, [:rain,:sprinkler])
 
 bn2 = BayesNet([cpdA, cpdB, cpdC])
 
-bayesDag = bn2.dag
-
-# +
 wiringDiagram = getWiringDiagram(bn2)
-
-
-
 to_graphviz(wiringDiagram, labels=true)
+
+print(fieldnames(Doctrines.FreeSymmetricMonoidalCategory.Hom))
+print(typeof(wiringDiagram))
+
+println(typeof(wiringDiagram.args))
+# println(fieldnames(Doctrines.FreeSymmetricMonoidalCategory.Hom))
+print(wiringDiagram.args)
+
+function rpxe_esrap(S_expr::Tuple)
+  return Expr( Tuple( isa(i, Tuple) ? rpxe_esrap(i) : i for i in S_expr )... );
+end
+
+temp = wiringDiagram
+B = IOBuffer() 
+Meta.show_sexpr(B, wiringDiagram)      
+seek(B, 0);                   
+SExprStr = read(B, String)  
+close(B)
+print(SExprStr)
+
+
+
