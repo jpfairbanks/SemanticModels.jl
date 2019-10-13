@@ -16,6 +16,15 @@ import Catlab.Graphics.Graphviz: Graph
 ⊗(f::OpenModel,g::OpenModel) = otimes(f,g)
 ⊚(f::OpenModel,g::OpenModel) = compose(f,g)
 
+""" op(f::Model)
+
+return the opposite model you get by reversing the direction of all the transitions
+"""
+op(f::Model) = Model(f.S, map(f.Δ) do t
+                     reverse(t) end)
+
+op(f::OpenModel) = OpenModel(f.dom, op(f.model), f.codom)
+
 X = Petri.X
 
 println("\nSpontaneous reaction spontaneous = X₁→X₂")
@@ -125,17 +134,14 @@ println("As an ordinary differential equation:")
 
 f = foodchain
 g = Graph(f)
-pprint(g)
 output = run_graphviz(g, prog="dot", format="svg")
 write("img/foodchain.svg", output)
 
 f = foodstar
 g = Graph(f)
-pprint(g)
 output = run_graphviz(g, prog="dot", format="svg")
 write("img/foodstar.svg", output)
 
-# TODO: finish malaria example
 # @variables S, I, R, Sm, Im
 # # people recover from and then lose their immunity to malaria
 # rec = Petri.Model([S,I,R], [(I,R), (R, S)])
@@ -151,21 +157,37 @@ write("img/foodstar.svg", output)
 # h1 = OpenModel([S,I], infect, [I, Im])
 # h2 = OpenModel([I,Im], infectm, [I])
 
+println("Malaria Example")
 # malaria = (f⊗g) ⊚ (h1⊚h2)
 dualinfect = compose(ph⊗id(Xob), id(Xob)⊗pdagh)
 rec = Hom(:rec, Xob⊗Xob, Xob⊗Xob)
 wan = Hom(:wan, Xob⊗Xob, Xob⊗Xob)
 cur = Hom(:cur, Xob⊗Xob, Xob⊗Xob)
-inf = Hom(:inf, Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
-infdag = Hom(Symbol("inf⋆"), Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
-# @show IRS = compose(rec⊗id(Xob), id(Xob)⊗wan)
-# @show IS = cur
-# @show hh = compose(inf⊗id(Xob),(id(Xob)⊗infdag))⊗id(Xob)
-# @show dom(hh)
-# @show codom(IRS⊗IS)
-# @show codom(hh)
-# malariah = compose(IRS⊗IS , hh)
-malariah = compose(cur⊗cur, compose(id(Xob)⊗inf, infdag⊗id(Xob)))
-drawhom(malariah, "img/malaria.svg")
+curdag = Hom(Symbol("cur⋆"), Xob⊗Xob, Xob⊗Xob)
+inf = Hom(Symbol("inf¹³₂₃"), Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
+inf′ = Hom(Symbol("inf³¹₂₁"), Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
+malariah = compose(compose(id(Xob)⊗inf, inf′⊗id(Xob)),cur⊗curdag)
+drawhom(malariah, "img/malaria_wd")
 
+cure = OpenModel([1,2], Model([1,2], [(X[2], X[1])]), [1,2])
+curedag = op(cure)
+trinary  = OpenModel([1,2,3], Model([1,2,3], [(X[1]+X[3], X[2]+X[3])]), [1,2,3])
+trinary′ = OpenModel([1,2,3], Model([1,2,3], [(X[3]+X[1], X[2]+X[1])]), [1,2,3])
+dualinfect = compose(trinary⊗eye(1), eye(1)⊗trinary′)
+g = Graph(trinary)
+output = run_graphviz(g, prog="dot", format="svg")
+write("img/trinary.svg", output)
+
+g = Graph(dualinfect)
+output = run_graphviz(g, prog="dot", format="svg")
+write("img/dualinfect.svg", output)
+
+f = compose(dualinfect, cure ⊗ curedag )
+homx = canonical(FreeSymmetricMonoidalCategory, malariah)
+println("Cannonical form construction proves:  $malariah == $homx")
+println("As an ordinary differential equation:")
+@show symbolic_symplify(Petri.odefunc(f.model, :state)) |> striplines
+g = Graph(f)
+output = run_graphviz(g, prog="dot", format="svg")
+write("img/malaria.svg", output)
 end
