@@ -1,5 +1,7 @@
 module Malaria
 using Petri
+using MacroTools
+import MacroTools: postwalk, striplines
 using ModelingToolkit
 import ModelingToolkit: Constant
 import Base: ==, ∈
@@ -10,6 +12,56 @@ using Catlab.Graphics
 
 function drawhom(hom, name::String, format="svg")
     to_wiring_diagram(hom) |> to_graphviz |> g->Graphics.Graphviz.run_graphviz(g, format=format) |> t->write("$name.$format", t)
+end
+
+canonical(Syntax::Module, hom) = begin d = to_wiring_diagram(hom)
+    to_hom_expr(Syntax, d)
+end
+
+function symbolic_symplify(ex::Expr)
+    iscall(x) = false
+    iscall(x, name::Symbol) = false
+    iscall(x::Expr) = x.head == :call
+    iscall(x::Expr, name::Symbol) = iscall(x) && x.args[1] == name
+
+    MacroTools.postwalk(ex) do x
+        if x == :param
+            return :T
+        end
+        if x == :state
+            return :u
+        end
+        # -1/1 => -1
+        if x == :(-1/1)
+            return :(-1)
+        end
+        # +(x) => x
+        if iscall(x, :+) && length(x.args)==2
+            return x.args[2]
+        end
+        # 1*x => x
+        if iscall(x, :*) && length(x.args)==3 && x.args[2] == 1
+            return x.args[3]
+        end
+        # *(a, *(b,c)) => *(a,b,c)
+        if iscall(x, :*) && length(x.args)==3 && iscall(x.args[end], :*)
+            return :(*($(x.args[2]), $(x.args[3].args[2:end]...)))
+        end
+        # *(a, /(b,c)) => /(*(a,b),c)
+        if iscall(x, :*) && length(x.args)==3 && iscall(x.args[end], :/)
+            a = x.args[2]
+            b = x.args[3].args[2]
+            c = x.args[3].args[3]
+            num = :(*($(a), $(b)))
+            # apply *(a, *(b,c)) => *(a,b,c) again
+            if iscall(num, :*) && length(num.args)==3 && iscall(num.args[end], :*)
+                num = :(*($(num.args[2]), $(num.args[3].args[2:end]...)))
+            end
+            f = :($num / $c)
+            return f
+        end
+        return x
+    end
 end
 
 MAX_STATES = 20
@@ -283,6 +335,10 @@ foodchain = compose(bipredation, bdd)
 
 foodchainh = compose(compose(ph⊗id(Xob),id(Xob)⊗ph), bh⊗dh⊗dh)
 drawhom(foodchainh, "foodchain_wd")
+homx = canonical(FreeSymmetricMonoidalCategory, foodchainh)
+println("Cannonical form construction proves:  $foodchainh == $homx")
+println("As an ordinary differential equation:")
+@show symbolic_symplify(Petri.odefunc(foodchain.model, :state)) |> striplines
 
 # # the first predator is the second predator (with two independent prey species)
 println("\npp† is (p⊗I)⊚(I⊗p†)")
@@ -296,8 +352,12 @@ foodstar = compose(ppdag, bdb)
 
 foodstarh = compose(compose(ph⊗id(Xob),id(Xob)⊗pdagh), bh⊗dh⊗bh)
 drawhom(foodstarh, "foodstar_wd")
-end
+homx = canonical(FreeSymmetricMonoidalCategory, foodstarh)
+println("Cannonical form construction proves:  $foodstarh == $homx")
+println("As an ordinary differential equation:")
+@show symbolic_symplify(Petri.odefunc(foodstar.model, :state)) |> striplines
 
+end
 
 # fog = Malaria.otimes(Malaria.f , Malaria.g)
 # h   = Malaria.compose(Malaria.h1 , Malaria.h2)
