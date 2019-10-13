@@ -11,7 +11,10 @@ using Catlab.WiringDiagrams
 using Catlab.Graphics
 
 function drawhom(hom, name::String, format="svg")
-    to_wiring_diagram(hom) |> to_graphviz |> g->Graphics.Graphviz.run_graphviz(g, format=format) |> t->write("$name.$format", t)
+    d = to_wiring_diagram(hom)
+    g = to_graphviz(d, direction=:horizontal)
+    t = Graphics.Graphviz.run_graphviz(g, format=format)
+    write("$name.$format", t)
 end
 
 canonical(Syntax::Module, hom) = begin d = to_wiring_diagram(hom)
