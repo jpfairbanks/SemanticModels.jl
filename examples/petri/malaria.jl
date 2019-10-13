@@ -6,70 +6,12 @@ using ModelingToolkit
 import ModelingToolkit: Constant
 import Base: ==, ∈
 using Catlab.Doctrines
-import Catlab.Doctrines: ⊗, compose
+import Catlab.Doctrines: ⊗, compose, otimes
 using Catlab.WiringDiagrams
 using Catlab.Graphics
+using SemanticModels.ModelTools.WiringDiagrams
+using Petri.OpenModels
 
-function drawhom(hom, name::String, format="svg")
-    d = to_wiring_diagram(hom)
-    g = to_graphviz(d, direction=:horizontal)
-    t = Graphics.Graphviz.run_graphviz(g, format=format)
-    write("$name.$format", t)
-end
-
-canonical(Syntax::Module, hom) = begin d = to_wiring_diagram(hom)
-    to_hom_expr(Syntax, d)
-end
-
-function symbolic_symplify(ex::Expr)
-    iscall(x) = false
-    iscall(x, name::Symbol) = false
-    iscall(x::Expr) = x.head == :call
-    iscall(x::Expr, name::Symbol) = iscall(x) && x.args[1] == name
-
-    MacroTools.postwalk(ex) do x
-        if x == :param
-            return :T
-        end
-        if x == :state
-            return :u
-        end
-        # -1/1 => -1
-        if x == :(-1/1)
-            return :(-1)
-        end
-        # +(x) => x
-        if iscall(x, :+) && length(x.args)==2
-            return x.args[2]
-        end
-        # 1*x => x
-        if iscall(x, :*) && length(x.args)==3 && x.args[2] == 1
-            return x.args[3]
-        end
-        # *(a, *(b,c)) => *(a,b,c)
-        if iscall(x, :*) && length(x.args)==3 && iscall(x.args[end], :*)
-            return :(*($(x.args[2]), $(x.args[3].args[2:end]...)))
-        end
-        # *(a, /(b,c)) => /(*(a,b),c)
-        if iscall(x, :*) && length(x.args)==3 && iscall(x.args[end], :/)
-            a = x.args[2]
-            b = x.args[3].args[2]
-            c = x.args[3].args[3]
-            num = :(*($(a), $(b)))
-            # apply *(a, *(b,c)) => *(a,b,c) again
-            if iscall(num, :*) && length(num.args)==3 && iscall(num.args[end], :*)
-                num = :(*($(num.args[2]), $(num.args[3].args[2:end]...)))
-            end
-            f = :($num / $c)
-            return f
-        end
-        return x
-    end
-end
-
-MAX_STATES = 20
-X = @variables(X[1:MAX_STATES])[1]
-STATELOOKUP = Dict(s.op.name=>i for (i,s) in enumerate(X))
 
 @variables S, I, R, Sm, Im
 # people recover from and then lose their immunity to malaria
@@ -80,125 +22,7 @@ recm = Petri.Model([Sm,Im], [(Im,Sm)])
 infect = Petri.Model([S,I,Im], [(S+Im, I+Im)])
 infectm = Petri.Model([Sm,I,Im], [(Sm+I, I+Im)])
 
-struct OpenModel{V,M}
-    dom::V
-    model::M
-    codom::V
-end
 
-function ==(f::OpenModel,g::OpenModel)
-    all(isequal.(f.dom, g.dom)) && all(isequal.(f.codom, g.codom)) && f.model == g.model
-end
-
-
-⊕(v::Vector, w::Vector) = vcat(v,w)
-# ⊕(v::Vector{Int}, w::Vector{Int}) = vcat(v,w.+length(v))
-
-function otimes(f::OpenModel{T,Md}, g::OpenModel{T,Md}) where {T<: Vector, Md<: Petri.Model}
-    f.model.S
-    g.model.S
-    # TODO: need to renumber the states of g
-    M = Petri.Model(f.model.S ⊕ g.model.S, f.model.Δ ⊕ g.model.Δ)
-    return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
-end
-
-function otimes(f::OpenModel{T,Md}, g::OpenModel{T,Md}) where {T<: Vector{Int}, Md<: Petri.Model}
-    f.model.S
-    g.model.S
-    nf = length(f.model.S)
-    ng = length(g.model.S)
-    newstates = Dict(X[s]=>X[s+nf] for (i, s) in enumerate(g.model.S))
-    replace(t::Tuple{Operation, Operation}) = (replace(t[1]), replace(t[2]))
-    replace(c::Constant) = c
-    replace(op::Operation) = begin
-        if op.op == (+)
-            return sum(map(replace, op.args))
-        end
-        if op.op == (*)
-            return prod(map(replace, op.args))
-        end
-        if length( op.args ) == 0
-            return newstates[op]
-        end
-        return op
-    end
-    newtransitions = f.model.Δ
-    if length(g.model.Δ) > 0
-        newtransitions = newtransitions ⊕ map(g.model.Δ) do t
-            replace(t)
-        end
-    end
-
-    newstatespace = collect(1:(nf+ng))
-    M = Petri.Model(newstatespace, newtransitions)
-    return OpenModel(f.dom ⊕ (g.dom .+ nf), M, f.codom ⊕ (g.codom .+ nf))
-end
-
-function equnion(a::Vector, b::Vector)
-    x = copy(a)
-    for item in b
-        if !any(item2 -> isequal(item2, item), x)
-            push!(x, item)
-        end
-    end
-    return x
-end
-
-∈(x::Operation, S::Vector{Operation}) = any(isequal.(x,S))
-
-function compose(f::OpenModel{T,Md}, g::OpenModel{T,Md}) where {T<: Vector, Md<: Petri.Model}
-    Y = f.codom
-    Y′ = g.dom
-    @assert length(Y) == length(Y′)
-    Z = g.codom
-    M = f.model
-    N = g.model
-
-    states = vcat(M.S, ( 1:length(filter(s->!(s ∈ Y′), N.S)) ) .+ length(M.S))
-    newstates = Dict(X[Y′[i]]=>X[Y[i]] for i in 1:length(Y))
-    i = 0
-    newstates′ = map(N.S) do s
-        if s ∈ Y′
-            return nothing
-        end
-        i+=1
-        X[s] => X[i+length(M.S)]
-    end |> l-> filter(x-> x != nothing, l) |> Dict
-    newstates = union(newstates, newstates′) |> Dict
-
-    replace(t::Tuple{Operation, Operation}) = (replace(t[1]), replace(t[2]))
-    replace(c::Constant) = c
-    replace(op::Operation) = begin
-        if op.op == (+)
-            return sum(map(replace, op.args))
-        end
-        if op.op == (*)
-            return prod(map(replace, op.args))
-        end
-        if length( op.args ) == 0
-            # op ∈ keys(newstates), but for Operations
-            if any(isequal.(keys(newstates), op))
-                return newstates[op]
-            end
-            return op
-        end
-        return op
-    end
-    newtransitions = f.model.Δ
-    if length(g.model.Δ) > 0
-        newtransitions = newtransitions ⊕ map(g.model.Δ) do t
-            replace(t)
-        end
-    end
-    Δ = newtransitions
-    Λ = vcat(M.Λ, N.Λ)
-    Φ = vcat(M.Φ, N.Φ)
-    Mp_yN = Petri.Model(states, Δ, Λ, Φ)
-    Z′ = map(Z) do z
-        findfirst(x->isequal(x, newstates[X[z]]), X)
-    end
-    return OpenModel(f.dom, Mp_yN, Z′)
-end
 
 f = OpenModel([S,I,R], rec, [S,I])
 g = OpenModel([Sm,Im], recm, Operation[])
@@ -240,7 +64,7 @@ h2 = OpenModel([I,Im], infectm, [I])
 # # twoprey(k,n) = lotka(k) ⊚ onsecond ⊚ OpenModel([2], pred(n), [1,2])
 # twoprey(k,n) = (lotka(k) ⊗ Id(1)) ⊚ (Id(1) ⊗ (σ2 ⊚ pred(n) ⊚ σ2))
 
-X = @variables(X[1:20])[1]
+X = Petri.OpenModels.X
 println("\nSpontaneous reaction spontaneous = X₁→X₂")
 spontaneous = OpenModel([1,2], Model([1,2], [(X[1],X[2])]), [1,2])
 println("\nParallel reaction parallel = spontaneous ⊗ spontaneous = X₁→X₂, X₃→X₄")
@@ -251,8 +75,6 @@ println("\nParallel Infections reactions infect ⊗ infect = X₁+X₂→ 2X₂ 
 parinfect = otimes(infect,infect)
 sponinf = compose(spontaneous, infect)
 
-NullModel(n::Int) = Model(collect(1:n), Vector{Tuple{Operation,Operation}}())
-eye(n::Int) = foldr(otimes, [OpenModel([1], NullModel(1), [1]) for i in 1:n])
 
 println("\nTesting the compose and otimes with parallel ⊚ (infect ⊗ I₂)")
 m1 = compose(parallel, otimes(infect,eye(2)))
