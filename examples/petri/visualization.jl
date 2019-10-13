@@ -74,12 +74,12 @@ f = Malaria.foodchain
 g = Graph(f)
 pprint(g)
 output = run_graphviz(g, prog="dot", format="svg")
-write("foodchain.svg", output)
+write("img/foodchain.svg", output)
 
 f = Malaria.foodstar
 g = Graph(f)
 pprint(g)
 output = run_graphviz(g, prog="dot", format="svg")
-write("foodstar.svg", output)
+write("img/foodstar.svg", output)
 
 end

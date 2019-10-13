@@ -334,7 +334,7 @@ foodchain = compose(bipredation, bdd)
 @show foodchain.model.Δ
 
 foodchainh = compose(compose(ph⊗id(Xob),id(Xob)⊗ph), bh⊗dh⊗dh)
-drawhom(foodchainh, "foodchain_wd")
+drawhom(foodchainh, "img/foodchain_wd")
 homx = canonical(FreeSymmetricMonoidalCategory, foodchainh)
 println("Cannonical form construction proves:  $foodchainh == $homx")
 println("As an ordinary differential equation:")
@@ -351,7 +351,7 @@ foodstar = compose(ppdag, bdb)
 @show foodstar.model.Δ
 
 foodstarh = compose(compose(ph⊗id(Xob),id(Xob)⊗pdagh), bh⊗dh⊗bh)
-drawhom(foodstarh, "foodstar_wd")
+drawhom(foodstarh, "img/foodstar_wd")
 homx = canonical(FreeSymmetricMonoidalCategory, foodstarh)
 println("Cannonical form construction proves:  $foodstarh == $homx")
 println("As an ordinary differential equation:")
