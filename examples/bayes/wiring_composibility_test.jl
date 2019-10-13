@@ -9,31 +9,50 @@ using Catlab.WiringDiagrams
 
 import Catlab.Graphics: to_graphviz
 include("bayesUtil.jl")
+
+⊗(a::WiringDiagram, b::WiringDiagram) = otimes(a,b)
+import Base: ∘
+∘(a::WiringDiagram, b::WiringDiagram) = compose(b, a)
+⊚(a,b) = b ∘ a
+⊚(a...) = foldl(⊚,a)
 # -
 
 #Create Equations
-rain_equation = randn(100)
-sprinkler_equation = randn(100) .+ 2 * rain_equation
-grasswet_equation_r = randn(100) .+ 2 * rain_equation
-grasswet_equation_s = randn(100) .+ 2 * sprinkler_equation
+a_equation = randn(100)
+b_equation = randn(100) .+ 2*a_equation .+ 3
+c_equation = randn(100) .+ 2*b_equation .+ 3
 
 #Build Rain, Sprinkler, GrassWet Example BayesNet
-data = DataFrame(rain=rain_equation, sprinkler=sprinkler_equation, grasswet_r=grasswet_equation_r, grasswet_s = grasswet_equation_s)
-cpdr = fit(StaticCPD{Normal}, data, :rain)
-cpds = fit(LinearGaussianCPD, data, :sprinkler, [:rain])
-cpdg_r = fit(LinearGaussianCPD, data, :grasswet_r, [:rain])
-cpdg_s = fit(LinearGaussianCPD, data, :grasswet_s, [:sprinkler])
+data = DataFrame(rain=a_equation, sprinkler=b_equation, grasswet=c_equation)
+cpdA = fit(StaticCPD{Normal}, data, :rain)
+cpdB = fit(LinearGaussianCPD, data, :sprinkler, [:rain])
+cpdC = fit(LinearGaussianCPD, data, :grasswet, [:rain,:sprinkler])
 
-bn1 = BayesNet([cpdr, cpds, cpdg_r])
-bn2 = BayesNet([cpdr, cpds, cpdg_s])
+bn1 = BayesNet([cpdA, cpdB, cpdC])
 
 wiringDiagram_1 = getWiringDiagram(bn1)
-to_graphviz(wiringDiagram, labels=true)
+to_graphviz(wiringDiagram_1, labels=true)
+
+a_equation = randn(100)
+flood_equation = randn(100) .+ 2*a_equation .+ 3
+grasswet_b_equation = randn(100) .+ 2*b_equation .+ 3
+
+data = DataFrame(rain=a_equation, flood=flood_equation, grasswet_b=grasswet_b_equation)
+cpdA_2 = fit(StaticCPD{Normal}, data, :rain)
+cpdB_2 = fit(LinearGaussianCPD, data, :flood, [:rain])
+cpdC_2 = fit(LinearGaussianCPD, data, :grasswet_b, [:flood])
+
+bn2 = BayesNet([cpdA_2, cpdB_2, cpdC_2])
 
 wiringDiagram_2 = getWiringDiagram(bn2)
-to_graphviz(wiringDiagram, labels=true)
+to_graphviz(wiringDiagram_2, labels=true)
 
-w_3 = wiringDiagram_1 ⊗ wiringDiagram_2
-to_graphviz(w_3, labels=true)
+bnList = [bn1, bn2]
+mergeList = [["grasswet_b", "grasswet"]]
+combinedWiring = combineBayesNets(bnList , mergeList )
+# to_graphviz(combinedWiring[1], labels=true)
+to_graphviz(combinedWiring, labels=true)
+
+
 
 
