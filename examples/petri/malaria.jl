@@ -10,7 +10,9 @@ import Catlab.Doctrines: ⊗, compose, otimes
 using Catlab.WiringDiagrams
 using Catlab.Graphics
 using SemanticModels.ModelTools.WiringDiagrams
-using Petri.OpenModels
+# using Petri.OpenModels
+using Catlab.Graphics.Graphviz
+import Catlab.Graphics.Graphviz: Graph
 
 
 @variables S, I, R, Sm, Im
@@ -64,7 +66,7 @@ h2 = OpenModel([I,Im], infectm, [I])
 # # twoprey(k,n) = lotka(k) ⊚ onsecond ⊚ OpenModel([2], pred(n), [1,2])
 # twoprey(k,n) = (lotka(k) ⊗ Id(1)) ⊚ (Id(1) ⊗ (σ2 ⊚ pred(n) ⊚ σ2))
 
-X = Petri.OpenModels.X
+X = Petri.X
 println("\nSpontaneous reaction spontaneous = X₁→X₂")
 spontaneous = OpenModel([1,2], Model([1,2], [(X[1],X[2])]), [1,2])
 println("\nParallel reaction parallel = spontaneous ⊗ spontaneous = X₁→X₂, X₃→X₄")
@@ -182,6 +184,17 @@ println("Cannonical form construction proves:  $foodstarh == $homx")
 println("As an ordinary differential equation:")
 @show symbolic_symplify(Petri.odefunc(foodstar.model, :state)) |> striplines
 
+f = foodchain
+g = Graph(f)
+pprint(g)
+output = run_graphviz(g, prog="dot", format="svg")
+write("img/foodchain.svg", output)
+
+f = foodstar
+g = Graph(f)
+pprint(g)
+output = run_graphviz(g, prog="dot", format="svg")
+write("img/foodstar.svg", output)
 end
 
 # fog = Malaria.otimes(Malaria.f , Malaria.g)
