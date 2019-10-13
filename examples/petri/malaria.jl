@@ -10,63 +10,14 @@ import Catlab.Doctrines: ⊗, compose, otimes
 using Catlab.WiringDiagrams
 using Catlab.Graphics
 using SemanticModels.ModelTools.WiringDiagrams
-# using Petri.OpenModels
 using Catlab.Graphics.Graphviz
 import Catlab.Graphics.Graphviz: Graph
 
-
-@variables S, I, R, Sm, Im
-# people recover from and then lose their immunity to malaria
-rec = Petri.Model([S,I,R], [(I,R), (R, S)])
-# mosquitos recover from malaria, but are not immune
-recm = Petri.Model([Sm,Im], [(Im,Sm)])
-
-infect = Petri.Model([S,I,Im], [(S+Im, I+Im)])
-infectm = Petri.Model([Sm,I,Im], [(Sm+I, I+Im)])
-
-
-
-f = OpenModel([S,I,R], rec, [S,I])
-g = OpenModel([Sm,Im], recm, Operation[])
-
-h1 = OpenModel([S,I], infect, [I, Im])
-h2 = OpenModel([I,Im], infectm, [I])
-
-# malaria = (f⊗g) ⊚ (h1⊚h2)
-
-# @variables X, Y, k
-# lv = Petri.Model([X,Y],
-#                  [(X,2X),
-#                   (Y, Constant(0)),
-#                   (X+Y, (k*Y))
-#                   ])
-
-# OpenModel([X], lv, [Y]) ⊚ OpenModel([Y], lv, [X])
-
-# NullModel(k) = Petri.Model([Operation(:S, Expression[Constant(i)]) for i in 1:k],[])
-# Id(k) = OpenModel(1:k, NullModel(k), 1:k)
-# σ2 = OpenModel([2,1], NullModel(2), [2,1])
-# birth   = Petri.Model([X], [(X, 2X)])
-# death   = Petri.Model([X], [(X, Constant(0))])
-# pred(k) = Petri.Model([X,Y], [(X+Y, kY)])
-
-# f    = OpenModel([1], birth, [1])
-# g    = OpenModel([1], death, [1])
-# h(k) = OpenModel([1,2], pred(k), [1,2])
-
-# onsecond = OpenModel([1,2], NullModel(2), [2])
-# lotka(k) = f ⊗ g ⊚ h(k)
-# # combine predation onto LV where the predator of LV is the new prey
-# # eg. sharks eat fish that eat smaller fish
-# # chain(k,n) = lotka(k) ⊚ onsecond ⊚ OpenModel([1], pred(n), [2])
-# chain(k,n) = (lotka(k) ⊗ Id(1)) ⊚ (Id(1) ⊗ pred(n))
-
-# # combine predation onto LV where the predator of LV is the new predator
-# # eg. Wolves hunt rabbits and sheep
-# # twoprey(k,n) = lotka(k) ⊚ onsecond ⊚ OpenModel([2], pred(n), [1,2])
-# twoprey(k,n) = (lotka(k) ⊗ Id(1)) ⊚ (Id(1) ⊗ (σ2 ⊚ pred(n) ⊚ σ2))
+⊗(f::OpenModel,g::OpenModel) = otimes(f,g)
+⊚(f::OpenModel,g::OpenModel) = compose(f,g)
 
 X = Petri.X
+
 println("\nSpontaneous reaction spontaneous = X₁→X₂")
 spontaneous = OpenModel([1,2], Model([1,2], [(X[1],X[2])]), [1,2])
 println("\nParallel reaction parallel = spontaneous ⊗ spontaneous = X₁→X₂, X₃→X₄")
@@ -76,6 +27,7 @@ infect = OpenModel([1,2], Model([1,2], [(X[1]+X[2], 2*X[2])]), [1,2])
 println("\nParallel Infections reactions infect ⊗ infect = X₁+X₂→ 2X₂ && X₃ +X₄ → 2X₄")
 parinfect = otimes(infect,infect)
 sponinf = compose(spontaneous, infect)
+
 
 
 println("\nTesting the compose and otimes with parallel ⊚ (infect ⊗ I₂)")
@@ -131,28 +83,15 @@ lv2 = compose(bd, p(1,2, 3))
 @show lv2.model.Δ
 
 # the first predator is the second prey
-# foodchain = compose(compose(otimes(compose(otimes(b,
-#                                                   eye(1)),
-#                                            p(1,2,3)),
-#                                    eye(1)),
-#                             otimes(eye(1),
-#                                    p(1,2,3))),
-#                     otimes(otimes(eye(1), d), b))
 println("\nbdd = b⊗d⊗d")
 bdd = otimes(otimes(b, d), d)
 println("\nbdb = b⊗d⊗b")
 bdb = otimes(b,otimes(d,b))
-# foodchain = compose(compose(otimes(p(1,2,3),
-#                                    eye(1)),
-#                             otimes(eye(1),
-#                                    p(1,2,3))),
-#                     bdd)
 println("bipredation is (p⊗I)⊚(I⊗p)")
 bipredation = compose(otimes(p(1,2,3),
                              eye(1)),
                       otimes(eye(1),
                              p(1,2,3)))
-# t1 = otimes(otimes(eye(1), d), eye(1))
 println("\nfoodchain is (bipredation)⊚(bdd). A fish, a bigger fish, and biggest fish")
 foodchain = compose(bipredation, bdd)
 @show foodchain.dom
@@ -195,11 +134,38 @@ g = Graph(f)
 pprint(g)
 output = run_graphviz(g, prog="dot", format="svg")
 write("img/foodstar.svg", output)
+
+# TODO: finish malaria example
+# @variables S, I, R, Sm, Im
+# # people recover from and then lose their immunity to malaria
+# rec = Petri.Model([S,I,R], [(I,R), (R, S)])
+# # mosquitos recover from malaria, but are not immune
+# recm = Petri.Model([Sm,Im], [(Im,Sm)])
+
+# infect = Petri.Model([S,I,Im], [(S+Im, I+Im)])
+# infectm = Petri.Model([Sm,I,Im], [(Sm+I, I+Im)])
+
+# f = OpenModel([S,I,R], rec, [S,I])
+# g = OpenModel([Sm,Im], recm, Operation[])
+
+# h1 = OpenModel([S,I], infect, [I, Im])
+# h2 = OpenModel([I,Im], infectm, [I])
+
+# malaria = (f⊗g) ⊚ (h1⊚h2)
+dualinfect = compose(ph⊗id(Xob), id(Xob)⊗pdagh)
+rec = Hom(:rec, Xob⊗Xob, Xob⊗Xob)
+wan = Hom(:wan, Xob⊗Xob, Xob⊗Xob)
+cur = Hom(:cur, Xob⊗Xob, Xob⊗Xob)
+inf = Hom(:inf, Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
+infdag = Hom(Symbol("inf⋆"), Xob⊗Xob⊗Xob, Xob⊗Xob⊗Xob)
+# @show IRS = compose(rec⊗id(Xob), id(Xob)⊗wan)
+# @show IS = cur
+# @show hh = compose(inf⊗id(Xob),(id(Xob)⊗infdag))⊗id(Xob)
+# @show dom(hh)
+# @show codom(IRS⊗IS)
+# @show codom(hh)
+# malariah = compose(IRS⊗IS , hh)
+malariah = compose(cur⊗cur, compose(id(Xob)⊗inf, infdag⊗id(Xob)))
+drawhom(malariah, "img/malaria.svg")
+
 end
-
-# fog = Malaria.otimes(Malaria.f , Malaria.g)
-# h   = Malaria.compose(Malaria.h1 , Malaria.h2)
-# mal = Malaria.compose(fog , h)
-
-# mal′ = Malaria.compose(Malaria.compose(Malaria.otimes(Malaria.f,Malaria.g), Malaria.h1), Malaria.h2)
-# mal′ == mal
