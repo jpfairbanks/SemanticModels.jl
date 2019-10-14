@@ -25,6 +25,18 @@ op(f::Model) = Model(f.S, map(f.Δ) do t
 
 op(f::OpenModel) = OpenModel(f.dom, op(f.model), f.codom)
 
+function debug_show(f::OpenModel, fname::String)
+    @show f.dom
+    @show f.model.S
+    @show f.model.Δ
+    @show f.codom
+
+    g = Graph(f)
+    # pprint(g)
+    output = run_graphviz(g, prog="dot", format="svg")
+    write(fname, output)
+end
+
 X = Petri.X
 
 println("\nSpontaneous reaction spontaneous = X₁→X₂")
@@ -71,7 +83,7 @@ b = OpenModel([1], birth, [1])
 d = OpenModel([1], death, [1])
 p(α, β, γ) = OpenModel([1,2], pred(α, β, γ), [1,2])
 println("\nCreating food web processes σ, predation†")
-σ() = OpenModel([2,1], NullModel(2), [2,1])
+σ() = OpenModel([1,2], NullModel(2), [2,1])
 pdag(α,β,γ) = OpenModel([1,2], Model([1, 2], [(α*X[2] + β*X[1], γ*X[1])]), [1,2])
 
 # Catlab expressions for our variables
@@ -201,8 +213,40 @@ homx = canonical(FreeSymmetricMonoidalCategory, birdsh)
 println("Cannonical form construction proves:  $birdsh == $homx")
 # vitals for Sp, Ip, Im, Sm, B are:
 # born, die (of malaria), die (of malaria), born, die (starvation)
-vitals = bh⊗dh⊗dh⊗bh⊗dh
-birdmalh = compose(malariah⊗id(Xob), id(Xob⊗Xob)⊗birdsh, vitals)
+vitalsh = bh⊗dh⊗dh⊗bh⊗dh
+vitals = b⊗d⊗d⊗b⊗d
+birdmalh = compose(malariah⊗id(Xob), id(Xob⊗Xob)⊗birdsh, vitalsh)
 drawhom(birdmalh, "img/birdmal_wd")
+birds = compose(σ()⊗eye(1), eye(1)⊗p(10,2,3), σ()⊗eye(1), eye(1)⊗p(6,2,3))
+debug_show(birds, "img/birds.svg")
+birdmal = compose(malaria⊗eye(1), eye(2)⊗birds, vitals)
+debug_show(birdmal, "img/birdmal.svg")
+homx = canonical(FreeSymmetricMonoidalCategory, birdmalh)
+println("Cannonical form construction proves:  $birdmalh == $homx")
+println("As an ordinary differential equation:")
+@show symbolic_symplify(Petri.odefunc(birdmal.model, :state)) |> striplines
+
+println("Testing Braiding with composition for Petri.OpenModel")
+
+
+# these examples show that σ_guess can precompose with a morphism to reverse it's two wires, it cannot post compose with it to renumber its outputs.
+# This relates to our implementation that favors f in compose(f,g), and the fact that in a PROP, all objects are natural numbers.
+# If all objects are braid(X,X) = X⊗X as objects. You can compose(braid(X,X), f) to get the version of f with the first and second state reversed, but
+# you cannot reverse the outputs because our "renumbering the states" implementation will renumber that away.
+σ_guess = OpenModel([1,2], NullModel(2), [2,1])
+f = compose(σ_guess, otimes(b, d))
+debug_show(f, "img/braid_debug_precomp.svg")
+f = compose(otimes(b, d), σ_guess)
+debug_show(f, "img/braid_debug_postcomp.svg")
+debug_show(otimes(b,d), "img/braid_debug_btimesd.svg")
+debug_show(compose(σ_guess, p(1,2,3)), "img/braid_debug_pred.svg")
+debug_show(compose(σ_guess, eye(2)), "img/braid_debug_precompid.svg")
+debug_show(compose(σ_guess, σ_guess, eye(2)), "img/braid_debug_precomp2id.svg")
+debug_show(compose(compose(σ_guess, p(1,2,3))⊗eye(1), compose(eye(1)⊗σ_guess, eye(1)⊗p(1,2,3))), "img/braid_debug_pred2.svg")
+debug_show(σ_guess⊗σ_guess, "img/braid_debug_precomp4.svg")
+debug_show(compose(σ_guess⊗σ_guess, eye(4)), "img/braid_debug_precomp4id.svg")
+debug_show(compose(σ_guess⊗σ_guess, p(1,2,3)⊗p(2,4,6)), "img/braid_debug_precomp4psq.svg")
+
+
 
 end
