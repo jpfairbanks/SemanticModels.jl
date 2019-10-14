@@ -42,6 +42,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 ModelingToolkit = ">=0.6"
+Catlab = ">=0.3"
 
 [targets]
 test = ["DifferentialEquations", "LsqFit", "Polynomials", "Printf", "Statistics", "Test"]

@@ -3,10 +3,33 @@
 module WiringDiagrams
 
 using Catlab.WiringDiagrams
+using Catlab.Doctrines
+using Catlab.Graphics
 using MacroTools
 import MacroTools: postwalk, striplines
 
-export wirenames, odeTemplate
+export wirenames, odeTemplate, drawhom, canonical
+
+"""    drawhom(hom, name::String, format="svg")
+
+draw a hom expression as a wiring diagram and store it as a file.
+Defaults to SVG format. The filename is <name.format>.
+"""
+function drawhom(hom, name::String, format="svg")
+    d = to_wiring_diagram(hom)
+    g = to_graphviz(d, direction=:horizontal)
+    t = Graphics.Graphviz.run_graphviz(g, format=format)
+    write("$name.$format", t)
+end
+
+"""    canonical(Syntax::Module, hom)
+
+canonicalizes a hom expression by converting it to a WiringDiagram and then back again.
+The Syntax parameter is the Doctrine for the morphism such as FreeSymmetricMonoidalCategory.
+"""
+canonical(Syntax::Module, hom) = begin d = to_wiring_diagram(hom)
+    to_hom_expr(Syntax, d)
+end
 
 wirenames(d::WiringDiagram) = foldr(union,
     map(box->union(input_ports(box), output_ports(box)),
