@@ -176,7 +176,7 @@ function mergeNode(nodeName::Symbol, mergeList::Array{Array{String,1},1})
         if String(nodeName) in group
             retFlag = true        
             for element in group
-                retNode *= " " * element
+                retNode *= "_" * element
             end           
         end     
     end
@@ -211,6 +211,108 @@ function combineBayesNets(bayesList::Array{BayesNet{CPD},1}, mergeList::Array{Ar
         
         
     return foldl(⊗,combinedWiringList)
+end
+# + {}
+#Wiring Diagram to Dag
+function getExprString(expr)
+    temp = combinedWiring
+    B = IOBuffer() 
+    Meta.show_sexpr(B, combinedWiring)      
+    seek(B, 0);                   
+    exprString = read(B, String)  
+    return exprString
+end
+
+function checkNodeNames(name, nodeNames)
+    
+    flag = false
+    for i in nodeNames
+        if occursin(i, name)
+             flag = true
+        end
+    end
+    return flag
+end
+
+
+# +
+function getDagFromWiringD(wiringDiagram, nodeNamesList)
+    exprString = getExprString(combinedWiring)
+    # print(exprString)
+
+    exprString = replace(exprString, "(" => " ( ")
+    exprString = replace(exprString, ")" => " ) ")
+
+    exprArray = split(exprString," ")
+    stacksize = 0
+    graphDictionary = Dict()
+    stack = Stack{Any}()
+    treeList = []
+    
+    #Create Expression Tree
+    for element in exprArray
+        if occursin("(", element)
+            push!(stack,element)
+            stacksize += 1 
+        elseif occursin(")", element)
+            pop!(stack)
+            stacksize -= 1 
+        end
+        
+        
+        if checkNodeNames(element, nodeNamesList)
+            push!(treeList, [element,stacksize])
+        end
+    end
+    #Creates Directed Graph  
+    g = SimpleDiGraph()
+    symbolKeyDict = Dict()
+    intVertexKeyDict = Dict()
+    treeLevel = -1
+    verticesCount = 1  
+    currTreeLevel = 0
+    for i = 1:length(treeList)
+        #if first node
+    #     println("**************************")
+    #     println(treeList[i])
+
+        if i == 1      
+            treeLevel = treeList[i][2]
+            add_vertices!(g, verticesCount)
+            graphDictionary[treeList[i][1]] = verticesCount
+            intVertexKeyDict[verticesCount] = treeList[i][1]
+    #         print("added vertex initial " )
+    #         println(verticesCount)
+            verticesCount += 1
+        else
+            currTreeLevel = treeList[i][2]
+#         !println(currTreeLevel)
+#         println(treeList[i][1])
+#         println(keys(graphDictionary))
+            if currTreeLevel <= treeLevel 
+                if !(treeList[i][1] in keys(graphDictionary))      
+                    add_vertices!(g, 1)
+#                 print("added vertex " )
+#                 println(verticesCount)
+#                 println(graphDictionary)
+#                 println(treeList[i-1][1])
+                    graphDictionary[treeList[i][1]] = verticesCount
+                    intVertexKeyDict[verticesCount] = treeList[i][1]
+                    verticesCount += 1 
+                end
+                    
+                add_edge!(g, graphDictionary[treeList[i-1][1]], graphDictionary[treeList[i][1]])
+#             print("added edge " )
+#             print(graphDictionary[treeList[i-1][1]])
+#             print(" to ")
+#             println(graphDictionary[treeList[i][1]])
+            end
+        end
+        treeLevel = currTreeLevel
+    end
+                
+    return g, graphDictionary
+    
 end
 # -
 

@@ -3,11 +3,20 @@
 using Random
 Random.seed!(0) # seed the random number generator to 0, for a reproducible demonstration
 using BayesNets
+# Pkg.add("Catlab")
+using Catlab
 using Pkg
 using LightGraphs
 using Catlab.WiringDiagrams
-
+# Pkg.add("DataStructures"); 
+using DataStructures;
 import Catlab.Graphics: to_graphviz
+
+# Pkg.add("TikzPictures")
+using TikzPictures
+# Pkg.add("TikzGraphs")
+using TikzGraphs
+import Catlab.Graphics: to_tikz
 include("bayesUtil.jl")
 
 ⊗(a::WiringDiagram, b::WiringDiagram) = otimes(a,b)
@@ -53,6 +62,10 @@ combinedWiring = combineBayesNets(bnList , mergeList )
 # to_graphviz(combinedWiring[1], labels=true)
 to_graphviz(combinedWiring, labels=true)
 
-
+nodeNames = ["merged_grasswet_b_grasswet", "rain", "sprinkler", "flood", "I", "Out"]
+newg, graphDictionary = getDagFromWiringD(combinedWiring, nodeNames)
+println(collect(edges(newg)))
+println(graphDictionary)
+plot(newg)
 
 
