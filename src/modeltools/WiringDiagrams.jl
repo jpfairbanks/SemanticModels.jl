@@ -20,6 +20,7 @@ function drawhom(hom, name::String, format="svg")
     g = to_graphviz(d, direction=:horizontal)
     t = Graphics.Graphviz.run_graphviz(g, format=format)
     write("$name.$format", t)
+    return g
 end
 
 """    canonical(Syntax::Module, hom)
