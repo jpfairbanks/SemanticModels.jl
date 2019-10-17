@@ -8,7 +8,7 @@ using Catlab.Graphics
 using MacroTools
 import MacroTools: postwalk, striplines
 
-export wirenames, odeTemplate, drawhom, canonical
+export wirenames, label!, odeTemplate, drawhom, canonical
 
 """    drawhom(hom, name::String, format="svg")
 
@@ -35,6 +35,15 @@ end
 wirenames(d::WiringDiagram) = foldr(union,
     map(box->union(input_ports(box), output_ports(box)),
         boxes(d)))
+
+function label!(g::Graphviz.Graph, v::Vector{String})
+    iter = Iterators.Stateful(v)
+    map(enumerate(g.stmts)) do (i,s)
+        if typeof(s) <: Edge
+            g.stmts[i].attrs[:label] = popfirst!(iter)
+        end 
+    end
+end
 
 # CODE TO CONVERT WIRING DIAGRAM TO ODE
 
