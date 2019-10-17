@@ -5,10 +5,11 @@ module WiringDiagrams
 using Catlab.WiringDiagrams
 using Catlab.Doctrines
 using Catlab.Graphics
+using Catlab.Graphics.Graphviz
 using MacroTools
 import MacroTools: postwalk, striplines
 
-export wirenames, label!, odeTemplate, drawhom, canonical
+export wirenames, label!, odeTemplate, drawhom, canonical, label!
 
 """    drawhom(hom, name::String, format="svg")
 
@@ -43,6 +44,7 @@ function label!(g::Graphviz.Graph, v::Vector{String})
             g.stmts[i].attrs[:label] = popfirst!(iter)
         end 
     end
+    return g
 end
 
 # CODE TO CONVERT WIRING DIAGRAM TO ODE
