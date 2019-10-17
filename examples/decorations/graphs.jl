@@ -13,6 +13,16 @@ walk(x::Operation, inner, outer) = outer(Operation(x.op, map(inner, x.args)))
 
 dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
 
+function equnion(a::Vector, b::Vector)
+    x = copy(a)
+    for item in b
+        if !any(item2 -> isequal(item2, item), x)
+            push!(x, item)
+        end
+    end
+    return x
+end
+
 ⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
 ⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
 ⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
@@ -22,28 +32,11 @@ function ⊔(g::PetriModel, h::PetriModel)
     newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.model.Δ]
     newΛ = [dictReplace(n, dict) for n in h.model.Λ]
     newΦ = [dictReplace(n, dict) for n in h.model.Φ]
-    @show newS
-    @show newΔ
     model(PetriModel, Petri.Model(union(g.model.S, newS), 
-                                  union(g.model.Δ, newΔ), 
-                                  union(g.model.Λ, newΛ),
-                                  union(g.model.Φ, newΦ)))
+                                  equnion(g.model.Δ, newΔ), 
+                                  equnion(g.model.Λ, newΛ),
+                                  equnion(g.model.Φ, newΦ)))
 end
-
-@variables S, I, R, I′
-
-sir = model(PetriModel, Petri.Model([S, I, R],
-                 [(S+I, 2I), (I,R)]))
-sii = model(PetriModel, Petri.Model([S, I, I′, R],
-                  [(S+I,  2I ),
-                   (S+I′, 2I′)]
-                 ))
-
-new = sir ⊔ sii
-
-println(new.model.S)
-
-println(new.model.Δ)
 # -
 
 """    AbstractMorph
@@ -107,17 +100,15 @@ function (f::FinSetMorph)(g::G) where G <: AbstractGraph
 end
 
 function (f::FinSetMorph)(g::G) where G <: PetriModel
-    @show dom(f)
-    @show func(f)
-    @show g.model.S
-    @show g.model.Δ
-    #dom(f) == g.model.S || throw(DomainError(g.model.S, "dom(f) = $(dom(f)) but nv(g) = $(nv(g))"))
-    #ϕ = func(f)
-    g
-    #map(edges(g)) do e
-    #    s,t = e.src, e.dst
-    #    Edge(ϕ(s), ϕ(t))
-    #end |> Graph
+    length(dom(f)) == length(g.model.S) || throw(DomainError(g.model.S))
+    ϕ = func(f))
+    outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
+    for i in dom(f)
+        outS[ϕ(i)] = g.model.S[i]
+    end
+    out = deepcopy(g)
+    out = deepcopy(g.model)
+    model(PetriModel, Petri.Model(outS, out.Δ, out.Λ, out.Φ))
 end
 
 # +
@@ -326,8 +317,6 @@ with the decoration of (f⊔g)(d)
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
     D = decoration(left(s)) ⊔ decoration(right(s))
-    @show D.model.S
-    @show D.model.Δ
     return Decorated(cs, (right(cs) ⊔ left(cs))(D))
 end
 # -
@@ -380,13 +369,11 @@ H′ = pushout(s)
 @show collect(edges(decoration(H′)))
 
 # +
-
-
 @variables S, I, R, I′
 
 sir = model(PetriModel, Petri.Model([S, I, R],
                  [(S+I, 2I), (I,R)]))
-sii = model(PetriModel, Petri.Model([S, I, I′, R],
+sii = model(PetriModel, Petri.Model([S, I, I′],
                   [(S+I,  2I ),
                    (S+I′, 2I′)]
                  ))
@@ -399,11 +386,14 @@ dec_g = Decorated(g, sii)
 
 s = Span(dec_f, dec_g)
 
-dump(sir.model.Δ[1][1])
+#dump(sir.model.Δ[1][1])
 
 H = pushout(s)
 
-#@show typeof(H
+@show decoration(H).model.S
+@show decoration(H).model.Δ
+
+#@show typeof(H)
 
 #@show collect(edges(decoration(H)))
 # -
