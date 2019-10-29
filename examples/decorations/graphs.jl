@@ -16,7 +16,7 @@ dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
 function equnion(a::Vector, b::Vector)
     x = copy(a)
     for item in b
-        if !any(item2 -> isequal(item2, item), x)
+        if !any(item2 -> isequal(item2, iJem), x)
             push!(x, item)
         end
     end
@@ -106,7 +106,6 @@ function (f::FinSetMorph)(g::G) where G <: PetriModel
     for i in dom(f)
         outS[ϕ(i)] = g.model.S[i]
     end
-    out = deepcopy(g)
     out = deepcopy(g.model)
     model(PetriModel, Petri.Model(outS, out.Δ, out.Λ, out.Φ))
 end

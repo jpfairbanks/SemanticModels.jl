@@ -40,35 +40,26 @@ dump(sir)
 dump(S)
 # -
 
-sir = model(PetriModel, Petri.Model([S, I, R],
-                 [(I, R), (S+I, 2I)],
-                 ))
+sir = Petri.Model([S, I, R], [(I, R), (S+I, 2I)])
 
-ir = model(PetriModel, Petri.Model([S, I, R],
-                 [(I, R)]))
+ir = Petri.Model([S, I, R], [(I, R)])
 
-seir = model(PetriModel, Petri.Model([S, I, R],
-                 [(I, R), (S+I, I+E), (E, I)],
-                 ))
+seir = Petri.Model([S, I, R], [(I, R), (S+I, I+E), (E, I)])
 
 # +
-irs = model(PetriModel, Petri.Model([S, I, R],
-                 [(I, R), (R, S)],
-                 ))
+irs = Petri.Model([S, I, R], [(I, R), (R, S)])
 
 dump(sir)
 dump(irs)
 # -
 
-sirs = model(PetriModel, Petri.Model([S, I, R],
-                 [(I, R), (S+I, 2*I), (R, S)],
-                 ))
+sirs = Petri.Model([S, I, R], [(I, R), (S+I, 2*I), (R, S)])
 
 rule = PetriModels.Span(sir, ir, seir)
 sirs′ = PetriModels.pushout(irs, sir)
-@test sirs′.model.Δ == sirs.model.Δ
+@test sirs′.Δ == sirs.Δ
 seirs = PetriModels.solve(PetriModels.DPOProblem(rule, irs))
-@test all(Set(seirs.model.Δ) .== Set([(S+I, I+E),
+@test all(Set(seirs.Δ) .== Set([(S+I, I+E),
                              (E, I),
                              (I, R),
                              (R, S)]))
@@ -78,9 +69,9 @@ r = seir
 c′ = irs
 
 l′ = PetriModels.pushout(l, c′)
-@test l′.model.Δ == sirs.model.Δ
-@test PetriModels.dropdown(l,c,l′).model.Δ == c′.model.Δ
-@test PetriModels.pushout(r, c′).model.Δ == seirs.model.Δ
+@test l′.Δ == sirs.Δ
+@test PetriModels.dropdown(l,c,l′).Δ == c′.Δ
+@test PetriModels.pushout(r, c′).Δ == seirs.Δ
 
 function Δ(m::Petri.Model, ctx=:state)
     function updateblock(exp, sym)
@@ -182,7 +173,7 @@ function Δ(m::Petri.Model, ctx=:state)
 end
 
 @show "SIR"
-Δ(l.model, :state)
+Δ(l, :state)
 # @show "IR"
 # funckit(c, :state)
 @show "SEIR"
@@ -195,7 +186,7 @@ end
 @show "SEIRS"
 # funckit(seirs, :state)
 
-exprs = Δ(sirs.model, :state)
+exprs = Δ(sirs, :state)
 m = Petri.Model([S, I, R], exprs, [
     quote
     λ_2(state) = state.γ * state.I
@@ -238,35 +229,35 @@ function test_1()
     no_transitions = Tuple{Operation, Operation}[]
     @variables A, B, C, D
     states = [A, B, C, D]
-    l = model(PetriModel, Petri.Model(states, [(A, B)]))
-    c = model(PetriModel, Petri.Model(states, no_transitions))
-    r = model(PetriModel, Petri.Model(states, [(A, B + C)]))
+    l = Petri.Model(states, [(A, B)])
+    c = Petri.Model(states, no_transitions)
+    r = Petri.Model(states, [(A, B + C)])
     rule = PetriModels.Span(l, c, r)
-    c′ = model(PetriModel, Petri.Model(states, [(B, A)]))
+    c′ = Petri.Model(states, [(B, A)])
     r′ = PetriModels.solve(PetriModels.DPOProblem(rule, c′))
-    @test r′.model.Δ == [(A, B+C), (B, A)]
+    @test r′.Δ == [(A, B+C), (B, A)]
 
     l′ = PetriModels.pushout(l, c′)
-    @test l′.model.Δ == [(A, B), (B, A)]
-    @test PetriModels.dropdown(l,c,l′).model.Δ == [(B, A)]
+    @test l′.Δ == [(A, B), (B, A)]
+    @test PetriModels.dropdown(l,c,l′).Δ == [(B, A)]
 end
 
 function test_2()
     no_transitions = Tuple{Operation, Operation}[]
     @variables A, B, C, D
     states = [A, B, C, D]
-    l = model(PetriModel, Petri.Model(states, [(A, B), (B,C)]))
-    c = model(PetriModel, Petri.Model(states, no_transitions))
-    r = model(PetriModel, Petri.Model(states, [(A, C)]))
+    l = Petri.Model(states, [(A, B), (B,C)])
+    c = Petri.Model(states, no_transitions)
+    r = Petri.Model(states, [(A, C)])
     rule = PetriModels.Span(l, c, r)
-    c′ = model(PetriModel, Petri.Model(states, [(C, D)]))
+    c′ = Petri.Model(states, [(C, D)])
     r′ = PetriModels.solve(PetriModels.DPOProblem(rule, c′))
-    @test r′.model.Δ == [(A, C), (C, D)]
+    @test r′.Δ == [(A, C), (C, D)]
 
     l′ = PetriModels.pushout(l, c′)
-    @test l′.model.Δ == [(A, B), (B, C), (C, D)]
-    @test PetriModels.dropdown(l,c,l′).model.Δ == [(C, D)]
-    @test PetriModels.pushout(rule.r, c′).model.Δ == [(A, C), (C, D)]
+    @test l′.Δ == [(A, B), (B, C), (C, D)]
+    @test PetriModels.dropdown(l,c,l′).Δ == [(C, D)]
+    @test PetriModels.pushout(rule.r, c′).Δ == [(A, C), (C, D)]
 end
 test_1()
 test_2()
@@ -329,7 +320,7 @@ end
 
 
 
-sir′ = funckit(sir.model)
+sir′ = funckit(sir)
 m = sir′
 m′ = eval(m)
 @show m′
@@ -339,7 +330,7 @@ soln = Petri.solve(p)
 @test soln.S <= 10
 @test soln.S + soln.I + soln.R == 101
 
-m′ = eval(funckit(sirs.model))
+m′ = eval(funckit(sirs))
 @show m′
 @show typeof(m′)
 p = Petri.Problem(m′, ParamSIR(100, 1, 0, [0.15, 0.55/101, 0.15]), 250)
@@ -349,5 +340,5 @@ sirs_soln = Petri.solve(p)
 @show soln
 @show sirs_soln
 
-m′ = Petri.eval(funckit(seirs.model))
+m′ = Petri.eval(funckit(seirs))
 # @code_native m′.Δ[1](ParamSIR(100, 1, 0, [ 0.15, 0.55/101, 0.15, 0.1 ]))
