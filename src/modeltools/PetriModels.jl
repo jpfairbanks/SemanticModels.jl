@@ -6,13 +6,15 @@ using Petri
 using ModelingToolkit
 import ModelingToolkit: Constant, Variable
 using MacroTools
-import MacroTools: postwalk
+import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
 
 using SemanticModels.ModelTools
+using SemanticModels.ModelTools.Decorations
+import SemanticModels.ModelTools.Decorations: ⊔, FinSetMorph
 import SemanticModels.ModelTools: model
 
-export PetriModel, model, rewrite!, Span, DPOProblem, solve, pushout, dropdown, equnion
+export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, pushout, dropdown, equnion, ⊔
 
 const PetriModel = Petri.Model
 
@@ -65,14 +67,14 @@ function rewrite!(pm::PetriModel, pm2::PetriModel, f::Dict)
     end
 end
 
-struct Span{L,C,R}
+struct PetriSpan{L,C,R}
     l::L
     c::C
     r::R
 end
 
 struct DPOProblem
-    rule::Span
+    rule::PetriSpan
     c′::PetriModel
 end
 
@@ -86,6 +88,35 @@ function equnion(a::Vector, b::Vector)
         end
     end
     return x
+end
+
+
+dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
+
+function ⊔(g::PetriModel, h::PetriModel)
+    dict = Dict(i => any(isequal.(i, g.S)) ? i : Operation(i.op, Expression[ModelingToolkit.Constant(2)]) for i in h.S)
+    newS = [dictReplace(n, dict) for n in h.S]
+    newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.Δ]
+    newΛ = [dictReplace(n, dict) for n in h.Λ]
+    newΦ = [dictReplace(n, dict) for n in h.Φ]
+    Petri.Model(union(g.S, newS), 
+                equnion(g.Δ, newΔ), 
+                equnion(g.Λ, newΛ),
+                equnion(g.Φ, newΦ))
+end
+
+
+function (f::FinSetMorph)(g::G) where G <: PetriModel
+    @show dom(f)
+    @show length(g.S)
+    length(dom(f)) == length(g.S) || throw(DomainError(g.S))
+    ϕ = func(f)
+    outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
+    for i in dom(f)
+        outS[ϕ(i)] = g.S[i]
+    end
+    out = deepcopy(g)
+    Petri.Model(outS, out.Δ, out.Λ, out.Φ)
 end
 
 
