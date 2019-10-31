@@ -56,19 +56,24 @@ H′ = Decorations.pushout(s)
 # +
 @variables S, I, R, I′
 
+# Create S -> I -> R model
 sir = Petri.Model([S, I, R], [(S+I, 2I), (I,R)])
+
+# Create Susceptible to 2 diseases model
 sii = Petri.Model([S, I, I′], [(S+I,  2I ), (S+I′, 2I′)])
 
+# Decorate a finite set with SIR
 f = FinSetMorph(1:3, [1, 2])
 dec_f = Decorated(f, sir)
 
+# Decorate a finite set with SII
 g = FinSetMorph(1:3, [1, 2])
 dec_g = Decorated(g, sii)
 
+# Create a span of decorated morphisms
 s = Span(dec_f, dec_g)
 
-#dump(sir.model.Δ[1][1])
-
+# Solve the pushout that combines the two Petri decorations
 H = Decorations.pushout(s)
 
 @show decoration(H).S

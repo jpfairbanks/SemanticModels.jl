@@ -26,7 +26,7 @@ We focus on three problems:
 
 1. **Model augmentation:** taking an existing model and modifying its components to add features or make comparisons.
 2. **Metamodel construction:** combining models or components of models to automatically generate scientific computing workflows.
-3. **Model Verification:** given a model, corpus of previous applications of that model, and an input to the model, detect if the model is properly functioning.
+3. **Model verification:** given a model, corpus of previous applications of that model, and an input to the model, detect if the model is properly functioning.
 
 SemanticModels leverages technology from program analysis and natural language processing in order to build a knowledge
 graph representing the connections between elements of code (variables, values, functions, and expressions) and elements
@@ -45,7 +45,6 @@ Pages = [
      "modeltools.md",
      "example.md",
      "theory.md",
-     "dubstep.md",
      "graph.md",
      "extraction.md",
      "validation.md",
