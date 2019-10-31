@@ -14,7 +14,7 @@ MAX_STATES = 20
 X = @variables(X[1:MAX_STATES])[1]
 STATELOOKUP = Dict(s.op.name=>i for (i,s) in enumerate(X))
 
-const OpenPetri{V} = OpenModel{V, PetriModel}
+const OpenPetri{V} = OpenModel{V, Petri.Model}
 
 ⊕(v::Vector, w::Vector) = vcat(v,w)
 # ⊕(v::Vector{Int}, w::Vector{Int}) = vcat(v,w.+length(v))
@@ -27,7 +27,7 @@ function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
     return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
 end
 
-function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector{Int}}
+function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int}, Md<:Petri.Model}
     f.model.S
     g.model.S
     nf = length(f.model.S)
@@ -56,7 +56,7 @@ function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector{Int}}
 
     newstatespace = collect(1:(nf+ng))
     M = Petri.Model(newstatespace, newtransitions)
-    return OpenPetri(f.dom ⊕ (g.dom .+ nf), M, f.codom ⊕ (g.codom .+ nf))
+    return OpenModel(f.dom ⊕ (g.dom .+ nf), M, f.codom ⊕ (g.codom .+ nf))
 end
 
 function equnion(a::Vector, b::Vector)
@@ -71,7 +71,7 @@ end
 
 ∈(x::Operation, S::Vector{Operation}) = any(isequal.(x,S))
 
-function compose(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
+function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md<:Petri.Model}
     Y = f.codom
     Y′ = g.dom
     @assert length(Y) == length(Y′)
@@ -122,9 +122,9 @@ function compose(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
     Z′ = map(Z) do z
         findfirst(x->isequal(x, newstates[X[z]]), X)
     end
-    return OpenPetri(f.dom, Mp_yN, Z′)
+    return OpenModel(f.dom, Mp_yN, Z′)
 end
 
-eye(n::Int) = foldr(otimes, [OpenPetri([1], NullPetri(1), [1]) for i in 1:n])
+eye(n::Int) = foldr(otimes, [OpenModel([1], NullPetri(1), [1]) for i in 1:n])
 
 end
