@@ -1,5 +1,39 @@
 # News
 
+## Release v0.3.0
+
+Release v0.3.0 is a major facelift on the new model augmentation tools introduced the the last release. This includes a more robust design, easier model implementation, and more built in features to augment and compose models.
+
+- New submodules
+    - ModelTools
+        - [`SemanticModels.ModelTools.CategoryTheory`](@ref) the main module that contains the category theory based building blocks for model augmentation
+            - [`SemanticModels.ModelTools.CategoryTheory.AbstractMorph`](@ref) abstract type for representing morphisms
+            - [`SemanticModels.ModelTools.CategoryTheory.FinSetMorph`](@ref) morphism in the category of finite sets
+            - [`SemanticModels.ModelTools.CategoryTheory.GraphMorph`](@ref) morphism in the category of graphs
+            - [`SemanticModels.ModelTools.CategoryTheory.⊔`](@ref) get the union of two categorically defined models or morphisms
+            - [`SemanticModels.ModelTools.CategoryTheory.Decorated`](@ref) a type representing a decoration applied to the objects of a morphism
+            - [`SemanticModels.ModelTools.CategoryTheory.AbstractSpan`](@ref) an abstract type for representing spans
+            - [`SemanticModels.ModelTools.CategoryTheory.Span`](@ref) general span of two morphisms
+            - [`SemanticModels.ModelTools.CategoryTheory.AbstractCospan`](@ref) an abstract type for representing cospans
+            - [`SemanticModels.ModelTools.CategoryTheory.Cospan`](@ref) general cospan of two morphisms
+            - [`SemanticModels.ModelTools.CategoryTheory.pushout`](@ref) solve the pushout defined by a span
+        - [`SemanticModels.ModelTools.PetriModels`](@ref) Extends ModelTools and the new CategoryTheory API to support models defined in [Petri.jl](https://github.com/mehalter/Petri.jl)
+        - [`SemanticModels.ModelTools.OpenModels`](@ref) module for defining an open model where there are defined inputs and outputs, domain and codomain
+        - [`SemanticModels.ModelTools.OpenPetris`](@ref) module for implementing the open petri model, and converting a PetriModel to an OpenPetri
+            - [`SemanticModels.ModelTools.OpenPetris.otimes`](@ref) combine two open petri models in parallel
+            - [`SemanticModels.ModelTools.OpenPetris.compose`](@ref) combine two open petri models in series
+- New examples
+    - `decorations/graphs.jl` example of using the new Category Theory based Morphism API to combine graphs and Petri models
+    - `petri/malaria.ipynb` example of utilizing the new OpenModel API to combine a Lotka Volterra model and an Epidemiology model to simulate Malaria spreading between a population
+    - `petri/rewrite_demo.jl` example of using rewrite rules to augment a Petri model
+    - `petri/rewrite.jl` more detailed example of using rewrite rules to augment a Petri model and then solving the new models using both agent based models and differential equations
+    - `petri/wiring_petri.jl` example of creating a model using wiring diagrams, converting that to a Petri model, and solving
+- New docs pages
+    - Removed Dubstep
+    - Updates to ModelTools
+    - Updates to Theory
+    - Replaced Flu Model walkthrough with Malaria example
+
 ## Release v0.2.0
 
 Release v0.2.0 include an inital version of our new model augmentation tools and program analysis features.
