@@ -2,7 +2,7 @@
 
 ## Release v0.3.0
 
-Release v0.3.0 is a major facelift on the new model augmentation tools introduced the the last release. This includes a more robust design, easier model implementation, and more built in features to augment and compose models.
+Release v0.3.0 is a major enhancement to the new model augmentation tools introduced the the last release. This includes a more robust design, easier model implementation, and more built in features to augment and compose models.
 
 - New submodules
     - ModelTools
