@@ -2,7 +2,7 @@
 using LightGraphs
 using SemanticModels
 using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.Decorations
+using SemanticModels.ModelTools.CategoryTheory
 using ModelingToolkit
 using Petri
 
@@ -47,7 +47,7 @@ dec_f = Decorated(f, b)
 # Create the span of decorated morphisms
 s = Span(dec_f,dec_g)
 # Solve for the decorated cospan that solves the pushout defined by the span
-H′ = Decorations.pushout(s)
+H′ = CategoryTheory.pushout(s)
 
 @assert H == decoration(H′)
 
@@ -74,7 +74,7 @@ dec_g = Decorated(g, sii)
 s = Span(dec_f, dec_g)
 
 # Solve the pushout that combines the two Petri decorations
-H = Decorations.pushout(s)
+H = CategoryTheory.pushout(s)
 
 @show decoration(H).S
 @show decoration(H).Δ

@@ -10,8 +10,8 @@ import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
 
 using SemanticModels.ModelTools
-using SemanticModels.ModelTools.Decorations
-import SemanticModels.ModelTools.Decorations: ⊔, FinSetMorph
+using SemanticModels.ModelTools.CategoryTheory
+import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
 import SemanticModels.ModelTools: model
 
 export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, pushout, dropdown, equnion, ⊔

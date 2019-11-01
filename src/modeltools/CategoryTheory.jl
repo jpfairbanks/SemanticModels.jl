@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Decorations
+module CategoryTheory
 
 using LightGraphs
 using SemanticModels
