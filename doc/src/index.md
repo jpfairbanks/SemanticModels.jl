@@ -44,6 +44,7 @@ Pages = [
      "news.md",
      "modeltools.md",
      "example.md",
+     "malaria.md",
      "theory.md",
      "graph.md",
      "extraction.md",
@@ -52,7 +53,6 @@ Pages = [
      "kgtypes.md",
      "approach.md",
      "slides.md",
-     "FluModel.md",
      "contributing.md"]
 Depth = 3
 ```
