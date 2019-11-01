@@ -6,15 +6,19 @@
 ![ModelTools](img/semanticmodels_jl.dot.svg)
 
 ModelTools provides the functionality for model augmentation. It is named after the great metaprogramming package
-[MacroTools.jl](https://github.com/MikeInnes/MacroTools.jl/). With ModelTools, you treat models as code and metaprogram
-on them like Lisp programs. This part of SemanticModels really shows how Julia could have been named HPC Lisp.
+[MacroTools.jl](https://github.com/MikeInnes/MacroTools.jl/). With ModelTools, you treat models as symmetric monoidal categories and metaprogram on them using morphisms in their category.
 
 1. Introduce a new class of models to analyze by writing a struct to represent models from class $\mathcal{C}$ along
-   with a constructor `model(::C, ex::Expr)`.
-1. Define a set of transformations (`T<:ModelTools.Transformation`) that are valid on that class of models
-1. Use SemanticModels functions to implement the constructor and transforms.
-1. Write programs that take models (as ASTs) and returns novel models (`<:ModelTools.AbstractModel`)
-1. Analyze compositions of transformations and compare new models with old models (Metamodeling)
+   with a constructor `model(::C,...)` to build the struct.
+1. Define a morphism from `FinSet` to $\mathcal{C}$ as fuction `(f::FinSetMorph)(g::G) where G <: C`
+1. Define the disjoin union between two models of class $\mathcal{C}$ as `⊔(g::C, h::C)`
+1. Define models of class $\mathcal{C}$ as a decoration on a finite set, and use pushout and double pushouts to transform the model
+
+To extend this new class of models to support composition with open systems:
+
+1. Introduce a new class of `OpenModel` along with a constructor that extends `OpenModel{V, C}`
+1. Define otimes and compose for the new `OpenModel`
+1. Convert models of class $\mathcal{C}$ to `OpenModel{V, C}` with a defined domain and codomain, and do model composition
 
 Under this workflow SemanticModels is more of a framework than a library, but it is extensible and can be used to take
 real world modeling code and build a modeling framework around it, rather than building a modeling framework and then
@@ -31,9 +35,8 @@ notebooks with jupytext or as rendered HTML pages in the docs.
 ### Model Augmentation
 
 These examples illustrate model augmentation with ModelTools
-1. [agentbased.jl](examples/html/agentbased.html)
-1. [agentgraft.jl](examples/html/agentgraft.html)
-1. [odegraft.jl](examples/html/odegraft.html)
+1. [rewrite_demo.jl](examples/html/rewrite_demo.html)
+1. [graphs.jl](examples/html/graphs.html)
 
 ### Algebraic Model Transformation
 These examples illustrate how model transformations can be algebraic structures
@@ -103,11 +106,10 @@ usage for a given library, what is the implicit DSL that users have developed?
 Our workflow is:
 
 1. Identify a widely used library
-1. Gather code samples that use that library
-1. Process the corpus to build a representation of how that library "should" be used
+1. Extend SemanticModels by implementing the couple necessary category theory functions in terms of the library
 1. Build a DSL for that class of problems
 1. New researchers and AI scientists can use the new DSL for representing the novel models
-1. Generate new models in the DSL using transformations that are valid in the DSL.
+1. Generate new models in the DSL using transformations and augmentations that are valid in the DSL.
 
 In this line of inquiry the DSL plays the role of the "structured semantic representation" of the model. We could use
 ModelingToolkit DSLs as the backend.
@@ -118,12 +120,12 @@ ModelingToolkit DSLs as the backend.
 Modules = [SemanticModels.ModelTools]
 ```
 
-### Transformations
+### Category Theory
 
-The following transformations ship with ModelTools, you can use them as templates for defining your own model classes.
+The following Category Theory operations ship with ModelTools, you can use them as templates for defining your own model classes.
 
 ```@autodocs
-Modules = [SemanticModels.ModelTools.Transformations]
+Modules = [SemanticModels.ModelTools.CategoryTheory]
 ```
 
 ### Model Classes 
@@ -131,7 +133,11 @@ Modules = [SemanticModels.ModelTools.Transformations]
 The following model class ship with ModelTools, you can use them as templates for defining your own model classes.
 ```@autodocs
 Modules = [SemanticModels.ModelTools.SimpleModels,
-SemanticModels.ModelTools.ExpStateModels, SemanticModels.ModelTools.ExpODEModels]
+SemanticModels.ModelTools.ExpStateModels, SemanticModels.ModelTools.ExpODEModels,
+SemanticModels.ModelTools.WiringDiagrams,
+SemanticModels.ModelTools.PetriModels,
+SemanticModels.ModelTools.OpenModels,
+SemanticModels.ModelTools.OpenPetris]
 ```
 
 ## Index

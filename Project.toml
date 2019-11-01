@@ -1,7 +1,7 @@
 name = "SemanticModels"
 uuid = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"
 authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>", "Micah Halter <micah.halter@gtri.gatech.edu>"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -28,6 +28,7 @@ Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+
 [extras]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
@@ -39,7 +40,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 ModelingToolkit = ">=0.6"
+Catlab = ">=0.3"
 
 [targets]
 test = ["DifferentialEquations", "LsqFit", "Polynomials", "Printf", "Statistics", "Test"]
-

@@ -2,7 +2,7 @@
 
 ## What is a model?
 
-The goal of science is to build models of natural phenomena that explain how they work.
+The goal of science is to build models of natural phenomena that explain the world.
 Scientists build these models by conducting data gathering phenomena and using math to represent these experiments.
 This sets up a balancing act between the two traits that make for a good scientific model, 
 it must first match the data collected and also be able to explain the phenomena.
@@ -16,56 +16,290 @@ power is some combination of generalization, parsimony, and consistency with the
 
 This formulation is notional in the current state of the art, because models are not a well parameterized space.
 The goal of this project is to identify subspaces that can be parameterized using algebraic structures and represent
-those subspace symbolically so that computers can represent them and perform optimization.
+those subspace symbolically so that computers can represent them and perform optimization over model structure in 
+addition to model parameters.
 
-## Analyzing scientific models as programs
-We can consider three different problems for semantic modeling
+The philosophy of science 
+[Kuhn 1962](https://en.wikipedia.org/wiki/The_Structure_of_Scientific_Revolutions)
+tells us that scientists don't make models in a vacuum, they are usually working
+within a scientific paradigm. These paradigms are often given names like
+"Newton's Theory of Classicial Mechanics" or "Einstein's Theory of General
+Relativity". Within these *theories*, specific scenarios are explained with
+*models* which instantiate the theory. While in scientific practice there are
+many types of theories, some more mathematical than others, we will focus on
+modeling frameworks as implementations of scientific theories and the models you
+can build within a framework as implementations of scientific models within that
+theory.
 
-1. *Model Modification:* Given a model $M$ and a transformation $T$ construct a
-   new model $T(M)$.
-2. *Metamodel construction:* Given a set of a possible component models
-   $\mathcal{M}$, known independent variables $\mathcal{I}$, and a set of
-   desired dependent variables $V$, and a set of rules for combining
-   models $R$construct a combination of models $m\in\mathcal{R(M)}$ that takes
-   as input $\mathcal{I}$ and evaluates the dependent variables $V$.
-3. *Model Validation:* Given a model $M$ and a set of properties $P$ and input
-   $x$, determine if the model satisfies all properties $P$ when evaluated on
-   $x$
-   
-A model $M=(D,R,f)$ is a tuple containing a set $D$, called the domain, and a
-set $R$, called the co-domain with a function $f:D\mapsto R$. If $D$ is the cross
-product of sets $D_1 \times D_2 \cdots D_k$ then the and $f = f(x_1\dots x_k)$
-where $x$ are the independent variables of $M$. If $R=R_1\times R_2\cdots r_d$
-then $R_i$ are the dependent variables of $M$. 
+### Modeling Frameworks as a Paradigm of Paradigms
+Computational Science is a scientific discipline concerned with the interaction
+of computations, mathematics, and domains science and thus, must have a paradigm
+of its own. In the pre-paradigm phase scientists just wrote Fortran programs to
+make their models and would have been unable to articulate a theory of which
+programs constitute a class of models. The dominant paradigm currently is the
+modeling framework, where a small group of scientists write a library or design
+a programming language for expressing all possible models within a scientific
+domain and then a larger group of scientists use the library in diverse
+experimental or theoretical contexts. The rules of the domain are a \"scientific
+paradigm\" and the modeling framework is an implementation of it in software.
 
-A Modeling framework $(U,M,R)$is a universe of sets $U$, class of models
-$\mathcal{M}$, and a set of rules $R$. Such that the domains and co-domains of
-all models in $\mathcal{M}$ are elements of $\mathcal{U}$, and the class of
-models is closed under composition when the rules are satisfied. If $R(M_1,
-\dots M_n)$ then $\circ\left(M_1\dots M_n\right)\in \mathcal{M}$. Composition of
-models is defined as 
+####  History of the Modeling Framework Paradigm
 
-$$\circ(M_1, \dots, M_n)=(D_1\times\dots\times D_{n-1}, R_1\times\dots\times R_{n-1}, \circ (f_1(x_1),\dots f_{n_1}(x_{n-1}))$$ 
+When scientists were first given access to computers, they wrote
+programs directly and every scientist doing computational work
+needed to write FORTRAN programs in order to implement their ideas.
+This worked for a while until the complexity of the algorithms
+needed to solve models on increasingly complex hardware exceeded the
+ability of scientists to become an expert in both the scientific
+domain and computer programming. Thus, the first modeling languages
+were born. Tools like MATLAB and Mathematica allowed scientists to
+learn a programming language that hid the complexity of computer
+programming from them and allowed them to focus on their domain
+knowledge and model construction.
 
-In order to build a useful DAG, a class of models should contain models such as
-constants, identity, projections, boolean logic, arithmetic, and elementary
-functions.
+Modeling languages more tightly coupled to the scientific discipline
+achieved great success. This includes Stan for Bayesian models,
+Simulink for signal processing with dataflow programs, and AML for
+algebraic modeling of optimization problems.
 
-We also need to handle the case of model identification. There are certain
-models within a framework that are essentially equivalent. For example if $D_1$
-and $D_2$ are sets with homomorphism $g:D_2\mapsto D_1$, then $M_1 = (D_1, R, f)
-= (D_2, R, f \circ g)$ are equivalent as models. In fact $(D_2, D_1, g)$ should
-be included in the class of models in a modeling framework.
+This paradigm flourished from the late 1970s until modern systems.
+The flaws in the monolithic modeling language were exposed by
+software libraries embedded in fully featured programming languages.
+Python and R for scientific modeling and statistical modeling
+respectively after the late 2000s. As the models grew in complexity
+and the scientific workloads became more data driven, scientists had
+to do more diverse computing tasks such as downloading and cleaning
+data from websites, interacting with network APIs, and managing
+large data files.
 
-We need a good theoretical foundation for proving theorems about manipulating
-models and combining them. Categories for Science may be
-that foundation.
+The frameworks have been able to succeed because they separate
+concerns, the implementers of the framework carve out a space of
+scientific computing to address (for example signal flow graphs or
+finite element simulations) and implement the mathematical
+algorithms of that scientific domain. The frameworks closely match
+the underlying scientific paradigms that they implement. Then the
+modelers can proceed in what Kuhn calls, *normal science* whereby
+they make and interrogate models within the framework. When the
+modelers get to the point were the framework cannot handle their
+problems (a *crisis*) they expand the framework or write a new one.
 
-The work of Evan Patterson on building semantic representations of data science
-programs is particularly relevant to these modeling questions
-[SRDSP](https://www.epatters.org/assets/papers/2018-semantic-enrichment-ijcai-demo.pdf "Semantic Representations of Data Science Programs").
-[Patterson 2018](https://www.epatters.org/assets/papers/2018-semantic-enrichment-kdd.pdf "Teaching machines to understand data science code by
-semantic enrichment of dataflow graphs") 
+1.  Connections to Algebraic Theories
+
+    Mathematical Reasoning has been the dominant paradigm of
+    mathematics since Descartes and over the centuries various
+    subfields of mathematics have undergone crises and paradigm
+    shifts such as the early 20th century revolutions of formal
+    logic, the everyday practice of modern mathematics would be very
+    familiar to the early modern scholars.
+
+    In the field of Algebra, the study of mathematical structure,
+    there are various *theories* that represent different types of
+    mathematical structures. For example, *groups* represent systems
+    of multiplication with identity, and *rings* are systems of
+    addition and multiplication that respect a distributive law. The
+    algebraic theory provides for a types of elements and tuple of
+    operations that must satisfy some equations. Each theory of
+    algebra is a different type of number system that can be used
+    for multiple scientific and engineering applications. Within a
+    theory of algebra, there are *models* that instantiate the
+    theory with specific sets of elements and specific operations
+    that satisfy the equations. Practitioners of algebra study both
+    the theory in general and specific models in particular. Thus
+    theorems in group theory come primarily in two varieties, \"let
+    G be a group ...\" or \"let $D_n$ be the dihedral group on $n$
+    points\" and then go on to state a consequent either for the
+    theory or the named models.
+
+2.  What is a Framework?
+
+    Software modeling frameworks are similar, in that they define a
+    theory of possible models that can be implemented with the
+    framework, and provide algorithms for answering queries about
+    those models. Since modeling frameworks are often built out of
+    programming languages in an *ad hoc* manner, they suffer flaws
+    of design. We propose two criteria for evaluating the quality of
+    a modeling framework:
+
+    1.  **correctness**, the framework can represent all models
+        within the domain paradigm it purports to implement, and
+    2.  **efficiency**, the framework provides efficient solvers for
+        real world problems of "normal science" within that
+        paradigm.
+
+    Such software then *implements* a scientific paradigm. The scope
+    of a paradigm is determined by the practitioners of the field.
+    The community of users of a framework together form a discipline
+    of scientific computing. A good modeling framework should have a
+    tight correspondence to a specific mathematical or scientific
+    theory. For example a system for modeling chemical systems
+    should use a syntax similar to the reaction network equations of
+    modern chemistry and be able to efficiently compute equilibria
+    and dynamics of complex chemical systems.
+
+    Some frameworks are so broad that they seem to span multiple
+    paradigms. For example, the modeling framework MATLAB defines
+    its scope as numerical computing, which is so broad so as to
+    seem all encompassing. Since existing modeling frameworks
+    developed organically in response to the needs of practical
+    scientists and engineers, they have unclear and disputed
+    boundaries not unlike borders on a map of unexplored territory.
+    Typically, the closer a domain specific modeling language
+    matches the domain it implements, the more powerful the tools
+    for analyzing the models, at the other end of the spectrum are
+    general purpose programming languages, which can express any
+    computable model, but cannot provide insight in a structured
+    way. One goal of computational science and engineering is to
+    provide formal constructions of modeling frameworks given a
+    formal definition of a scientific paradigm.
+
+#### Problems in the Modeling Framework Paradigm
+
+As the complexity of our models grows and the diversity of our analysis of the
+model increases, the modeling framework paradigm faces growing problems. The
+acute problems of the domain are:
+
+  Problem                          Attempted Solutions
+  -------------------------------- --------------------------------------------------------------------
+  Efficient Simulation of Models   Auto Parallelizing Compilers
+  Correctness V&V                  Unitful Quantities and Type Systems
+  Model Fusion                     Networking protocols and API standardization
+  Model Selection                  Parameterizing the space of models and applying genetic algorithms
+  Data Driven Modeling             Replace deterministic components of models with ML models
+  Parameter Estimation             Gradient free optimization, approx bayesian computing, autograd
+  Optimization                     Auto differentiation through programs
+
+###  The Computational Science of the Future
+
+While scientists have been using framework driven computing for
+decades, mathematicians have been unifying the two great pillars of
+modern mathematics -- Analysis, the mathematics evolved from
+differential and integral calculus, and Algebra, the study of
+mathematical structure. This grand unified theory is Category
+Theory, which was developed to unify Algebraic Topology, but has
+recently found direct application to the analysis of scientific
+systems.
+
+Scientific theories like the chemical reaction networks of Petri are
+amenable to formalization and explanation as categories, where the
+algebraic and analytic structures are made explicit. With applied
+category providing a new generation of applied mathematics to
+understand scientific phenomena, and the deep connection between
+category theory and functional programming, a new generation of
+scientific software can be developed.
+
+#### Software that understands science
+
+Just as the structure of the modeling framework forces the modeler
+to stay within the paradigm, ACT based modeling software will
+provide structure to the programs written by scientists. The benefit
+of ACT based software is that the paradigmatic rules will be made
+explicit. They set of objects in a category define the scope of
+concepts that can be included in a model, and the set of primitive
+morphisms define the possible relationships between those concepts.
+Thus by specifying a category, you explicitly construct the *rules*
+of the modeling paradigm.
+
+Once made precise, this structure can be exploited by algorithms
+that understand the modeling framework. Modeling frameworks that
+form a monoidal category provide for combination of models by
+sequential and parallel composition. Modeling frameworks that form
+an adhesive category provide also the structure of double pushout
+(DPO) rewriting, which enables reasoning over *model space* by
+analogy.
+
+In order to say that algorithms *understand* models, we must
+operationalize a definition of understanding.
+
+1.  **Rejection of ill-formed models**: any modeling framework
+    defines a scope of possible models and must be able to detect a
+    program that specifies a model outside that scope. Scientists
+    use a lay type system when checking formulas by hand. This type
+    system gives all quantities a *sort* which allows them to check,
+    \"this formula doesn\'t make sense, because it combines two
+    numbers of different sorts\". For example unit-checking is a
+    form of type checking that rejects mechanical models that add
+    quantities with different units, such as $5m + 3m/s$. Any
+    modeling framework worth using must have the ability to
+    recognize well formed models.
+
+2.  **Explanation of model differences**: a human scientist can see
+    multiple scientific models and describe the differences. For
+    example \"the heat equation on a square surface with Dirichlet
+    boundary conditions\" differs from \"the heat equation on a
+    circular surface with von Neumann boundary conditions\" in both
+    *surface shape* and *boundary conditions* aspects. Scientists
+    working within a common paradigm have a similar
+    conceptualization of these aspects and how models inhabit them,
+    even if they do not have a formal system of describing these
+    aspects. An algorithm that understands models should be able to
+    explain such differences when presented with similar models.
+
+3.  **Comprehension of model neighborhoods**: a useful technique for
+    model construction is to take an existing model from the
+    literature and perturb it into a novel model that is adapted to
+    the current experimental or observational context. An algorithm
+    that understands models should be able to provide novel models
+    that are in the *neighborhood* of any given model.
+
+These three types of model comprehension are interlinked. The
+rejection of ill-formed models (or recognition of well-formed
+models) defines a scope of all possible models that is used in
+framing the explanation of model differences and comprehension of
+model neighborhoods. To describe model differences in terms of
+aspects is one way to parameterize model neighborhoods and then
+specify the relative location of two models within the implied
+topology.
+
+#### New Problems
+
+If computational science is to be thought of as a discipline in its own right,
+it must have content beyond, "the parts of applied math and computer science
+that are useful to scientists." We can outline several problems of interested
+within this discipline.
+
+1.  **Modeling Framework Construction**: Given a definition of the scientific
+    theory as a category, generate a domain specific language for expressing
+    models within that theory. Such models should be easy to write and the
+    system should retain enough of the problem structure to execute solution
+    algorithms.
+
+2.  **Modeling Framework Analysis**: Given a DSL and solver algorithm, derive a
+    presentation of a category. This is the inverse problem of the modeling
+    framework construction problem.
+
+3.  **Compositional solvers**: If the modeling framework is compositional, for
+    instance based on monoidal categories, then the solution to scientific
+    queries about that model should be compositional. Any property of the model
+    should be able to be computed based on the properties of its components. For
+    example, a chemical equilibrium of two independent systems is a combination
+    of the equilibria of the two component systems. Numerical solution
+    algorithms that exploit this compositional structure of the models should be
+    faster or more accurate than naive techniques. The development of
+    compositional solvers should alleviate the crisis of complexity presented by
+    multiscale and multiphysics simulations.
+
+4.  **Universal data structures for partially symbolic computing**: Given
+    intimate connections between applied category theory and diagrammatic
+    languages, there should be universal data structures for representing
+    models. For example in any monoidal category, there is a system of wiring
+    diagrams that can be used to draw morphisms. Algorithms for analyzing models
+    that are built on manipulations of these data structures will be universal
+    across modeling frameworks. By developing algorithms that work with models
+    from multiple frameworks, we can make leverage increasingly sophisticated
+    algorithms while proliferating frameworks to every area of science.
+
+5.  **Automated Metamodeling**: A lot of scientific activity involving models
+    involves higher order functions on models. Model selection is a process that
+    takes a class of models and a data set and returns the best model from the
+    class given the data. Sensitivity analysis and uncertainty quantification
+    are modeling activities that take a model and provide another model that
+    computes the sensitivities or uncertainties of the given model. Once
+    algorithms can be built that understand the rules of a scientific paradigm,
+    these metamodeling activities can be automated
+
+6. **Model Fusion**: Given models in two different frameworks, design and
+   implement an interface that allows you to combine those two models in a
+   meaningful way.
 
 ## Categories for Science
 
@@ -93,7 +327,7 @@ want to push that to expanding.
 ### Ologs
 
 Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used
-to precisely specify what a scientist is talking about (see [Spivak Kent 2012](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0024274) "Ologs: A Categorical Framework for Knowledge Representation."). 
+to precisely specify what a scientist is talking about (see [Spivak, Kent 2012](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0024274) "Ologs: A Categorical Framework for Knowledge Representation."). 
 
 An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the
 name of the aspect. An aspect is valid if it is a function (1-many relation). 
@@ -146,7 +380,7 @@ language.
 
 Our goal is to extract and encode the maximum amount of information from scientific codes into the type system. The type
 system is analyzable as a category. Thus we can look at the category of types and analyze the integrety of the programs.
-For example if there are two types $S,T$ and two functions $f,g: S\arrow T$ such that $Codom(f) = Codom(g)$ but
+For example if there are two types $S,T$ and two functions $f,g: S\rightarrow T$ such that $Codom(f) = Codom(g)$ but
 $Range(f) \cap Range(g)$, then we say that the type system is ambiguous in that there are two functions that use
 disjoint subsets of their common codomain. In order to more fully encode program semantics into the type system, the
 programmer (or an automated system) should introduce new types to the program to represent these disjoint subsets.
@@ -184,6 +418,205 @@ separately to show how the compiler has been taught to understand the semantics 
 ![The typegraph understand the transition graph of the agents](img/type_DFA.dot.svg)
 
 The embedding of model semantics into the type system enables programs to reason over the behavior of the models.
+
+# Theoretical Understanding of Modeling
+
+Models are mathematical objects that behave like functions, but are not well
+captured by the ordinary definition of mathematical function. They are also not
+captured by programming language functions or subroutines. Mathematical
+functions only care about the association between input and output values of the
+function, and programming languages are concerned with troublesome implementation
+details. We need a representation of models that is aware of the internal
+structure of the model, but also captures the functional nature. We
+also think of models as representing systems, and a fundamental property of
+systems is that you can compose them to get complex systems out of simples ones.
+
+Category Theory (CT) generalizes the notion of sets and functions to discuss
+*objects* and *morphisms*. In our notation, a modeling framework corresponds to
+a category, and the models that you can express in that framework are the
+morphisms in that category.
+
+Monoidal Categories are Categories that have two types of composition
+($\circ, \otimes$), the first corresponds to sequential processes and resembles
+the function composition. The second, represents parallel or independent
+combination of two models.
+
+1. Objects: $W,X,Y,Z$
+1. Morphisms: $f:X\rightarrow Y$, $g:Y\rightarrow Z$
+1. Composition: $g\circ f = fg:X\rightarrow Z$
+1. Combination: $f:X\rightarrow Y, g: W\rightarrow Z$ implies $f\otimes g:
+   (X\otimes W) \rightarrow (Y\otimes Z)$
+
+In this language we call the objects *domains*, the morphisms *models*.
+Composition is feeding the output of one model as the input to another, and
+$f\otimes g$ is parallel or independent combination of $f$ and $g$. There are
+equations for $\circ, \otimes$ like associativity that are necessary to show
+that $\circ, \otimes$ respect each other. We consider each Monoidal
+Category (MC) to be an example of a modeling framework. Many existing areas of
+mathematical modeling were developed as MCs without knowing it, because the
+idea of composition and combination are very natural for decomposing physical
+systems into their component parts.
+
+## Examples of Modeling Frameworks
+
+The following mathematical modeling frameworks are both widely used in science
+and engineering, and are examples of Monoidal Categories.
+
+1. Petri Nets (Figure 1)
+1. Bayesian Networks (Figure 2)
+1. Matrices and Linear Algebra
+1. Dataflow programs used in Signal Processing
+1. Controls Algorithms
+1. Machine Learning Workflows
+1. Neural Networks
+1. Models of Quantum Computation
+
+![Petri Nets have associated wiring diagrams](img/theory/seirds_wire_petri.png)
+
+![Bayesian Networks have associated wiring diagrams (Figure Credit: Jacobs, Kissinger, and Zanasi, 2019)](img/theory/bayesian_models.png)
+
+MCs provide you with a universal syntax called *wiring diagrams*.
+`SemanticModels.jl` uses a Julia package developed by E. Patterson at Stanford
+called `Catlab` to represent these wiring diagrams. Wiring diagrams provide a
+syntax to the modeling framework, in that one can express every model in the
+language of $\circ, \otimes$ and a list of primitives. Since we are in the world
+of computation, we are concerned primarily with finitely presented MCs which
+have a finite set of primitives.
+
+In order to compute with a modeling framework, it is essential to give the
+modeling framework a *semantics*, which means a functor from the set of wiring
+diagrams to some formulation that can be turned into a program. For example,
+Petri Nets are just multigraphs with attached metadata, that need to be
+converted into Differential Equations or Stochastic Discrete Event Simulators in
+order to model chemical or biological processes. Once you have this
+representation, you need to generate a program that solves those equations. We
+consider this the core of a modeling framework:
+
+1. you have an MC for describing models,
+1. a functor that converts it to a structured knowledge representation, and
+1. a code generation platform for creating executable code.
+
+## Double Pushout Rewriting
+
+The Category Theory community has been working on understanding
+rewriting systems in mathematics for several decades, but the most directly
+applicable work has been done in the last 5 years by John Baez group at UC
+Riverside. Daniel Cicala wrote a dissertation published in May 2019 on rewriting
+systems for Open Systems like Petri Nets.
+
+*Double pushout rewriting* is a process of making analogies between systems for
+specifying transformations on those systems. Originally developed for
+transforming graphs according to rules, DPO rewriting has been extended to
+arbitrary *topoi[^1]*. Figure 3 shows an example of graph rewriting that says
+*delete a loop* and then applies that rule to another graph.
+
+![Double pushout rewriting allows modelers to reason by analogy to change model structure](img/theory/rewrite_loop.png)
+
+## Model Augmentation in Category Theory
+
+There is a mathematical structure called a lens that solves a hard problem in
+functional programming. Given a large and complex data structure, how do you
+manipulate a small part of it in a way consistent with the overall structure? In
+data processing you can think of running an SQL query to create a view,
+modifying rows in that view, and having the database state reflect those changes
+in the underlying tables. Lenses are a mathematical object for representing this
+situation in software engineering.
+
+Model augmentation fits this mathematical structure perfectly. The complex data
+structure is the code found in a modeling program, and the view is the small
+fraction of that code that represents the scientific model. Augmenting a model
+inside a code corresponds to a lens where we extract the model, change it, and
+then update the code to be consistent with our changes. Figure 4 depicts the
+relationship between lenses and model augmentation within SemanticModels.
+
+![Model Augmentation is the combination of lenses and double pushout rewriting](img/theory/lens+dpo.png)
+
+`SemanticModels.jl` currently implements model augmentation by combining lenses with
+MCs to extract a model from the code, apply *double pushout rewriting*, and then
+updating the code to reflect this new model. The *lens laws* require that
+transformation is composable with nice mathematical properties, thus making the
+system amenable to mathematical analysis. Over the coming months we will advance
+both the analysis of our system and its capabilities to operate on more diverse
+codes and models.
+
+# Partially Symbolic Computing
+
+We are using `ModelingToolkit.jl` which provides an embedded *computer algebra
+system (CAS)* to represent computations as data. This software has matured
+during the first phase of ASKE, and is now ready for routine use. Working with
+ModelingToolkit expressions is easier than working with Julia expression trees
+primarily because there are no conditional or iterative structures such as if
+statements or for loops. We believe that embedded CAS will change how scientific
+software is developed over the next 10 years.
+
+In general purpose computing, the task of generating fast code falls to
+compilers and is performed using general purpose techniques for code
+optimization. However, in scientific computing, this task is performed by highly
+skilled mathematicians, scientists, and engineers because the need for high
+performance code is so great and the complexity of the systems is so high.
+Scientific computing is characterized by specialists using their mathematical
+and scientific talent to write code faster than what a compiler can possibly
+produce because they know something special about the problem they are trying
+to solve. Examples such as the Fast Fourier Transform show what heroic effort on
+the part of scientific computing that specialists can produce.
+
+As these techniques go from highly specialized one-off tricks to general purpose
+techniques that can apply to many problems, they will be automated. This
+automation requires symbolic understanding of what the program is trying to
+compute. There are many opportunities for performance and accuracy improvements
+that can be exploited by computational techniques that have access to the
+mathematic representation of a problem for symbolic computing. Now that high performance
+dynamic code generation is a viable technology, the time is ripe for embedded
+CAS based modeling frameworks. These frameworks will take a data structure that
+represents the symbolic mathematics that the scientist wants to solve, and
+generate special purpose code for that problem on demand.
+
+![The SEIRDS system can be represented as a system of ODEs (top), a Petri Net (left), or a wiring diagram (right). All of these representations are
+compositionally related.](img/theory/final_juliacon.png)
+
+Our Petri Net framework (Figure 5) is based on partially symbolic computing and
+uses an embedded CAS to represent the structure of the Petri Net. When it is
+time to solve the model, we dynamically generate code for Differential
+Equations, or Stochastic Discrete Event Simulation based on the symbolic
+expressions. Model Augmentation operates on the symbolic formulation, which is
+much easier to work with than general purpose code, but compiles down to
+straight-line procedural code with no generic code overhead. Thus we get the
+benefit of a custom implementation of each Petri Net, without the labor
+intensive work of writing the code each time. A benefit of this approach is that
+no one needs to write a general simulator that can simulate any possible system.
+You only need to write a code generator that given a specific system, generates
+a simulator for that specific system. We believe that this is an easier task
+than writing a single simulator that is simple, concise, general, and efficient.
+This is because the majority of software complexity in scientific computing
+comes from pushing the Pareto frontier of $\text{concise} \times \text{general}
+\times \text{fast}$. A code generator can completely abandon the requirements of
+concise and general code, and thus has liberty to write code that is simple and
+fast. The code generator must be concise and general, but does not need to be
+fast. By reducing the problem to writing a general code generator that generates
+specialized code, one can avoid high complexity scientific software.
+
+The experience of writing a Petri Net modeling library illustrates the benefits
+of designing the modeling software around symbolic expressions, without
+implementing the entire modeling framework in a pure CAS like Mathematica. Model
+Augmentation requires the manipulation of the modeling code. If that code is
+explicitly represented as lists of symbolic expressions, these manipulations are
+easier than manipulating either abstract syntax trees (traditional
+metaprogramming) or run-time data structures that configure the model (typical in
+dynamic programming languages). An embedded CAS allows you to manipulate
+modeling expressions in the familiar language of mathematics and then generate
+the efficient code for implementing those formulas. Since code is more complex
+than formulas, it is beneficial to program at the level of formulas if possible.
+
+We intend to continue pushing this partially symbolic computing agenda through
+additional frameworks such as Bayesian Networks and statistical analysis.
+
+## Semantic Representations of Data Science Programs
+
+The work of Evan Patterson on building semantic representations of data science
+programs is particularly relevant to these modeling questions
+[SRDSP](https://www.epatters.org/assets/papers/2018-semantic-enrichment-ijcai-demo.pdf "Semantic Representations of Data Science Programs").
+[Patterson 2018](https://www.epatters.org/assets/papers/2018-semantic-enrichment-kdd.pdf "Teaching machines to understand data science code by
+semantic enrichment of dataflow graphs") 
 
 ## Model Augmentation
 
@@ -230,12 +663,15 @@ But in the transformation state there is just `f(x) -> xf(x)` and `f(x) -> f(x) 
 By representing complex models as transformations of a base model, under an algebra of transformations, we are able to
 make metaprogramming for science much easier.
 
-### Model Synthesis
+### Scientific Workflows and Model Synthesis
 
 One goal of the program is to get to the point where we can automatically infer how to combine models based on what they
 compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models
 with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and
-are typically written with either a declarative DAG language or an imperative DAG building library.
+are typically written with either a declarative DAG language or an imperative DAG building library. The complexity of 
+using DAG driven workflows reveals how the existing implementations lack compositionality, (how can you compose two makefiles?).
+By redesigning scientific workflow tools around categories of PROPS, we can achieve higher compositionality and thus more scalable 
+scientific workflow tools. 
 
 [Fong and Spivak 2018](http://math.mit.edu/~dspivak/teaching/sp18/7Sketches.pdf) shows how to express signal processing
 and controls problems in a graphical language based on categories of products and permutations category or _props_.

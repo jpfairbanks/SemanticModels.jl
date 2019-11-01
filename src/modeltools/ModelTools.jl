@@ -162,7 +162,10 @@ include("SimpleModels.jl")
 include("ExpODEModels.jl")
 include("ExpStateModels.jl")
 include("MonomialRegressionModels.jl")
+include("CategoryTheory.jl")
 include("PetriModels.jl")
+include("OpenModels.jl")
+include("OpenPetris.jl")
 include("WiringDiagrams.jl")
 
 end
