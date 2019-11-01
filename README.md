@@ -1,7 +1,7 @@
 # SemanticModels.jl
 A julia package for representing and manipulating models at the semantic level.
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://jpfairbanks.com/doc/aske)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://aske.gtri.gatech.edu/docs/latest/)
 
 Traditional scientific computing happens by translating conceptual models of natural phenomena into mathematical models
 on a chalkboard and then implementing those models in code that is then compiled into executable instructions and run on
