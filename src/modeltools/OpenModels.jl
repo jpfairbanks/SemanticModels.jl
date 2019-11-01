@@ -3,7 +3,7 @@ import Base: ==
 using SemanticModels.ModelTools
 import SemanticModels.ModelTools: model
 using Catlab.Graphics.Graphviz
-import Catlab.Graphics.Graphviz: Graph
+import Catlab.Graphics.Graphviz: Graph, Edge
 
 
 export OpenModel
@@ -23,11 +23,11 @@ function Graph(f::OpenModel)
     A, M, B = f.dom, f.model, f.codom
     stmts_dom = map(enumerate(A)) do (i,a)
         m = M.S[a]
-        Edge(["I$i", "X$m"], Attributes(:style=>"dashed"))
+        Edge(["I$i", "$m"], Attributes(:style=>"dashed"))
     end
     stmts_codom = map(enumerate(B)) do (i,a)
         m = M.S[a]
-        Edge(["X$m", "O$i"], Attributes(:style=>"dashed"))
+        Edge(["$m", "O$i"], Attributes(:style=>"dashed"))
     end
     append!(g.stmts, append!(stmts_dom, stmts_codom))
     return g
