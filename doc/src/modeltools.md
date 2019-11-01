@@ -120,12 +120,12 @@ ModelingToolkit DSLs as the backend.
 Modules = [SemanticModels.ModelTools]
 ```
 
-### Transformations
+### Category Theory
 
-The following transformations ship with ModelTools, you can use them as templates for defining your own model classes.
+The following Category Theory operations ship with ModelTools, you can use them as templates for defining your own model classes.
 
 ```@autodocs
-Modules = [SemanticModels.ModelTools.Decorations]
+Modules = [SemanticModels.ModelTools.CategoryTheory]
 ```
 
 ### Model Classes 
