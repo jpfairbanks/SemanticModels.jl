@@ -50,10 +50,10 @@ Then you can load it at the julia REPL with `using SemanticModels`
 You should start exploring the notebooks in the examples folder. These notebooks are represented in jupytext format, 
 and are stored as julia programs you can run at the repl or in the notebook interface after installing the jupytext plugin for jupyter. 
 
-1. Model augmentation: an example script `examples/agentgraft.jl` shows how to augment an agent based simulation to add new
+1. Model augmentation: an example script `examples/decorations/graphs.jl` shows how to augment an agent based simulation to add new
    modeling components using an API for changing models at the semantic level.
 
-2. Model Representations: SemanticModels supports extracting knowledge graph representations of scripts. See the `examples/agenttypes2.jl` notebook for a demonstration. 
+2. Model Representations: SemanticModels supports extracting diagram representations of scripts and creating scripts from wiring diagram representations. See the `examples/petri/malaria.ipynb` notebook for a demonstration, as well as expanding on model augmentation by combining and composing models to build a more complex simulation. 
 
 
 There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
@@ -118,6 +118,7 @@ outputs of different variations of the model.
 We think of SemanticModels as a _post hoc_ modeling framework the enters the scene after scientific code has been
 written. As opposed to a standard modeling framework that you develop before you write the scientific code.
 
+<!---
 ### Overdubbing
 
 `SemanticModels.Dubstep` provides functionality for manipulating models at execution time. Where `ModelTool` allows you
@@ -125,6 +126,7 @@ to manipulate models at the syntactic level, `Dubstep` allows you to manipulate 
 similar lines of static vs dynamic analysis.
 
 You can modify a program's execution using `Cassette.overdub` and replace function calls with your own functions. For an example, see `test/transform/ode.jl`. Or you can use a new compiler pass if you need more control over the values that you want to manipulate.
+-->
 
 ### Knowledge Graphs
 
