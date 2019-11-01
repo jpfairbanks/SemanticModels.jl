@@ -41,6 +41,14 @@ from a list of numbers. For example, `FinSetMorph([1,3,2,3])` is the morphism th
 `1->1, 2->3, 3->2, 4->3` on domain `1:4` with codomain `1:3`. When you define a morphism from
 a list of integers, the codomain is inferred from the largest element of the list. The domain
 must always be the `1:l` where `l` is the length of the input list.
+
+```(f::FinSetMorph)(g::G) where G <: AbstractGraph```
+
+lift a finite set morphism (list of integers) to a graph homomorphism by its action on the vertex
+set. The graph `h = f(g)` is defined by taking the edges of `g` and relabeling their src and dst
+according to the function of `f`.
+
+This method computes a valid graph homomorphism by definition.
 """
 struct FinSetMorph{T,F} <: AbstractMorph
     codom::T
@@ -63,14 +71,6 @@ function ⊔(f::FinSetMorph, g::FinSetMorph)
     FinSetMorph(Y, h)
 end
 
-"""    f(g::AbstractGraph)
-
-lift a finite set morphism (list of integers) to a graph homomorphism by its action on the vertex
-set. The graph `h = f(g)` is defined by taking the edges of `g` and relabeling their src and dst
-according to the function of `f`.
-
-This method computes a valid graph homomorphism by definition.
-"""
 function (f::FinSetMorph)(g::G) where G <: AbstractGraph
     dom(f) == vertices(g) || throw(DomainError(vertices(g), "dom(f) = $(dom(f)) but nv(g) = $(nv(g))"))
     ϕ = func(f)
