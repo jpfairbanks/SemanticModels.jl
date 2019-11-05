@@ -1,4 +1,7 @@
-# SemanticModels.jl
+![SemanticModels.jl](doc/src/assets/full-logo.png)
+
+---
+
 A julia package for representing and manipulating models at the semantic level.
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://aske.gtri.gatech.edu/docs/latest/)
@@ -11,7 +14,7 @@ always built by changing the old software until you build up enough cruft to dec
 SemanticModels changes this by representing models at a semantic level and allowing programs to be expressed as
 transformations on these models.
 
-![SemanticModels Diagram](https://aske.gtri.gatech.edu/docs/latest/img/semanticmodels_jl.dot.svg)
+<!-- ![SemanticModels Diagram](https://aske.gtri.gatech.edu/docs/latest/img/semanticmodels_jl.dot.svg) -->
 
 The domains of software security and programming language theory (PLT) have spent a lot of time developing software and
 theory for the analysis of computer programs, but these tools have not been adopted by the scientific community. This is
@@ -28,7 +31,7 @@ these DSLs will help achieve that vision.
 
 SemanticModels takes an alternative approach, which is to learn the DSL from actual usage of the libraries.
 Every software library defines an implicit embedded DSL for its users. We aim to leverage that fact, along with large
-collections of open source software to learn the modeling frameworks from the corpus of code. 
+collections of open source software to learn the modeling frameworks from the corpus of code.
 
 
 ## Getting Started
@@ -47,13 +50,13 @@ precompile times, due to heavy use of generated functions.
 
 Then you can load it at the julia REPL with `using SemanticModels`
 
-You should start exploring the notebooks in the examples folder. These notebooks are represented in jupytext format, 
-and are stored as julia programs you can run at the repl or in the notebook interface after installing the jupytext plugin for jupyter. 
+You should start exploring the notebooks in the examples folder. These notebooks are represented in jupytext format,
+and are stored as julia programs you can run at the repl or in the notebook interface after installing the jupytext plugin for jupyter.
 
 1. Model augmentation: an example script `examples/decorations/graphs.jl` shows how to augment an agent based simulation to add new
    modeling components using an API for changing models at the semantic level.
 
-2. Model Representations: SemanticModels supports extracting diagram representations of scripts and creating scripts from wiring diagram representations. See the `examples/petri/malaria.ipynb` notebook for a demonstration, as well as expanding on model augmentation by combining and composing models to build a more complex simulation. 
+2. Model Representations: SemanticModels supports extracting diagram representations of scripts and creating scripts from wiring diagram representations. See the `examples/petri/malaria.ipynb` notebook for a demonstration, as well as expanding on model augmentation by combining and composing models to build a more complex simulation.
 
 
 There are scripts in the folder `SemanticModels/bin` which provide command line access to some functionality of the
@@ -100,7 +103,7 @@ process of taking a known model developed by another researcher (potentially a p
 transforming the model to create a novel model. This process can help fit an existing theory to new data, explore
 alternative hypotheses about the mechanisms of a natural phenomena, or conduct counterfactual thought experiments.
 
-SemanticModels.ModelTool is the current home for this capability. 
+SemanticModels.ModelTool is the current home for this capability.
 You can call `m = ModelTool.model(ExpAgentProblem, expr)` to lift an agent based model up to the semantic level, then apply
 transformations on that `m` and then call `eval(m.expr)` to generate code for that new model. This allows you to compare
 different variations on a theme to conduct your research.

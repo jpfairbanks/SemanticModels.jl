@@ -1,11 +1,8 @@
-# SemanticModels.jl Documentation
+![SemanticModels.jl](assets/full-logo.png)
 
 ```@meta
 CurrentModule = SemanticModels
 ```
-
-![SemanticModels Diagram](img/semanticmodels_jl.dot.svg)
-
 
 SemanticModels is a system for representing scientific knowledge inherent to scientific model structure.
 Our philosophy is that over the next few decades, the adoption of computation as a first class pillar of scientific
