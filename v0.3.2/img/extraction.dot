@@ -1,0 +1,54 @@
+  digraph H{
+      rankdir="LR"
+      node[shape=rectangle]
+  #subgraph cluster_G {
+      node[style=filled]
+      #label ="Pipeline of extraction"
+      rankdir="LR"
+
+      subgraph cluster_1{
+        node[color="#5DADE2"]
+        label="Extraction"
+        a,b,c,d
+
+        a->b [label="text"]
+        a->c [label="data"]
+        a->d [label="formulas"]
+        #e [label="Find possible\nmodels"]
+      }
+      subgraph cluster_2 {
+          node[color=lightblue]
+        h [label="knowledge\ngraph"]
+        label="Model Creation"
+        constraint=false
+        #h -> f
+
+
+        e [label="model\nconstraints"]
+        f [label="likely\nmodel"]
+        {rank=same h e}
+        e -> f
+
+      }
+
+      subgraph cluster_3{
+          node[color="#48C9B0"]
+
+        i -> g
+        f -> g
+        label="Solving"
+        {rank = same; i; g;}
+      }
+
+      {b,c,d} -> e
+      h -> i
+      h -> e
+      a -> h
+      a [shape=record,label="literature|code|documetation"]
+      b [label="rules"]
+      c [label="parameters"]
+      d [label="functions"]
+      g [label="code\ngeneration"]
+      i [label="solver"]
+      #›}
+  }

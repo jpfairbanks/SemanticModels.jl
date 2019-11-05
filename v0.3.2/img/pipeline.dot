@@ -1,0 +1,112 @@
+digraph H {
+	graph [bb="0,0,925.64,284",
+		label="Pipeline of extraction",
+		lheight=0.19,
+		lp="462.82,11",
+		lwidth=1.67,
+		rankdir=LR
+	];
+	node [label="\N",
+		style=filled
+	];
+	{
+		b		 [color="#5DADE2",
+			height=0.5,
+			label=rules,
+			pos="285.5,228",
+			width=0.75825];
+		c		 [color="#5DADE2",
+			height=0.5,
+			label=parameters,
+			pos="285.5,174",
+			width=1.3582];
+		d		 [color="#5DADE2",
+			height=0.5,
+			label=functions,
+			pos="285.5,120",
+			width=1.195];
+	}
+	subgraph cluster_1 {
+		graph [bb="8,94,342.4,276",
+			label=Extraction,
+			lheight=0.19,
+			lp="175.2,265",
+			lwidth=0.81
+		];
+		node [color="#5DADE2"];
+		a		 [color="#5DADE2",
+			height=0.5,
+			label=documents,
+			pos="64.421,148",
+			width=1.345];
+		b;
+		a -> b		 [label=text,
+			lp="174.73,205",
+			pos="e,260.9,219.77 97.583,161.12 113.36,167.29 132.53,174.66 149.84,181 184.24,193.6 223.85,207.22 251.35,216.54"];
+		c;
+		a -> c		 [label=data,
+			lp="174.73,170",
+			pos="e,238.84,168.51 110.77,153.45 145.14,157.49 192.19,163.03 228.81,167.33"];
+		d;
+		a -> d		 [label=formulas,
+			lp="174.73,143",
+			pos="e,244.33,125.21 110.5,142.16 146.59,137.59 196.77,131.24 234.15,126.5"];
+	}
+	subgraph cluster_2 {
+		graph [bb="363.4,30,636.02,240",
+			constraint=false,
+			label="Model Creation",
+			lheight=0.19,
+			lp="499.71,229",
+			lwidth=1.23
+		];
+		node [color=lightblue];
+		{
+			graph [rank=same];
+			h			 [color=lightblue,
+				height=0.70711,
+				label="knowledge\ngraph",
+				pos="426.15,63",
+				width=1.5208];
+			e			 [color=lightblue,
+				height=0.70711,
+				label="model\nconstraints",
+				pos="426.15,185",
+				width=1.5057];
+		}
+		f		 [color=lightblue,
+			height=0.70711,
+			label="likely\nmodel",
+			pos="591.96,116",
+			width=1.0016];
+		h -> f		 [pos="e,559.06,105.49 471.46,77.482 495.7,85.233 525.39,94.723 549.24,102.34"];
+		h -> e		 [pos="e,426.15,159.43 426.15,88.734 426.15,108.89 426.15,129.05 426.15,149.21"];
+		e -> f		 [pos="e,560.8,128.96 467.14,167.94 492.82,157.26 525.78,143.54 551.38,132.89"];
+	}
+	subgraph cluster_3 {
+		graph [bb="657.02,83,917.64,171",
+			label=Solving,
+			lheight=0.19,
+			lp="787.33,160",
+			lwidth=0.61
+		];
+		node [color="#48C9B0"];
+		g		 [color="#48C9B0",
+			height=0.70711,
+			label="code\ngeneration",
+			pos="718.11,116",
+			width=1.4748];
+		i		 [color="#48C9B0",
+			height=0.5,
+			label=solver,
+			pos="877.92,112",
+			width=0.88108];
+		g -> i		 [pos="e,845.89,112.8 771.32,114.67 792.26,114.14 815.95,113.55 835.68,113.06"];
+	}
+	a -> h	 [pos="e,373.03,69.207 98.94,135.26 133.4,122.95 188.06,104.52 236.61,93 278.24,83.118 325.8,75.6 362.87,70.563"];
+	b -> e	 [pos="e,380.56,198.94 310.33,220.41 327.07,215.29 349.85,208.33 370.78,201.93"];
+	c -> e	 [pos="e,372.57,180.81 333.51,177.75 342.85,178.48 352.76,179.26 362.51,180.02"];
+	d -> e	 [pos="e,387.44,167.11 314.65,133.47 333.01,141.95 357.16,153.11 378.28,162.88"];
+	h -> i	 [pos="e,865,95.411 481.27,63 493.5,63 506.39,63 518.4,63 518.4,63 518.4,63 808.7,63 827.72,63 845.17,75.478 857.79,87.841"];
+	f -> g	 [pos="e,664.55,116 628.11,116 636.36,116 645.37,116 654.39,116"];
+}
