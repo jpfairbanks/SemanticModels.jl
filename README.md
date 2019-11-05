@@ -1,5 +1,7 @@
 ![SemanticModels.jl](doc/src/assets/full-logo.png)
 
+---
+
 A julia package for representing and manipulating models at the semantic level.
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://aske.gtri.gatech.edu/docs/latest/)
