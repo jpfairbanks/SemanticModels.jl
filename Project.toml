@@ -31,6 +31,7 @@ StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
+julia = "1.0"
 CSV = "<1.0"
 Cassette = "<1.0"
 Catlab = "0.3"
@@ -56,7 +57,6 @@ Random = "<2.0"
 StaticArrays = "0.11"
 StochasticDiffEq = "6.10.0"
 Unitful = "<1.0"
-julia = "1.0"
 
 [extras]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
