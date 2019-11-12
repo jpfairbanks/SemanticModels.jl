@@ -1,7 +1,7 @@
 name = "SemanticModels"
 uuid = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"
 authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>", "Micah Halter <micah.halter@gtri.gatech.edu>"]
-version = "0.3.1"
+version = "0.3.0"
 
 [deps]
 BoundaryValueDiffEq = "764a87c0-6b3e-53db-9096-fe964310641d"
