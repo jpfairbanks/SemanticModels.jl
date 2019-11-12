@@ -27,6 +27,7 @@ Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 
 [extras]
@@ -62,6 +63,7 @@ ModelingToolkit = "0.6"
 Petri = "<1.0"
 Plots = "<1.0"
 Random = "<2.0"
+StaticArrays = "0.11"
 Unitful = "<1.0"
 
 [targets]
