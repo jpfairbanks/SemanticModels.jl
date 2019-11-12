@@ -4,6 +4,7 @@ authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>", "Micah Halter <m
 version = "0.3.1"
 
 [deps]
+BoundaryValueDiffEq = "764a87c0-6b3e-53db-9096-fe964310641d"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Cassette = "7057c7e9-c182-5462-911a-8362d720325c"
 Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
@@ -32,6 +33,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 julia = "1.0"
+BoundaryValueDiffEq = "2.3.0"
 CSV = "<1.0"
 Cassette = "<1.0"
 Catlab = "0.3"
