@@ -205,7 +205,13 @@ struct DoublePushout{S<:AbstractSpan, T<:NTuple{3,AbstractMorph}}
     application::S
 end
 
-# TODO DPO CONSTRUCTOR TO SOLVE UNKNOWN DOUBLEPUSHOUT
+# TODO DPO CONSTRUCTOR TO SOLVE UNKNOWN DOUBLEPUSHOUT OF FINSET
+# take in Span `top` (l, c, r) and finset `l′ `, f: l -> l′
+# Solve for c′ using dropdown
+#     c′ = setdiff(l′, f(l)) ⊔ c
+# Solve pushout for span of c′ ← c → r to get r′
+
+# function pullback
 
 # +
 """    AbstractCospan
@@ -266,7 +272,7 @@ treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and
 function pushout(s::Span{T,T}) where T <: FinSetMorph
     f_dict = Dict(a=>i for (i, a) in enumerate(left(s).fun))
     g′ = map(n->n in keys(f_dict) ? func(right(s))(f_dict[n]) : n+length(rightob(s)), leftob(s))
-    
+
     g_dict = Dict(a=>i for (i, a) in enumerate(right(s).fun))
     f′ = map(n->n in keys(g_dict) ? g′[func(left(s))(g_dict[n])] : n, rightob(s))
 
