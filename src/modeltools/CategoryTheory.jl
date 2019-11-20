@@ -147,6 +147,14 @@ decoration(m::Decorated) = m.d
 # Remove the decoration of a decorated morphism, and return the original morphism
 undecorate(m::Decorated) = m.f
 
+function left(d::Decorated)
+  return left(d.f)
+end
+
+function right(d::Decorated)
+  return right(d.f)
+end
+
 # +
 """    AbstractSpan
 
