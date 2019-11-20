@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+# + {}
+# using Pkg
+# Pkg.add("TikzPictures")
+# Pkg.update()
+# Pkg.free("GeneralizedGenerated")
+# -
+
 using Catlab
 using Catlab.Doctrines
 import TikzPictures
@@ -6,6 +13,7 @@ import Catlab.Graphics: to_tikz
 import SemanticModels.ModelTools.RelOlogModels: RelOlogModel, model, ⊚, ⊗
 using SemanticModels.ModelTools.CategoryTheory
 import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
+
 
 # +
 @present seir(FreeBicategoryRelations) begin
@@ -80,5 +88,7 @@ out = decoration(H)
 println(generators(out, FreeBicategoryRelations.Ob))
 to_tikz(reduce(⊗, generators(out, FreeBicategoryRelations.Hom)); arrowtip="Stealth", labels=true)
 # -
+
+
 
 

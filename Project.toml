@@ -29,10 +29,10 @@ Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
+TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
-julia = "1.0"
 BoundaryValueDiffEq = "2.3.0"
 CSV = "<1.0"
 Cassette = "<1.0"
@@ -59,6 +59,7 @@ Random = "<2.0"
 StaticArrays = "0.11"
 StochasticDiffEq = "6.10.0"
 Unitful = "<1.0"
+julia = "1.0"
 
 [extras]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
