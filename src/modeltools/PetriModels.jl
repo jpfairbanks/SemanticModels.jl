@@ -107,8 +107,6 @@ end
 
 
 function (f::FinSetMorph)(g::G) where G <: PetriModel
-    @show dom(f)
-    @show length(g.S)
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
     outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
