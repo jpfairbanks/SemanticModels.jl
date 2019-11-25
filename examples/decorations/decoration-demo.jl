@@ -82,21 +82,24 @@ f = FinSetMorph(1:3, [1, 2])
 g = FinSetMorph(1:3, [1, 2])
 # ### Decorate the Morphisms with a Petri Model
 # + {}
-# Decorate a finite set with SII Petri Model
-dec_f_petri = Decorated(f, sii_petri)
 
-# Decorate a finite set with SIR Petri Model
-dec_g_petri = Decorated(g, sir_petri)
+sii_petriModel = model(PetriModel, sii_petri)
+sir_petriModel = model(PetriModel, sir_petri)
+
+sii_relModel = model(RelOlogModel, sii_relolog)
+sir_relModel = model(RelOlogModel, sir_relolog)
 # -
 # ### Decorate the Same Morphisms with a Relational Olog
 
-double_f = Decorated(dec_f_petri, sii_relolog)
-double_g = Decorated(dec_g_petri, sir_relolog)
+dec_f = Decorated(f, [sii_petriModel, sii_relModel])
+dec_g = Decorated(g, [sir_petriModel, sir_relModel])
 
 # ### Create Span and Solve Pushout
 
 # +
-S = Span(double_f, double_g)
+
+S = Span(dec_f, dec_f)
+
 
 H = CategoryTheory.pushout(S)
 # -
@@ -104,9 +107,10 @@ H = CategoryTheory.pushout(S)
 # ### View New Models
 
 # +
-H_relolog = decoration(H)
-H_petri = decoration(undecorate(H))
 
-display(Petri.Graph(devar(H_petri)))
+H_relolog = decorations(H, RelOlogModel)
+H_petri = decorations(H, PetriModel)
 
-to_tikz(reduce(⊗, generators(H_relolog, FreeBicategoryRelations.Hom)); arrowtip="Stealth", labels=true)
+map(x->display(Petri.Graph(devar(x.model))), H_petri)
+
+map(x->display(to_tikz(reduce(⊗, generators(x.model, FreeBicategoryRelations.Hom)); arrowtip="Stealth", labels=true)), H_relolog)

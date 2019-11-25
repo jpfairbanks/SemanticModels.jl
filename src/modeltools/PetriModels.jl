@@ -16,12 +16,14 @@ import SemanticModels.ModelTools: model
 
 export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, pushout, dropdown, equnion, ⊔
 
-const PetriModel = Petri.Model
+struct PetriModel <: AbstractModel
+  model::Petri.Model
+end
 
 OpVar(s::Symbol) = Operation(Variable(s), [])
 
 function model(::Type{PetriModel}, m::Petri.Model)
-    return m
+    return PetriModel(m)
 end
 
 function model(::Type{PetriModel}, d::WiringDiagram)::PetriModel
@@ -39,14 +41,16 @@ function model(::Type{PetriModel}, d::WiringDiagram)::PetriModel
         δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : OpVar.(outvars[1])
         return (δ_in, δ_out)
     end
-    return PetriModel(symvars, unique(transitions))
+    return PetriModel(Petri.Model(symvars, unique(transitions)))
 end
 
 function rewrite!(pm::PetriModel, pm2::PetriModel)
     rewrite!(pm, pm2, Dict())
 end
 
-function rewrite!(pm::PetriModel, pm2::PetriModel, f::Dict)
+function rewrite!(pModel::PetriModel, pModel2::PetriModel, f::Dict)
+    pm = pModel.model
+    pm2 = pModel2.model
     vars = map(pm.S) do s
         s.op
     end
@@ -93,20 +97,24 @@ end
 
 dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
 
-function ⊔(g::PetriModel, h::PetriModel)
+function ⊔(gModel::PetriModel, hModel::PetriModel)
+    g = gModel.model
+    h = hModel.model
     dict = Dict(i => any(isequal.(i, g.S)) ? i : Operation(i.op, Expression[ModelingToolkit.Constant(2)]) for i in h.S)
     newS = [dictReplace(n, dict) for n in h.S]
     newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.Δ]
     newΛ = [dictReplace(n, dict) for n in h.Λ]
     newΦ = [dictReplace(n, dict) for n in h.Φ]
-    Petri.Model(union(g.S, newS), 
+    PetriModel(Petri.Model(union(g.S, newS), 
                 equnion(g.Δ, newΔ), 
                 equnion(g.Λ, newΛ),
-                equnion(g.Φ, newΦ))
+                equnion(g.Φ, newΦ)))
 end
 
 
-function (f::FinSetMorph)(g::G) where G <: PetriModel
+
+function (f::FinSetMorph)(gModel::G) where G <: PetriModel
+    g = gModel.model
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
     outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
@@ -114,7 +122,7 @@ function (f::FinSetMorph)(g::G) where G <: PetriModel
         outS[ϕ(i)] = g.S[i]
     end
     out = deepcopy(g)
-    Petri.Model(outS, out.Δ, out.Λ, out.Φ)
+    PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
 end
 
 
@@ -122,7 +130,9 @@ end
 
 compute the CT pushout of two models.
 """
-function pushout(pm::PetriModel, pm2::PetriModel)
+function pushout(pModel::PetriModel, pModel2::PetriModel)
+    pm = pModel.model
+    pm2 = pModel2.model
     states = equnion(pm.S, pm2.S)
     Δ = equnion(pm.Δ, pm2.Δ)
     Λ = equnion(pm.Λ, pm2.Λ)
@@ -138,7 +148,10 @@ compute c′ given l, c, l′, the formula for petrinets is
 
 T_{c'} = T_{l'} \\setdiff f(T_l) \\cup a(T_c)
 """
-function dropdown(pl::PetriModel, pc::PetriModel, pl′::PetriModel)
+function dropdown(pL::PetriModel, pC::PetriModel, pL′::PetriModel)
+    pl = pL.model
+    pc = pC.model
+    pl′ = pL′.model
     states = union(pl′.S, pc.S)
     Δ = union(setdiff(pl′.Δ, pl.Δ), pc.Δ)
     Λ = union(setdiff(pl′.Λ, pl.Λ), pc.Λ)

@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 module CategoryTheory
 
-using LightGraphs
 using SemanticModels
+using SemanticModels.ModelTools
 import Catlab.Doctrines: dom, codom
 using MacroTools: prewalk, postwalk
 using ModelingToolkit
+import Base: append!, push!, deleteat!, delete!
 
-export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, GraphMorph, Decorated, decoration, undecorate, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
 
-# +
+export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, Decorated, decorations, undecorate, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
+
 import MacroTools.walk
 walk(x::Operation, inner, outer) = outer(Operation(x.op, map(inner, x.args)))
 
 
 ⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))
 ⊔(a::AbstractVector{Int}, b::AbstractVector{Int}) = vcat(a,b)
-⊔(g::AbstractGraph, h::AbstractGraph) = blockdiag(g,h)
 
-# -
 
 """    AbstractMorph
 
@@ -32,7 +31,6 @@ where T is the type of the objects in the category. See FinSetMorph for an examp
 """
 abstract type AbstractMorph end
 
-# +
 """    FinSetMorph{T,F}
 
 morphisms in the category of Finite Sets. The objects are of type UnitRange{Int}.
@@ -71,81 +69,58 @@ function ⊔(f::FinSetMorph, g::FinSetMorph)
     FinSetMorph(Y, h)
 end
 
-function (f::FinSetMorph)(g::G) where G <: AbstractGraph
-    dom(f) == vertices(g) || throw(DomainError(vertices(g), "dom(f) = $(dom(f)) but nv(g) = $(nv(g))"))
-    ϕ = func(f)
-    map(edges(g)) do e
-        s,t = e.src, e.dst
-        Edge(ϕ(s), ϕ(t))
-    end |> Graph
-end
-
-# +
-"""    GraphMorph{T,F} <: Morph
-
-morphisms in the category of Finite Graphs. The objects must be a subtype of AbstractGraph.
-
-You can take a `FinSetMorph` and lift it to a graph homomorphism. This is the functor that
-takes the finite set `1:n`, to the empty graph with `n` vertices.
-
-"""
-struct GraphMorph{T, F} <: AbstractMorph
-    dom::T
-    codom::T
-    fun::F
-end
-
-"""    GraphMorph(g::AbstractGraph, f::FinSetMorph)
-
-is defined to be the graph homomorphism you get by functorially lifting `f`.
-That is, `f` acts on the vertex set of `g` as an `Int->Int` function, and then
-must act on the edges consistently.
-"""
-GraphMorph(g::AbstractGraph, f::FinSetMorph) = GraphMorph(g, f(g), f)
-
-dom(m::GraphMorph) = m.dom
-codom(m::GraphMorph) = m.codom
-func(m::GraphMorph) = begin
-    f = func(m.fun)
-    return i->f(i)
-end
-
-"""    verify(m::GraphMorph)
-
-validate a graph homomorphism by checking that all the edges in `dom(m)` and map to edges in `codom(m)`.
-"""
-verify(m::GraphMorph) = begin
-    dom(m.fun) == vertices(dom(m)) || return false
-    codom(m.fun) == vertices(codom(m)) || return false
-    E = Set(edges(codom(m)))
-    f = func(m)
-    map(edges(dom(m))) do e
-        u,v = f(e.src), f(e.dst)
-        if u > v
-            u,v = v,u
-        end
-        Edge(u,v) in E
-    end |> all
-end
-
-# +
 """    Decorated{M,T}
 
 a decoration applied to the objects of a morphism, where M is a type of morphism and
 type T is the category of the decoration
 """
-struct Decorated{M,T}
+struct Decorated{M}
     f::M
-    d::T
+    d::AbstractArray{AbstractModel}
 end
+
+# Handle creating a decorated morphism with an array of a single type
+Decorated(f, d::AbstractArray{T}) where T<:AbstractModel = Decorated(f, Vector{AbstractModel}(d))
+# Handle creating a decorated morphism from a single decoration
+Decorated(f, d::T) where T<:AbstractModel = Decorated(f, Vector{AbstractModel}([d]))
 
 # Get the domain or codomain of a decorated morphism
 dom(m::Decorated) = dom(m.f)
 codom(m::Decorated) = codom(m.f)
-# Get the decoration of a decorated morphism
-decoration(m::Decorated) = m.d
+
+# Get the decorations of a decorated morphism
+function decorations(m::Decorated)
+  return m.d
+end
+# Get the decorations of AbstractModel T of a decorated morphism
+function decorations(m::Decorated, ::Type{T}) where T<:AbstractModel
+  filter(x -> isa(x,T), decorations(m))
+end
+
 # Remove the decoration of a decorated morphism, and return the original morphism
-undecorate(m::Decorated) = m.f
+function undecorate(m::Decorated)
+  return m.f
+end
+
+# Add a decoration to a decorated morphism
+function push!(m::Decorated, decoration::AbstractModel)
+  push!(decorations(m), decoration)
+end
+
+# Add a collection of decorations to a decorated morphism
+function append!(m::Decorated, decorations)
+    append!(m.d, decorations)
+end
+
+# remove a decoration from a decorated morphism
+function deleteat!(m::Decorated, i)
+  deleteat!(decorations(m), i)
+end
+
+# Remove the decorations of AbstractModel T from a decorated morphism
+function delete!(m::Decorated, ::Type{T}) where T<:AbstractModel
+  filter!(x -> !isa(x,T), decorations(m))
+end
 
 function left(d::Decorated)
   return left(d.f)
@@ -155,7 +130,6 @@ function right(d::Decorated)
   return right(d.f)
 end
 
-# +
 """    AbstractSpan
 
 an abstract type for representing spans. The essential API for subtypes of AbstractSpan are
@@ -180,7 +154,6 @@ function apexob(s::AbstractSpan)
     return a
 end
 
-# +
 """    Span{F,G} <: AbstractSpan
 
 a general span type where types F and G are types of morphisms in the span
@@ -206,7 +179,6 @@ function undecorate(s::Span{T,T}) where T <: Decorated
     return Span(undecorate(left(s)), undecorate(right(s)))
 end
 
-# +
 struct DoublePushout{S<:AbstractSpan, T<:NTuple{3,AbstractMorph}}
     rule::S
     morphs::T
@@ -246,7 +218,6 @@ function apexob(c::AbstractCospan)
     return a
 end
 
-# +
 """    Cospan{F,G} <: AbstractCospan
 
 a general cospan type where types F and G are types of morphisms in the cospan
@@ -272,7 +243,6 @@ function undecorate(c::Cospan{T,T}) where T <: Decorated
     return Cospan(undecorate(left(c)), undecorate(right(c)))
 end
 
-# +
 """    pushout(s::Span{T,T}) where T <: FinSetMorph
 
 treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b)
@@ -299,8 +269,8 @@ with the decoration of (f⊔g)(d)
 """
 function pushout(s::Span{T, T}) where T <: Decorated
     cs = pushout(undecorate(s))
-    D = decoration(left(s)) ⊔ decoration(right(s))
-    return Decorated(cs, (right(cs) ⊔ left(cs))(D))
+    decorations = map(x->x[1] ⊔ x[2], zip(left(s).d, right(s).d))
+    return Decorated(cs, map((right(cs) ⊔ left(cs)), decorations))
 end
 
 end
