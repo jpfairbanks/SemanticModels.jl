@@ -19,17 +19,17 @@ const OpenPetri{V} = OpenModel{V, PetriModel}
 ⊕(v::Vector, w::Vector) = vcat(v,w)
 # ⊕(v::Vector{Int}, w::Vector{Int}) = vcat(v,w.+length(v))
 
-function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
-    f.model.S
-    g.model.S
-    # TODO: need to renumber the states of g
-    M = model(PetriModel, Petri.Model(f.model.S ⊕ g.model.S, f.model.Δ ⊕ g.model.Δ))
-    return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
-end
+# function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
+#     f.model.S
+#     g.model.S
+#     # TODO: need to renumber the states of g
+#     M = model(PetriModel, Petri.Model(f.model.S ⊕ g.model.S, f.model.Δ ⊕ g.model.Δ))
+#     return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
+# end
 
 function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int}, Md<:PetriModel}
-    f.model.S
-    g.model.S
+    # M = f.model.model
+    # N = g.model.model
     nf = length(f.model.model.S)
     ng = length(g.model.model.S)
     newstates = Dict(X[s]=>X[s+nf] for (i, s) in enumerate(g.model.model.S))
@@ -55,7 +55,7 @@ function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int},
     end
 
     newstatespace = collect(1:(nf+ng))
-    M = model(PetriModel, Petri.Model(newstatespace, newtransitions))
+    M = PetriModel(Petri.Model(newstatespace, newtransitions))
     return OpenModel(f.dom ⊕ (g.dom .+ nf), M, f.codom ⊕ (g.codom .+ nf))
 end
 
@@ -110,7 +110,7 @@ function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md
         return op
     end
     newtransitions = M.Δ
-    if length(g.model.Δ) > 0
+    if length(N.Δ) > 0
         newtransitions = newtransitions ⊕ map(N.Δ) do t
             replace(t)
         end
@@ -118,13 +118,13 @@ function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md
     Δ = newtransitions
     Λ = vcat(M.Λ, N.Λ)
     Φ = vcat(M.Φ, N.Φ)
-    Mp_yN = model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
+    Mp_yN = PetriModel(Petri.Model(states, Δ, Λ, Φ))
     Z′ = map(Z) do z
         findfirst(x->isequal(x, newstates[X[z]]), X)
     end
     return OpenModel(f.dom, Mp_yN, Z′)
 end
 
-eye(n::Int) = foldr(otimes, [OpenModel([1], NullPetri(1), [1]) for i in 1:n])
+eye(n::Int) = foldr(otimes, [OpenModel([1], PetriModel(NullPetri(1)), [1]) for i in 1:n])
 
 end

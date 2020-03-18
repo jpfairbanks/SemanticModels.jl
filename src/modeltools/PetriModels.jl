@@ -8,6 +8,7 @@ import ModelingToolkit: Constant, Variable
 using MacroTools
 import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
+import Catlab.Graphics: Graph
 
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.CategoryTheory
