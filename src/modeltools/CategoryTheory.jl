@@ -6,8 +6,10 @@ using SemanticModels.ModelTools
 import Catlab.Doctrines: dom, codom
 using MacroTools: prewalk, postwalk
 using ModelingToolkit
+import Base: append!, push!, deleteat!, delete!
 
-export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, Decorated, decorations, undecorate, add_decoration!, add_decorations!, remove_decoration!, remove_decorations!, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
+
+export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, Decorated, decorations, undecorate, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
 
 import MacroTools.walk
 walk(x::Operation, inner, outer) = outer(Operation(x.op, map(inner, x.args)))
@@ -72,7 +74,7 @@ end
 a decoration applied to the objects of a morphism, where M is a type of morphism and
 type T is the category of the decoration
 """
-mutable struct Decorated{M}
+struct Decorated{M}
     f::M
     d::AbstractArray{AbstractModel}
 end
@@ -101,23 +103,23 @@ function undecorate(m::Decorated)
 end
 
 # Add a decoration to a decorated morphism
-function add_decoration!(m::Decorated, decoration::AbstractModel)
+function push!(m::Decorated, decoration::AbstractModel)
   push!(decorations(m), decoration)
 end
 
 # Add a collection of decorations to a decorated morphism
-function add_decorations!(m::Decorated, decorations)
-    m.d = vcat(m.d, decorations)
+function append!(m::Decorated, decorations)
+    append!(m.d, decorations)
 end
 
 # remove a decoration from a decorated morphism
-function remove_decoration!(m::Decorated, i)
+function deleteat!(m::Decorated, i)
   deleteat!(decorations(m), i)
 end
 
 # Remove the decorations of AbstractModel T from a decorated morphism
-function remove_decorations!(m::Decorated, ::Type{T}) where T<:AbstractModel
-  m.d = filter(x -> !isa(x,T), decorations(m))
+function delete!(m::Decorated, ::Type{T}) where T<:AbstractModel
+  filter!(x -> !isa(x,T), decorations(m))
 end
 
 function left(d::Decorated)

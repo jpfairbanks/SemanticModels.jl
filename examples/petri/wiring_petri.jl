@@ -53,10 +53,10 @@ to_graphviz(s_split, labels=true)
 =#
 
 # +
-inf  = WiringDiagram(infecting)
-expo = WiringDiagram(Hom(:exposure, S⊗I, E⊗I))
-rec  = WiringDiagram(Hom(:recovery, I,   R))
-wan  = WiringDiagram(Hom(:waning,   R,   S))
+inf  = to_wiring_diagram(infecting)
+expo = to_wiring_diagram(Hom(:exposure, S⊗I, E⊗I))
+rec  = to_wiring_diagram(Hom(:recovery, I,   R))
+wan  = to_wiring_diagram(Hom(:waning,   R,   S))
 
 
 
@@ -69,16 +69,16 @@ set = [rain, sprinkler, grasswet]
 foldl((x, y)->println(y), set)
 # -
 
-si    = WiringDiagram(Hom(:infection,   S⊗I, I⊗I))
-se    = WiringDiagram(Hom(:exposure,    S⊗I, E⊗I))
-prog  = WiringDiagram(Hom(:progression, E,   I))
-fatal = WiringDiagram(Hom(:die,  I, D))
-rip   = WiringDiagram(Hom(:rest, D, D))
+si    = to_wiring_diagram(Hom(:infection,   S⊗I, I⊗I))
+se    = to_wiring_diagram(Hom(:exposure,    S⊗I, E⊗I))
+prog  = to_wiring_diagram(Hom(:progression, E,   I))
+fatal = to_wiring_diagram(Hom(:die,  I, D))
+rip   = to_wiring_diagram(Hom(:rest, D, D))
 
 sir    = si    ⊚ (rec   ⊗ rec)
 seir   = se    ⊚ (prog  ⊗ rec)
 seirs  = seir  ⊚ (wan   ⊗ wan)
-seird  = seir  ⊚ (fatal ⊗ WiringDiagram(Hom(:id, R, R)))
+seird  = seir  ⊚ (fatal ⊗ to_wiring_diagram(Hom(:id, R, R)))
 seirds = seird ⊚ (rip   ⊗ wan)
 
 

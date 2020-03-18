@@ -18,7 +18,7 @@ Defaults to SVG format. The filename is <name.format>.
 """
 function drawhom(hom, name::String, format="svg")
     d = to_wiring_diagram(hom)
-    g = to_graphviz(d, direction=:horizontal)
+    g = to_graphviz(d, orientation=LeftToRight)
     t = Graphics.Graphviz.run_graphviz(g, format=format)
     write("$name.$format", t)
     return g
@@ -42,7 +42,7 @@ function label!(g::Graphviz.Graph, v::Vector{String})
     map(enumerate(g.stmts)) do (i,s)
         if typeof(s) <: Edge
             g.stmts[i].attrs[:label] = popfirst!(iter)
-        end 
+        end
     end
     return g
 end
@@ -110,14 +110,14 @@ oderhs(d::WiringDiagram) = oderhs(fluxes(d)...)
 """    odeTemplate(d::WiringDiagram)
 
 create an expression that defines a code that solves the ODE.
-Given just the wiring diagram, we don't know the paramters, initial conditions, or timedomain, 
+Given just the wiring diagram, we don't know the paramters, initial conditions, or timedomain,
 so they are passed in as arguments to the function we generate.
 
 These parameters and initial conditions are destructured in the main function so you can
 see what the code is expecting to receive by reading the generated output.
 
 The structure of the timedomain is not implied by the wiring diagram so it is passed directly to the
-ODEProblem constructor. Any keyword arguments you pass to `main()` are forwarded to `solve()`. 
+ODEProblem constructor. Any keyword arguments you pass to `main()` are forwarded to `solve()`.
 
 """
 function odeTemplate(d::WiringDiagram)

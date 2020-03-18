@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module Malaria
 using Petri
 using MacroTools

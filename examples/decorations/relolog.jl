@@ -3,7 +3,7 @@ using Catlab
 using Catlab.Doctrines
 import TikzPictures
 import Catlab.Graphics: to_tikz
-import SemanticModels.ModelTools.RelOlogModels: RelOlogModel, model, ⊚, ⊗
+import SemanticModels.ModelTools.RelOlogModels: RelOlogModel, model, ⊗
 using SemanticModels.ModelTools.CategoryTheory
 import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
 
@@ -15,12 +15,12 @@ import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
     E::Ob
     I::Ob
     R::Ob
-    
+
     exposes::Hom(I, S)
     becomes_exposed::Hom(S, E)
     falls_ill::Hom(E, I)
     recovers_to::Hom(I, R)
-    
+
     illness := compose(becomes_exposed, falls_ill)
     exposure := compose(exposes, becomes_exposed)
 end
