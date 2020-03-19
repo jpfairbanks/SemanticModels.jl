@@ -5,7 +5,7 @@ using Catlab.WiringDiagrams
 using Catlab.Programs
 import Base.Multimedia: display
 import Catlab.Graphics: to_graphviz, LeftToRight
-import Base: (==)
+import Base: (==), length, show
 using Test
 
 println("Done Importing Catlab")
@@ -142,8 +142,46 @@ using SemanticModels.ModelTools.PetriModels
 using SemanticModels.ModelTools.OpenModels
 using SemanticModels.ModelTools.OpenPetris
 using SemanticModels.ModelTools.CategoryTheory
+import SemanticModels.ModelTools.CategoryTheory: undecorate
 pushout = CategoryTheory.pushout
+undecorate(c::Cospan) = Cospan(undecorate(left(c)), undecorate(right(c)))
 
+show(io::IO, f::FinSetMorph) = begin
+    x = length(dom(f))
+    y = length(codom(f))
+    print(io, "$x→$y($(f.fun))")
+end
+show(io::IO, f::Decorated) = begin
+    d = f.d[1]
+    m = f.f
+    print(io, "Decorated($m, $d)")
+end
+
+show(io::IO, f::Cospan) = begin
+    print(io, "Cospan(l=")
+    print(io, left(f))
+    print(", r=")
+    print(io, right(f))
+    print(")")
+end
+function show(io::IO, z::Petri.Model)
+    X, Y = z.S, z.Δ
+    # compact = get(io, :compact, true)
+    compact = false
+    if compact
+        x,y = length(X), length(Y)
+        print(io,"Model(∣S∣=$x,∣Δ∣=$y)")
+    else
+        print(io,"Model(S=$X, Δ=[")
+        for i in Y
+            print(io, "$i")
+        end
+        print(io,"]")
+    end
+end
+
+
+# Petri.Model(r::UnitRange, x) = Petri.Mode(collect(r), x, missing, missing)
 struct OpenPetriDom
   N::Int
 end
@@ -154,7 +192,7 @@ println("Done Loading")
 # TODO: The Model Toolkit interface was dumb, let's just do everything with integer variable numbers
 # SEIR is Petri.Mode([1,2,3], [([1], [2]), ([1,2], [3]), ([3],[2])])
 IntPetriModel(S, Δ) = Petri.Model(S, Δ, [],[])
-NullModel(n::Int) = IntPetriModel(collect(1:n), Vector{Tuple{Vector{Int}, Vector{Int}}}())
+NullModel(n::Int) = IntPetriModel(collect(1:n), Vector{Tuple{Vector{Int}, Vector{Int}}}(), missing, missing)
 
 function tcat(v::Vector{Tuple{Vector{Int},Vector{Int}}},
      w::Vector{Tuple{Vector{Int},Vector{Int}}}, shift::Int)
@@ -184,7 +222,7 @@ end
 function otimes_ipm(f::PetriModel, g::PetriModel)
     @show M = f.model
     @show N = g.model
-    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
+    domcat(v, w) = vcat(v, w.+length(M.S))
     @show newS = domcat(M.S, N.S)
     @show M
     @show M.S
@@ -192,90 +230,6 @@ function otimes_ipm(f::PetriModel, g::PetriModel)
     @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
     return PetriModel(Petri.Model(newS, newΔ, missing, missing))
 end
-
-println("Defining Our Instance")
-
-@instance Epidemiology(OpenPetriDom, OpenModel) begin
-  @import ⊗
-
-  dom(f::OpenModel) = OpenPetriDom(length(f.dom))
-  codom(f::OpenModel) = OpenPetriDom(length(f.codom))
-
-  compose(f::OpenModel, g::OpenModel) = OpenPetris.compose_om(f,g)
-  id(X::OpenPetriDom) = OpenPetris.eye(length(X.N))
-
-  otimes(X::OpenPetriDom, Y::OpenPetriDom) = OpenModel(X.N + Y.N)
-  otimes(f::OpenModel, g::OpenModel) = OpenPetris.otimes_ipm(f,g)
-  munit(::Type{OpenPetriDom}) = OpenPetriDom(0)
-  braid(X::OpenPetriDom, Y::OpenPetriDom) =
-    OpenModel(vcat(collect(1:X.N),collect(1:Y.N).+X.N),
-              PetriModel(NullPetri(X.N+Y.N)),
-              vcat(collect(1:Y.N).+X.N, collect(1:X.N)))
-  mcopy(X::OpenPetriDom) = OpenModel([1], NullModel(1), ones(Int, X))
-  mmerge(X::OpenPetriDom) = OpenModel(ones(Int, X.N), NullModel(1), [1])
-  create(X::OpenPetriDom) = OpenModel(Int[], NullModel(X.N), collect(1:X.N))
-  delete(X::OpenPetriDom) = OpenModel(collect(1:X.N), NullModel(X.N), Int[])
-  pair(f::OpenModel, g::OpenModel) = compose(mcopy(dom(f)), otimes(f,g))
-  copair(f::OpenModel, g::OpenModel) = compose(otimes(f,g), mmerge(codom(f)))
-  proj1(A::OpenPetriDom,B::OpenPetriDom) = otimes(id(A), delete(B))
-  proj2(A::OpenPetriDom,B::OpenPetriDom) = otimes(delete(A), id(B))
-
-  incl1(A::OpenPetriDom,B::OpenPetriDom) = otimes(id(A), create(B))
-  incl2(A::OpenPetriDom,B::OpenPetriDom) = otimes(create(A), id(B))
-
-  spontaneous(A::OpenPetriDom, B::OpenPetriDom) = begin
-     OpenModel([1], IntPetriModel([1,2],
-                                      [([1], [2])]),
-                                      [2])
-  end
-  transmission(A::OpenPetriDom, B::OpenPetriDom) = begin
-     OpenModel([1,2], IntPetriModel([1,2],
-                                      [([1,2], [2,2])]),
-                                      [2,2])
-  end
-  exposure(A::OpenPetriDom, B::OpenPetriDom, C::OpenPetriDom) = begin
-     OpenModel([1,2], IntPetriModel([1, 2],
-                                      [([1, 2], [3,2])]),
-                                      [3,2])
-  end
-  death(A::OpenPetriDom) = begin
-     OpenModel([1], IntPetriModel([1,2],
-                                      [([1], [2])]),
-                                      Int[])
-  end
-end
-
-
-dth = death(OpenPetriDom(1))
-
-create(OpenPetriDom(1))
-
-
-m1 = Petri.Model([1,2], [([1],[2])], [],[])
-
-
-
-
-states(f::OpenModel) = f.model.S
-transitions(f::OpenModel) = f.model.Δ
-dsq = otimes_ipm(dth, dth)
-@test states(dsq) == [1,2,3,4]
-@test length(transitions(dsq)) == 2
-@test states(otimes_ipm(dsq, dsq)) == 1:8
-
-dc = otimes_ipm(dth, create(OpenPetriDom(1)))
-@test states(dc) == 1:3
-@test transitions(dc) == [([1], [2])]
-
-dcc = otimes_ipm(dc, create(OpenPetriDom(1)))
-@test states(dcc) == 1:4
-@test transitions(dcc) == [([1], [2])]
-
-dccd = otimes_ipm(dcc, death(OpenPetriDom(1)))
-@test states(dccd) == 1:6
-@test transitions(dccd) == [([1], [2]), ([5],[6])]
-
-#function compose_ipm(f::OpenModel, g::OpenModel)
 
 println("Testing CT API")
 f = FinSetMorph(1:4, [1,2,3])
@@ -287,7 +241,7 @@ Cospan(f,g), Cospan(f′, g′)
 pushout(Span(g,f′))
 
 
-spon = PetriModel(spontaneous(OpenPetriDom(1), OpenPetriDom(1)).model)
+spon = PetriModel(Petri.Model([1,2], [([1], [2])], missing, missing))
 f = Decorated(FinSetMorph(1:2, [2]), [spon])
 g = Decorated(FinSetMorph(1:2, [1]), [spon])
 s = Span(g,f)
@@ -296,6 +250,8 @@ cs = pushout(undecorate(s))
 
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     g = gModel.model
+    @show dom(f)
+    @show g.S
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
     #outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
@@ -310,10 +266,12 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
 end
 
+@testset "Spon Quotient" begin
 spon2 = otimes_ipm(spon, spon)
 spon2quo = (left(cs)⊔right(cs))(spon2)
 @test spon2quo.model.S == 1:3
 @test spon2quo.model.Δ == [([1], [2]),([2], [3])]
+end
 
 
 f = FinSetMorph(1:2, [2])
@@ -342,7 +300,10 @@ function compose_pushout(cs₁, cs₂)
     s = Span(left(cs₁), right(cs₂))
     cs′ = pushout(undecorate(s))
     # the quotient operator from X+Y --> X +_B Y
-    q = (left(cs′)⊔right(cs′))
+    # this is backwards, I think -- jpf
+    # q = (left(cs′)⊔right(cs′))
+    # @show q.fun
+    q = (right(cs′)⊔left(cs′))
     @show q.fun
     coproduct = map(x->otimes_ipm(x[1], x[2]), zip(left(s).d, right(s).d))[1]
     #coproduct = otimes_ipm(decorations(cs₁)[1], decorations(cs₂)[1])
@@ -362,6 +323,7 @@ function compose_pushout(cs₁, cs₂)
     return Cospan(f′, g′)
 end
 
+@testset "compose_pushout" begin
 sponspon = compose_pushout(cs₁, cs₂)
 @test sponspon.f.f.codom == sponspon.g.f.codom
 @test sponspon.f.f.fun == [1]
@@ -369,3 +331,192 @@ sponspon = compose_pushout(cs₁, cs₂)
 # @test sponspon.f.f == FinSetMorph(1:3, [1])
 # @test sponspon.g.f == FinSetMorph(1:3, [3])
 @test sponspon.g.d == sponspon.f.d
+end
+
+
+println("Defining Our Instance")
+
+struct FinSet
+    n::UnitRange{Int}
+end
+
+FinSet(n::Int) = FinSet(1:n)
+
+NullModel(n::Int) = PetriModel(Petri.Model(collect(1:n), Vector{Tuple{Vector{Int},Vector{Int}}}(), missing, missing))
+length(X::FinSet) = length(X.n)
+==(X::FinSet, Y::FinSet) = X.n == Y.n
+
+struct PetriCospan
+    f::Cospan
+end
+
+
+id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
+
+@instance Epidemiology(FinSet, PetriCospan) begin
+
+  dom(f::PetriCospan) = FinSet(dom(left(f.f)))
+  codom(f::PetriCospan) = FinSet(dom(right(f.f)))
+
+  compose(f::PetriCospan, g::PetriCospan) = begin
+      @show typeof(f.f)
+      @show typeof(g.f)
+      PetriCospan(compose_pushout(f.f,g.f))
+  end
+
+  id(X::FinSet) = PetriCospan(Cospan(Decorated(id(FinSetMorph, length(X.n)),
+                                        NullModel(length(X.n))),
+                              Decorated(id(FinSetMorph, length(X.n)),
+                                        NullModel(length(X.n)))))
+  otimes(X::FinSet, Y::FinSet) = FinSet(length(X) + length(Y))
+
+  otimes(f::PetriCospan, g::PetriCospan) = begin
+      df = left(f.f).d[1]
+      dg = left(g.f).d[1]
+      f, g = undecorate(f.f), undecorate(g.f)
+      l = left(f) ⊔ left(g)
+      r = right(f) ⊔ right(g)
+      d = otimes_ipm(df, dg)
+      PetriCospan(Cospan(Decorated(l, d), Decorated(r, d)))
+  end
+
+
+  munit(::Type{FinSet}) = FinSet(0)
+  braid(X::FinSet, Y::FinSet) = begin
+      Z = otimes(X,Y).n
+      d = NullModel(Z)
+      M,N = length(X), length(Y)
+      f₁ = Decorated(FinSetMorph(Z, Z), d)
+      f₂ = Decorated(FinSetMorph(Z, vcat(N:N+M, 1:N)), d)
+      return PetriCospan(Cospan(f₁, f₂))
+  end
+
+  mcopy(X::FinSet) = begin
+      d = NullModel(length(X))
+      f = Decorated(FinSetMorph(X.n, X.n), d)
+      g = Decorated(FinSetMorph(X.n, kron(ones(Int, length(X)), X.n), d))
+      PetriCospan(Cospan(f,g))
+  end
+
+  mmerge(X::FinSet) = begin
+      d = NullModel(length(X))
+      f = Decorated(FinSetMorph(X.n, X.n), d)
+      g = Decorated(FinSetMorph(X.n, kron(ones(Int, length(X)), X.n), d))
+      PetriCospan(Cospan(g,f))
+  end
+
+  create(X::FinSet) = begin
+      d = NullModel(length(X))
+      f = Decorated(FinSetMorph(X.n, Int[]), d)
+      g = Decorated(id(FinSetMorph, length(X)), d)
+      PetriCospan(Cospan(f,g))
+  end
+
+  delete(X::FinSet) = begin
+      d = NullModel(length(X))
+      f = Decorated(FinSetMorph(X.n, Int[]), d)
+      g = Decorated(id(FinSetMorph, length(X)), d)
+      PetriCospan(Cospan(g,f))
+  end
+
+  pair(f::PetriCospan, g::PetriCospan) = compose(mcopy(dom(f)), otimes(f,g))
+  copair(f::PetriCospan, g::PetriCospan) = compose(otimes(f,g), mmerge(codom(f)))
+  proj1(A::FinSet,B::FinSet) = otimes(id(A), delete(B))
+  proj2(A::FinSet,B::FinSet) = otimes(delete(A), id(B))
+
+  incl1(A::FinSet,B::FinSet) = otimes(id(A), create(B))
+  incl2(A::FinSet,B::FinSet) = otimes(create(A), id(B))
+
+  spontaneous(A::FinSet, B::FinSet) = begin
+      M, N = length(A), length(B)
+      M == N || error("Length of A and length of B must be equal")
+      d = PetriModel(IntPetriModel(1:M+N, [([i], [M+i]) for i in 1:M]))
+      f = Decorated(id(FinSetMorph, M), d)
+      g = Decorated(id(FinSetMorph, M), d)
+      PetriCospan(Cospan(f,g))
+  end
+
+  transmission(A::FinSet, B::FinSet) = begin
+      M, N = length(A), length(B)
+      length(A) == 1 || error("Currently only supports one transmission variable")
+      d = PetriModel(IntPetriModel([1, 2], [([1, 2], [2,2])]))
+      f = Decorated(id(FinSetMorph, M), d)
+      g = Decorated(id(FinSetMorph, M), d)
+      PetriCospan(Cospan(f,g))
+  end
+  exposure(A::FinSet, B::FinSet, C::FinSet) = begin
+      length(C) == 1 || error("Currently only supports one exposure variable")
+      d = PetriModel(IntPetriModel([1, 2, 3], [([1, 2], [3,2])]))
+      f = Decorated(FinSetMorph(1:3, [1,2]), d)
+      g = Decorated(FinSetMorph(1:3, [3,2]), d)
+      PetriCospan(Cospan(f,g))
+  end
+  death(A::FinSet) = begin
+      M = length(A)
+      d = PetriModel(IntPetriModel(1:2M, [([i], [M+i]) for i in 1:M]))
+      f = Decorated(FinSetMorph(1:2M, 1:M), d)
+      g = Decorated(FinSetMorph(1:2M, Int[]), d)
+      PetriCospan(Cospan(f,g))
+  end
+end
+
+
+# states(f::OpenModel) = f.model.S
+# transitions(f::OpenModel) = f.model.Δ
+# @test states(dsq) == [1,2,3,4]
+# @test length(transitions(dsq)) == 2
+# @test states(otimes_ipm(dsq, dsq)) == 1:8
+#
+# dc = otimes_ipm(dth, create(FinSet(1)))
+# @test states(dc) == 1:3
+# @test transitions(dc) == [([1], [2])]
+#
+# dcc = otimes_ipm(dc, create(FinSet(1)))
+# @test states(dcc) == 1:4
+# @test transitions(dcc) == [([1], [2])]
+#
+# dccd = otimes_ipm(dcc, death(FinSet(1)))
+# @test states(dccd) == 1:6
+# @test transitions(dccd) == [([1], [2]), ([5],[6])]
+
+#function compose_ipm(f::OpenModel, g::OpenModel)
+
+@testset "Two Chains" begin
+    chain = Cospan(Decorated(FinSetMorph(1:2, [1]), spon), Decorated(FinSetMorph(1:2, [2]), spon))
+    twochain = compose_pushout(chain, chain)
+    threechain = compose_pushout(twochain, chain)
+end
+
+
+@testset "Create Death" begin
+    dth = death(FinSet(1))
+    crt = create(FinSet(1))
+    r = right(crt.f).f
+    @test r.fun == [1]
+    l = left(dth.f).f
+    @test l.fun == [1]
+    cs = pushout(Span(r, l))
+    @test dom(left(cs)) == 1:2
+    @test dom(right(cs)) == 1:1
+    @test codom(left(cs)) == 1:2
+    @test codom(right(cs)) == 1:2
+
+    crtdth = compose_pushout(crt.f, dth.f)
+    @test dom(left(crtdth).f) == 1:0
+    @test codom(left(crtdth).f) == 1:3
+    @test left(crtdth).f.fun == Int[]
+end
+
+@testset "Death Sq" begin
+    dth = death(FinSet(1))
+    dsq = otimes(dth, dth)
+    @test left(dsq.f).f.fun == [1,2]
+    @test dsq.f.f.d[1].model.S == 1:4
+    @test dsq.f.f.d[1].model.Δ == [([1],[2]), ([3], [4])]
+    @test dom(dsq.f.f.f) == 1:2
+    @test dom(dsq.f.g.f) == 1:0
+    @test codom(dsq.f.f.f) == 1:4
+    @test codom(dsq.f.g.f) == 1:4
+    @test dsq.f.f.f.fun == [1,2]
+    @test dsq.f.g.f.fun == Int[]
+end
