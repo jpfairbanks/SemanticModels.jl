@@ -243,6 +243,9 @@ function undecorate(c::Cospan{T,T}) where T <: Decorated
     return Cospan(undecorate(left(c)), undecorate(right(c)))
 end
 
+# TODO: This pushout gets the numbers mixed up. It is right up to permutation
+# which is fine for when we want to do one pushout. But when we want to chain
+# pushouts in order to do composition, "up to permutation" isn't good enough.
 """    pushout(s::Span{T,T}) where T <: FinSetMorph
 
 treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b)

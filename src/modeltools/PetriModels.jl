@@ -126,6 +126,7 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
 end
 
+# TODO: this looks like coproduct not pushout.
 
 """    pushout(m1::Model, m2::Model)
 
