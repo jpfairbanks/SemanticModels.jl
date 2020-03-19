@@ -6,10 +6,9 @@ using Catlab.Programs
 import Base.Multimedia: display
 import Catlab.Graphics: to_graphviz, LeftToRight
 import Base: (==)
+using Test
 
-using SemanticModels.ModelTools.CategoryTheory
-
-pushout = CategoryTheory.pushout
+println("Done Importing Catlab")
 
 import Catlab.Doctrines:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,
@@ -137,11 +136,14 @@ draw(seirddef)
 #
 # to_tikz(seirddef, labels=true)
 println("Loading SemanticModels")
-using SemanticModels
-using SemanticModels.ModelTools.OpenPetris
 using Petri
+using SemanticModels
 using SemanticModels.ModelTools.PetriModels
 using SemanticModels.ModelTools.OpenModels
+using SemanticModels.ModelTools.OpenPetris
+using SemanticModels.ModelTools.CategoryTheory
+pushout = CategoryTheory.pushout
+
 struct OpenPetriDom
   N::Int
 end
@@ -176,6 +178,19 @@ function otimes_ipm(f::OpenModel, g::OpenModel)
     @show M.Δ
     @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
     return OpenModel(newdom, IntPetriModel(newS, newΔ), newcodom)
+end
+
+# TODO: integrate this method with the one above. Multiple dispatch is hard.
+function otimes_ipm(f::PetriModel, g::PetriModel)
+    @show M = f.model
+    @show N = g.model
+    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
+    @show newS = domcat(M.S, N.S)
+    @show M
+    @show M.S
+    @show M.Δ
+    @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
+    return PetriModel(Petri.Model(newS, newΔ, missing, missing))
 end
 
 println("Defining Our Instance")
@@ -240,7 +255,6 @@ m1 = Petri.Model([1,2], [([1],[2])], [],[])
 
 
 
-using Test
 
 states(f::OpenModel) = f.model.S
 transitions(f::OpenModel) = f.model.Δ
@@ -276,24 +290,9 @@ pushout(Span(g,f′))
 spon = PetriModel(spontaneous(OpenPetriDom(1), OpenPetriDom(1)).model)
 f = Decorated(FinSetMorph(1:2, [2]), [spon])
 g = Decorated(FinSetMorph(1:2, [1]), [spon])
-s = Span(f,g)
+s = Span(g,f)
 
 cs = pushout(undecorate(s))
-#map((right(cs)⊔left(cs)), map(x->x[1]⊔x[2], zip(left(s).d, right(s).d)))
-
-#(right(cs)⊔left(cs))(⊔(spon, spon))
-
-function otimes_ipm(f::PetriModel, g::PetriModel)
-    @show M = f.model
-    @show N = g.model
-    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
-    @show newS = domcat(M.S, N.S)
-    @show M
-    @show M.S
-    @show M.Δ
-    @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
-    return PetriModel(Petri.Model(newS, newΔ, missing, missing))
-end
 
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     g = gModel.model
@@ -303,10 +302,8 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     outS = 1:length(Set(ϕ.m.fun))
     outΔ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
     for t in g.Δ
-        @show t[1]
-        @show ins = ϕ.(t[1])
-        @show t[2]
-        @show outs = ϕ.(t[2])
+        ins = ϕ.(t[1])
+        outs = ϕ.(t[2])
         push!(outΔ, (ins,outs))
      end
     out = deepcopy(g)
@@ -314,6 +311,61 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
 end
 
 spon2 = otimes_ipm(spon, spon)
-spon2quo = (right(cs)⊔left(cs))(spon2)
+spon2quo = (left(cs)⊔right(cs))(spon2)
 @test spon2quo.model.S == 1:3
 @test spon2quo.model.Δ == [([1], [2]),([2], [3])]
+
+
+f = FinSetMorph(1:2, [2])
+g = FinSetMorph(1:2, [1])
+s = Span(g,f)
+
+cs = CategoryTheory.pushout(s)
+
+@test (left(cs)⊔right(cs)).fun == [1,2,2,3]
+
+f₁ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₁ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+f₂ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₂ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+cs₁ = Cospan(f₁, g₁)
+cs₂ = Cospan(f₂, g₂)
+
+compose(f::FinSetMorph, g::FinSetMorph) = FinSetMorph(g.codom, func(g).(f.fun))
+⋅(f::FinSetMorph, g::FinSetMorph) = compose(f,g)
+
+function compose_pushout(cs₁, cs₂)
+    @show right(cs₁)
+    @show right(cs₂)
+    s = Span(left(cs₁), right(cs₂))
+    cs′ = pushout(undecorate(s))
+    # the quotient operator from X+Y --> X +_B Y
+    q = (left(cs′)⊔right(cs′))
+    @show q.fun
+    coproduct = map(x->otimes_ipm(x[1], x[2]), zip(left(s).d, right(s).d))[1]
+    #coproduct = otimes_ipm(decorations(cs₁)[1], decorations(cs₂)[1])
+    sum = q(coproduct)
+    @show sum
+    #TODO: figure out legs of new cospan
+    println("forming legs")
+    @show left(cs₁)
+    @show left(cs₁).f
+    @show left(cs′)
+    f′ = left(cs₁).f ⋅ left(cs′)
+    @show f′
+    g′ = right(cs₂).f ⋅ right(cs′)
+    @show g′
+    f′ = Decorated(f′,sum)
+    g′ = Decorated(g′, sum)
+    return Cospan(f′, g′)
+end
+
+sponspon = compose_pushout(cs₁, cs₂)
+@test sponspon.f.f.codom == sponspon.g.f.codom
+@test sponspon.f.f.fun == [1]
+@test sponspon.g.f.fun == [3]
+# @test sponspon.f.f == FinSetMorph(1:3, [1])
+# @test sponspon.g.f == FinSetMorph(1:3, [3])
+@test sponspon.g.d == sponspon.f.d
