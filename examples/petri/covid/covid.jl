@@ -5,6 +5,11 @@ using Catlab.WiringDiagrams
 using Catlab.Programs
 import Base.Multimedia: display
 import Catlab.Graphics: to_graphviz, LeftToRight
+import Base: (==)
+
+using SemanticModels.ModelTools.CategoryTheory
+
+pushout = CategoryTheory.pushout
 
 import Catlab.Doctrines:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,
@@ -131,3 +136,184 @@ draw(seirddef)
 # using SCS
 #
 # to_tikz(seirddef, labels=true)
+println("Loading SemanticModels")
+using SemanticModels
+using SemanticModels.ModelTools.OpenPetris
+using Petri
+using SemanticModels.ModelTools.PetriModels
+using SemanticModels.ModelTools.OpenModels
+struct OpenPetriDom
+  N::Int
+end
+
+println("Done Loading")
+==(X::OpenPetriDom, Y::OpenPetriDom) = (X.N==Y.N)
+
+# TODO: The Model Toolkit interface was dumb, let's just do everything with integer variable numbers
+# SEIR is Petri.Mode([1,2,3], [([1], [2]), ([1,2], [3]), ([3],[2])])
+IntPetriModel(S, Δ) = Petri.Model(S, Δ, [],[])
+NullModel(n::Int) = IntPetriModel(collect(1:n), Vector{Tuple{Vector{Int}, Vector{Int}}}())
+
+function tcat(v::Vector{Tuple{Vector{Int},Vector{Int}}},
+     w::Vector{Tuple{Vector{Int},Vector{Int}}}, shift::Int)
+    w′ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
+    for t in w
+        push!(w′, (map(x->x+shift, t[1]),
+         map(x->x+shift, t[2])))
+    end
+    return vcat(v,w′)
+end
+
+function otimes_ipm(f::OpenModel, g::OpenModel)
+    @show M = f.model
+    @show N = g.model
+    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
+    @show newdom = domcat(f.dom, g.dom)
+    @show newcodom = domcat(f.codom, g.codom)
+    @show newS = domcat(M.S, N.S)
+    @show M
+    @show M.S
+    @show M.Δ
+    @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
+    return OpenModel(newdom, IntPetriModel(newS, newΔ), newcodom)
+end
+
+println("Defining Our Instance")
+
+@instance Epidemiology(OpenPetriDom, OpenModel) begin
+  @import ⊗
+
+  dom(f::OpenModel) = OpenPetriDom(length(f.dom))
+  codom(f::OpenModel) = OpenPetriDom(length(f.codom))
+
+  compose(f::OpenModel, g::OpenModel) = OpenPetris.compose_om(f,g)
+  id(X::OpenPetriDom) = OpenPetris.eye(length(X.N))
+
+  otimes(X::OpenPetriDom, Y::OpenPetriDom) = OpenModel(X.N + Y.N)
+  otimes(f::OpenModel, g::OpenModel) = OpenPetris.otimes_ipm(f,g)
+  munit(::Type{OpenPetriDom}) = OpenPetriDom(0)
+  braid(X::OpenPetriDom, Y::OpenPetriDom) =
+    OpenModel(vcat(collect(1:X.N),collect(1:Y.N).+X.N),
+              PetriModel(NullPetri(X.N+Y.N)),
+              vcat(collect(1:Y.N).+X.N, collect(1:X.N)))
+  mcopy(X::OpenPetriDom) = OpenModel([1], NullModel(1), ones(Int, X))
+  mmerge(X::OpenPetriDom) = OpenModel(ones(Int, X.N), NullModel(1), [1])
+  create(X::OpenPetriDom) = OpenModel(Int[], NullModel(X.N), collect(1:X.N))
+  delete(X::OpenPetriDom) = OpenModel(collect(1:X.N), NullModel(X.N), Int[])
+  pair(f::OpenModel, g::OpenModel) = compose(mcopy(dom(f)), otimes(f,g))
+  copair(f::OpenModel, g::OpenModel) = compose(otimes(f,g), mmerge(codom(f)))
+  proj1(A::OpenPetriDom,B::OpenPetriDom) = otimes(id(A), delete(B))
+  proj2(A::OpenPetriDom,B::OpenPetriDom) = otimes(delete(A), id(B))
+
+  incl1(A::OpenPetriDom,B::OpenPetriDom) = otimes(id(A), create(B))
+  incl2(A::OpenPetriDom,B::OpenPetriDom) = otimes(create(A), id(B))
+
+  spontaneous(A::OpenPetriDom, B::OpenPetriDom) = begin
+     OpenModel([1], IntPetriModel([1,2],
+                                      [([1], [2])]),
+                                      [2])
+  end
+  transmission(A::OpenPetriDom, B::OpenPetriDom) = begin
+     OpenModel([1,2], IntPetriModel([1,2],
+                                      [([1,2], [2,2])]),
+                                      [2,2])
+  end
+  exposure(A::OpenPetriDom, B::OpenPetriDom, C::OpenPetriDom) = begin
+     OpenModel([1,2], IntPetriModel([1, 2],
+                                      [([1, 2], [3,2])]),
+                                      [3,2])
+  end
+  death(A::OpenPetriDom) = begin
+     OpenModel([1], IntPetriModel([1,2],
+                                      [([1], [2])]),
+                                      Int[])
+  end
+end
+
+
+dth = death(OpenPetriDom(1))
+
+create(OpenPetriDom(1))
+
+
+m1 = Petri.Model([1,2], [([1],[2])], [],[])
+
+
+
+using Test
+
+states(f::OpenModel) = f.model.S
+transitions(f::OpenModel) = f.model.Δ
+dsq = otimes_ipm(dth, dth)
+@test states(dsq) == [1,2,3,4]
+@test length(transitions(dsq)) == 2
+@test states(otimes_ipm(dsq, dsq)) == 1:8
+
+dc = otimes_ipm(dth, create(OpenPetriDom(1)))
+@test states(dc) == 1:3
+@test transitions(dc) == [([1], [2])]
+
+dcc = otimes_ipm(dc, create(OpenPetriDom(1)))
+@test states(dcc) == 1:4
+@test transitions(dcc) == [([1], [2])]
+
+dccd = otimes_ipm(dcc, death(OpenPetriDom(1)))
+@test states(dccd) == 1:6
+@test transitions(dccd) == [([1], [2]), ([5],[6])]
+
+#function compose_ipm(f::OpenModel, g::OpenModel)
+
+println("Testing CT API")
+f = FinSetMorph(1:4, [1,2,3])
+g = FinSetMorph(1:4, [4,1])
+f′ = FinSetMorph(1:3, [2,3])
+g′ = FinSetMorph(1:3, [1,2])
+Cospan(f,g), Cospan(f′, g′)
+
+pushout(Span(g,f′))
+
+
+spon = PetriModel(spontaneous(OpenPetriDom(1), OpenPetriDom(1)).model)
+f = Decorated(FinSetMorph(1:2, [2]), [spon])
+g = Decorated(FinSetMorph(1:2, [1]), [spon])
+s = Span(f,g)
+
+cs = pushout(undecorate(s))
+#map((right(cs)⊔left(cs)), map(x->x[1]⊔x[2], zip(left(s).d, right(s).d)))
+
+#(right(cs)⊔left(cs))(⊔(spon, spon))
+
+function otimes_ipm(f::PetriModel, g::PetriModel)
+    @show M = f.model
+    @show N = g.model
+    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
+    @show newS = domcat(M.S, N.S)
+    @show M
+    @show M.S
+    @show M.Δ
+    @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
+    return PetriModel(Petri.Model(newS, newΔ, missing, missing))
+end
+
+function (f::FinSetMorph)(gModel::G) where G <: PetriModel
+    g = gModel.model
+    length(dom(f)) == length(g.S) || throw(DomainError(g.S))
+    ϕ = func(f)
+    #outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
+    outS = 1:length(Set(ϕ.m.fun))
+    outΔ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
+    for t in g.Δ
+        @show t[1]
+        @show ins = ϕ.(t[1])
+        @show t[2]
+        @show outs = ϕ.(t[2])
+        push!(outΔ, (ins,outs))
+     end
+    out = deepcopy(g)
+    PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
+end
+
+spon2 = otimes_ipm(spon, spon)
+spon2quo = (right(cs)⊔left(cs))(spon2)
+@test spon2quo.model.S == 1:3
+@test spon2quo.model.Δ == [([1], [2]),([2], [3])]
