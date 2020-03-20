@@ -286,31 +286,16 @@ compose(f::FinSetMorph, g::FinSetMorph) = FinSetMorph(g.codom, func(g).(f.fun))
 function compose_pushout(cs₁, cs₂)
     @show right(cs₁)
     @show left(cs₂)
-    s = Span(left(cs₁), right(cs₂))
-    @show typeof(s)
-    @show typeof(undecorate(s))
+    s = Span(left(cs₂), right(cs₁))
     cs′ = pushout(undecorate(s))
     # the quotient operator from X+Y --> X +_B Y
-    # this is backwards, I think -- jpf
-    # q = (left(cs′)⊔right(cs′))
-    # @show q.fun
-    @show right(cs′)
-    @show left(cs′)
-    q = (right(cs′)⊔left(cs′))
+    q = (left(cs′) ⊔ right(cs′))
     @show q.fun
-    coproduct = map(x->otimes_ipm(x[1], x[2]), zip(left(s).d, right(s).d))[1]
-    #coproduct = otimes_ipm(decorations(cs₁)[1], decorations(cs₂)[1])
+    coproduct = map(x->otimes_ipm(x[1], x[2]), zip(right(s).d, left(s).d))[1]
     sum = q(coproduct)
-    @show sum
     #TODO: figure out legs of new cospan
-    println("forming legs")
-    @show left(cs₁)
-    @show left(cs₁).f
-    @show left(cs′)
     f′ = left(cs₁).f ⋅ left(cs′)
-    @show f′
     g′ = right(cs₂).f ⋅ right(cs′)
-    @show g′
     f′ = Decorated(f′,sum)
     g′ = Decorated(g′, sum)
     return Cospan(f′, g′)
@@ -474,44 +459,6 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
       g = Decorated(FinSetMorph(1:2M, Int[]), d)
       PetriCospan(Cospan(f,g))
   end
-end
-
-function compose_pushout(cs₁, cs₂)
-    @show right(cs₁)
-    @show left(cs₂)
-    #s = Span(right(cs₁), left(cs₂))
-    s = Span(left(cs₂), right(cs₁))
-    @show typeof(s)
-    @show typeof(undecorate(s))
-    @show left(s)
-    @show right(s)
-    cs′ = pushout(undecorate(s))
-    # the quotient operator from X+Y --> X +_B Y
-    # this is backwards, I think -- jpf
-    # q = (left(cs′)⊔right(cs′))
-    # @show q.fun
-    @show right(cs′)
-    @show left(cs′)
-    q = (left(cs′) ⊔ right(cs′))
-    @show q.fun
-    println("Building Coproduct of decorations")
-    coproduct = map(x->otimes_ipm(x[1], x[2]), zip(right(s).d, left(s).d))[1]
-    #coproduct = otimes_ipm(decorations(cs₁)[1], decorations(cs₂)[1])
-    @show coproduct
-    sum = q(coproduct)
-    @show sum
-    #TODO: figure out legs of new cospan
-    println("forming legs")
-    @show left(cs₁)
-    @show left(cs₁).f
-    @show left(cs′)
-    f′ = left(cs₁).f ⋅ left(cs′)
-    @show f′
-    g′ = right(cs₂).f ⋅ right(cs′)
-    @show g′
-    f′ = Decorated(f′,sum)
-    g′ = Decorated(g′, sum)
-    return Cospan(f′, g′)
 end
 
 
