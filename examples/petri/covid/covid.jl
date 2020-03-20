@@ -145,6 +145,7 @@ using SemanticModels.ModelTools.CategoryTheory
 import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
 pushout = CategoryTheory.pushout
 undecorate(c::Cospan) = Cospan(undecorate(left(c)), undecorate(right(c)))
+undecorate(c::Span) = Span(undecorate(left(c)), undecorate(right(c)))
 
 # function ⊔(f::FinSetMorph, g::FinSetMorph)
 #     Y = codom(f) ⊔ codom(g)
@@ -407,7 +408,7 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
 
   mcopy(X::FinSet) = begin
       d = NullModel(length(X))
-      f = Decorated(FinSetMorph(X.n, X.n), d)
+      f = Decorated(FinSetMorph(X.n, collect(X.n)), d)
       g = Decorated(FinSetMorph(X.n, kron(ones(Int, 2), X.n)), d)
       PetriCospan(Cospan(f,g))
   end
@@ -475,6 +476,45 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
   end
 end
 
+function compose_pushout(cs₁, cs₂)
+    @show right(cs₁)
+    @show left(cs₂)
+    #s = Span(right(cs₁), left(cs₂))
+    s = Span(left(cs₂), right(cs₁))
+    @show typeof(s)
+    @show typeof(undecorate(s))
+    @show left(s)
+    @show right(s)
+    cs′ = pushout(undecorate(s))
+    # the quotient operator from X+Y --> X +_B Y
+    # this is backwards, I think -- jpf
+    # q = (left(cs′)⊔right(cs′))
+    # @show q.fun
+    @show right(cs′)
+    @show left(cs′)
+    q = (left(cs′) ⊔ right(cs′))
+    @show q.fun
+    println("Building Coproduct of decorations")
+    coproduct = map(x->otimes_ipm(x[1], x[2]), zip(right(s).d, left(s).d))[1]
+    #coproduct = otimes_ipm(decorations(cs₁)[1], decorations(cs₂)[1])
+    @show coproduct
+    sum = q(coproduct)
+    @show sum
+    #TODO: figure out legs of new cospan
+    println("forming legs")
+    @show left(cs₁)
+    @show left(cs₁).f
+    @show left(cs′)
+    f′ = left(cs₁).f ⋅ left(cs′)
+    @show f′
+    g′ = right(cs₂).f ⋅ right(cs′)
+    @show g′
+    f′ = Decorated(f′,sum)
+    g′ = Decorated(g′, sum)
+    return Cospan(f′, g′)
+end
+
+
 @testset "Merge and Copy" begin
     m4 = mmerge(FinSet(4))
     @test dom(m4.f.f.f) == 1:8
@@ -489,6 +529,12 @@ end
     @test codom(m4.f.g.f) == 1:4
     @test m4.f.f.d[1].model.S == 1:4
     @test m4.f.f.d[1].model.Δ == []
+    X = FinSet(1)
+    m4 = mcopy(X)⋅(mcopy(X)⊗mcopy(X))
+    @test dom(left(m4.f)) == 1:1
+    @test codom(left(m4.f)) == 1:1
+    @test dom(right(m4.f)) == 1:4
+    @test codom(right(m4.f)) == 1:1
 end
 
 # states(f::OpenModel) = f.model.S
@@ -514,6 +560,12 @@ end
 @testset "Two Chains" begin
     chain = Cospan(Decorated(FinSetMorph(1:2, [1]), spon), Decorated(FinSetMorph(1:2, [2]), spon))
     twochain = compose_pushout(chain, chain)
+    @test dom(left(twochain)) == 1:1
+    @test codom(left(twochain)) == 1:3
+    @test left(twochain).f.fun == [1]
+    @test dom(right(twochain)) == 1:1
+    @test codom(right(twochain)) == 1:3
+    @test right(twochain).f.fun == [3]
     threechain = compose_pushout(twochain, chain)
 end
 
@@ -532,8 +584,9 @@ end
     @test codom(right(cs)) == 1:2
 
     crtdth = compose_pushout(crt.f, dth.f)
+    @show crtdth
     @test dom(left(crtdth).f) == 1:0
-    @test codom(left(crtdth).f) == 1:3
+    @test codom(left(crtdth).f) == 1:2
     @test left(crtdth).f.fun == Int[]
 end
 
@@ -553,7 +606,7 @@ end
 
 @testset "Exposure" begin
     exp = exposure(FinSet(1), FinSet(1), FinSet(1))
-    T = [([3, 2], [4, 2]), ([1, 2], [3, 2])]
+    T = [([1, 2], [3, 2]), ([3, 2], [4, 2])]
     @show e² = exp⋅exp
     @test left(e².f).d[1].model.Δ == T
     @test dom(left(e².f).f) == 1:2
@@ -588,7 +641,7 @@ end
     @test dom(right(h.f).f) == 1:2
     @test codom(right(h.f).f) == 1:2
 
-    m = g⋅h
+    m = f⋅g⋅h
     @show m
     @test dom(left(m.f).f) == 1:2
     @test codom(left(m.f).f) == 1:2
