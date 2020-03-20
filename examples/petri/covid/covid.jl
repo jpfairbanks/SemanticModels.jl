@@ -472,6 +472,27 @@ end
     @test codom(right(m.f).f) == 1:2
 end
 
+X = FinSet(1)
+@testset "Functor" begin
+    Fsei = compose(exposure(X,X,X), otimes(spontaneous(X,X), id(X)), mmerge(X))
+    @test left(Fsei.f).d[1].model.S == 1:3
+    @test left(Fsei.f).d[1].model.Δ == [([1,2], [3,2]), ([3], [2])]
+    @show dom(right(Fsei.f).f) == 1:1
+    @show codom(right(Fsei.f).f) == 1:3
+    @show right(Fsei.f).f.fun == [2]
+
+
+    Fseir = Fsei ⋅ spontaneous(X,X)
+    @show Fseir
+    @test left(Fseir.f).d[1].model.S == 1:4
+    # @test left(Fsei.f).d[1].model.Δ == [([1,2], [3,2]), ([3], [2])]
+    @show dom(right(Fseir.f).f) == 1:1
+    @show codom(right(Fseir.f).f) == 1:4
+    @show right(Fseir.f).f.fun == [4]
+
+
+end
+
 println("Making COVID Model")
 
 @present Disease(FreeEpidemiology) begin
@@ -561,3 +582,5 @@ draw(seirddef)
 # using SCS
 #
 # to_tikz(seirddef, labels=true)
+
+# F(ex) = functor((FinSet, FinSetMorph), ex, generators=Dict())
