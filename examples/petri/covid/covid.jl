@@ -583,4 +583,16 @@ repeat(d::FreeEpidemiology.Hom, n::Int) = compose([d for i in 1:n]...)
 #
 # to_tikz(seirddef, labels=true)
 
-# F(ex) = functor((FinSet, FinSetMorph), ex, generators=Dict())
+F(ex) = functor((FinSet, FinSetMorph),
+                ex,
+                generators=Dict(S=>X, I=>X, E=>X, R=>X))
+
+Fseir = compose(exposure(X,X,X),otimes(spontaneous(X,X),id(X)),mmerge(X),mcopy(X),otimes(id(X),spontaneous(X,X)))
+# states are [S, I, E, R]
+seir_petri = left(Fseir.f).d[1]
+f = FinSetMorph(1:3, [1, 2, 3])
+g = FinSetMorph(1:3, [1, 2, 3])
+Fseir′ = PetriCospan(Cospan(Decorated(f,seir_petri), Decorated(g, seir_petri)))
+s = spontaneous(X,X)
+flow = otimes(s, s, s)
+@show Fseir′ ⋅ flow
