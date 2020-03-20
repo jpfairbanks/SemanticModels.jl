@@ -48,93 +48,6 @@ mmerge(A::Ports{Epidemiology.Hom}, Symbol) = implicit_mmerge(A, 2)
     otimes(f::Hom, g::Hom) = associate(new(f,g))
 end
 
-@present Disease(FreeEpidemiology) begin
-    S::Ob
-    E::Ob
-    I::Ob
-    R::Ob
-end
-
-S,E,I,R = generators(Disease)
-draw(spontaneous(E,I)⋅spontaneous(I,R)⊗(spontaneous(E,I)))
-sei = compose(exposure(S,I,E), otimes(spontaneous(E,I), id(I)), mmerge(I))
-draw(sei)
-seir = sei⋅Δ(I)⋅(id(I)⊗spontaneous(I, R))
-draw(seir)
-seir2 = compose(mcopy(S)⊗id(I), id(S)⊗seir)
-draw(seir2)
-
-draw(death(S))
-
-d = @program Disease (s::S, e::E, i::I) begin
-    e1, i1 = exposure{S,I,E}(s,i)
-    i2 = spontaneous{E,I}(e1)
-    e = [e, e1]
-    e_out = spontaneous{E,E}(e)
-    i1 = [i1, i2]
-    r = spontaneous{I,R}(i1)
-    s_out = spontaneous{S,S}(s)
-    return s_out, e_out, spontaneous{I,I}(i1)
-end
-draw(d)
-
-draw(d⋅d)
-
-seirdef = to_hom_expr(FreeEpidemiology, d)
-try
-    add_definition!(Disease, :seir, seirdef)
-catch
-    println("INFO: definition already added.")
-end
-
-# if the disease is fatal, we need to add a death component
-seird = @program Disease (s::S, e::E, i::I) begin
-    e1, i1 = exposure{S,I,E}(s,i)
-    i2 = spontaneous{E,I}(e1)
-    e = [e, e1]
-    e_out = spontaneous{E,E}(e)
-    i1 = [i1, i2]
-    r = spontaneous{I,R}(i1)
-    s_out = spontaneous{S,S}(s)
-    death{I}(i1)
-    return s_out, e_out, spontaneous{I,I}(i1)
-end
-#TODO: This does not get translated correctly, bug?
-seirddef = to_hom_expr(FreeEpidemiology, seird)
-try
-    add_definition!(Disease, :seird, seirddef)
-catch
-    println("INFO: definition already added.")
-end
-
-seirgen = generator(Disease, :seir)
-seirdgen = generator(Disease, :seird)
-
-
-ncities(city,n::Int) = compose([city for i in 1:n]...)
-city³ = ncities(seirgen, 3)
-draw(city³)
-
-dcity³ = wd(city³)
-dc3 = substitute(dcity³, box_ids(dcity³), [d,d,d])
-@show dc3 == ncities(d, 3)
-draw(dc3)
-
-import Base: repeat
-repeat(d::WiringDiagram, n::Int) = compose([d for i in 1:n]...)
-repeat(d::FreeEpidemiology.Hom, n::Int) = compose([d for i in 1:n]...)
-
-draw(ncities(seirdgen, 3))
-draw(repeat(seird, 3))
-
-draw(seirddef)
-#
-# using TikzPictures
-# using Catlab.Graphics.TikZWiringDiagrams
-# using Convex
-# using SCS
-#
-# to_tikz(seirddef, labels=true)
 println("Loading SemanticModels")
 using Petri
 using SemanticModels
@@ -188,13 +101,6 @@ function show(io::IO, z::Petri.Model)
 end
 
 
-# Petri.Model(r::UnitRange, x) = Petri.Mode(collect(r), x, missing, missing)
-struct OpenPetriDom
-  N::Int
-end
-
-println("Done Loading")
-==(X::OpenPetriDom, Y::OpenPetriDom) = (X.N==Y.N)
 
 # TODO: The Model Toolkit interface was dumb, let's just do everything with integer variable numbers
 # SEIR is Petri.Mode([1,2,3], [([1], [2]), ([1,2], [3]), ([3],[2])])
@@ -209,20 +115,6 @@ function tcat(v::Vector{Tuple{Vector{Int},Vector{Int}}},
          map(x->x+shift, t[2])))
     end
     return vcat(v,w′)
-end
-
-function otimes_ipm(f::OpenModel, g::OpenModel)
-    @show M = f.model
-    @show N = g.model
-    domcat(v::Vector{Int}, w::Vector{Int}) = vcat(v, w.+length(M.S))
-    @show newdom = domcat(f.dom, g.dom)
-    @show newcodom = domcat(f.codom, g.codom)
-    @show newS = domcat(M.S, N.S)
-    @show M
-    @show M.S
-    @show M.Δ
-    @show newΔ = tcat(M.Δ, N.Δ, length(M.S))
-    return OpenModel(newdom, IntPetriModel(newS, newΔ), newcodom)
 end
 
 # TODO: integrate this method with the one above. Multiple dispatch is hard.
@@ -486,26 +378,6 @@ end
     @test codom(right(m4.f)) == 1:1
 end
 
-# states(f::OpenModel) = f.model.S
-# transitions(f::OpenModel) = f.model.Δ
-# @test states(dsq) == [1,2,3,4]
-# @test length(transitions(dsq)) == 2
-# @test states(otimes_ipm(dsq, dsq)) == 1:8
-#
-# dc = otimes_ipm(dth, create(FinSet(1)))
-# @test states(dc) == 1:3
-# @test transitions(dc) == [([1], [2])]
-#
-# dcc = otimes_ipm(dc, create(FinSet(1)))
-# @test states(dcc) == 1:4
-# @test transitions(dcc) == [([1], [2])]
-#
-# dccd = otimes_ipm(dcc, death(FinSet(1)))
-# @test states(dccd) == 1:6
-# @test transitions(dccd) == [([1], [2]), ([5],[6])]
-
-#function compose_ipm(f::OpenModel, g::OpenModel)
-
 @testset "Two Chains" begin
     chain = Cospan(Decorated(FinSetMorph(1:2, [1]), spon), Decorated(FinSetMorph(1:2, [2]), spon))
     twochain = compose_pushout(chain, chain)
@@ -599,3 +471,93 @@ end
     @test dom(right(m.f).f) == 1:2
     @test codom(right(m.f).f) == 1:2
 end
+
+println("Making COVID Model")
+
+@present Disease(FreeEpidemiology) begin
+    S::Ob
+    E::Ob
+    I::Ob
+    R::Ob
+end
+
+S,E,I,R = generators(Disease)
+draw(spontaneous(E,I)⋅spontaneous(I,R)⊗(spontaneous(E,I)))
+sei = compose(exposure(S,I,E), otimes(spontaneous(E,I), id(I)), mmerge(I))
+draw(sei)
+seir = sei⋅Δ(I)⋅(id(I)⊗spontaneous(I, R))
+draw(seir)
+seir2 = compose(mcopy(S)⊗id(I), id(S)⊗seir)
+draw(seir2)
+
+draw(death(S))
+
+d = @program Disease (s::S, e::E, i::I) begin
+    e1, i1 = exposure{S,I,E}(s,i)
+    i2 = spontaneous{E,I}(e1)
+    e = [e, e1]
+    e_out = spontaneous{E,E}(e)
+    i1 = [i1, i2]
+    r = spontaneous{I,R}(i1)
+    s_out = spontaneous{S,S}(s)
+    return s_out, e_out, spontaneous{I,I}(i1)
+end
+draw(d)
+
+draw(d⋅d)
+
+seirdef = to_hom_expr(FreeEpidemiology, d)
+try
+    add_definition!(Disease, :seir, seirdef)
+catch
+    println("INFO: definition already added.")
+end
+
+# if the disease is fatal, we need to add a death component
+seird = @program Disease (s::S, e::E, i::I) begin
+    e1, i1 = exposure{S,I,E}(s,i)
+    i2 = spontaneous{E,I}(e1)
+    e = [e, e1]
+    e_out = spontaneous{E,E}(e)
+    i1 = [i1, i2]
+    r = spontaneous{I,R}(i1)
+    s_out = spontaneous{S,S}(s)
+    death{I}(i1)
+    return s_out, e_out, spontaneous{I,I}(i1)
+end
+#TODO: This does not get translated correctly, bug?
+seirddef = to_hom_expr(FreeEpidemiology, seird)
+try
+    add_definition!(Disease, :seird, seirddef)
+catch
+    println("INFO: definition already added.")
+end
+
+seirgen = generator(Disease, :seir)
+seirdgen = generator(Disease, :seird)
+
+
+ncities(city,n::Int) = compose([city for i in 1:n]...)
+city³ = ncities(seirgen, 3)
+draw(city³)
+
+dcity³ = wd(city³)
+dc3 = substitute(dcity³, box_ids(dcity³), [d,d,d])
+@show dc3 == ncities(d, 3)
+draw(dc3)
+
+import Base: repeat
+repeat(d::WiringDiagram, n::Int) = compose([d for i in 1:n]...)
+repeat(d::FreeEpidemiology.Hom, n::Int) = compose([d for i in 1:n]...)
+
+draw(ncities(seirdgen, 3))
+draw(repeat(seird, 3))
+
+draw(seirddef)
+#
+# using TikzPictures
+# using Catlab.Graphics.TikZWiringDiagrams
+# using Convex
+# using SCS
+#
+# to_tikz(seirddef, labels=true)
