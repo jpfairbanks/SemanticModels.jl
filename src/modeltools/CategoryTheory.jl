@@ -250,7 +250,7 @@ end
 
 treat f,g as a span and compute the pushout that is, the cospan of f=(f⊔g) and g=(a⊔b)
 """
-function pushout(s::Span{T,T}) where T <: FinSetMorph
+function pushout(s::Span{T,U}) where {T <: FinSetMorph, U <: FinSetMorph}
     f_dict = Dict(a=>i for (i, a) in enumerate(left(s).fun))
     g′ = map(n->n in keys(f_dict) ? func(right(s))(f_dict[n]) : n+length(rightob(s)), leftob(s))
 
