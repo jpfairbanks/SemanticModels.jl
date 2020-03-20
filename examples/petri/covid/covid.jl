@@ -142,9 +142,15 @@ using SemanticModels.ModelTools.PetriModels
 using SemanticModels.ModelTools.OpenModels
 using SemanticModels.ModelTools.OpenPetris
 using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: undecorate
+import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
 pushout = CategoryTheory.pushout
 undecorate(c::Cospan) = Cospan(undecorate(left(c)), undecorate(right(c)))
+
+# function ⊔(f::FinSetMorph, g::FinSetMorph)
+#     Y = codom(f) ⊔ codom(g)
+#     h = f.fun ⊔ (g.fun .+ codom(f))
+#     FinSetMorph(Y, h)
+# end
 
 show(io::IO, f::FinSetMorph) = begin
     x = length(dom(f))
@@ -273,36 +279,22 @@ spon2quo = (left(cs)⊔right(cs))(spon2)
 @test spon2quo.model.Δ == [([1], [2]),([2], [3])]
 end
 
-
-f = FinSetMorph(1:2, [2])
-g = FinSetMorph(1:2, [1])
-s = Span(g,f)
-
-cs = CategoryTheory.pushout(s)
-
-@test (left(cs)⊔right(cs)).fun == [1,2,2,3]
-
-f₁ = Decorated(FinSetMorph(1:2, [1]), spon)
-g₁ = Decorated(FinSetMorph(1:2, [2]), spon)
-
-f₂ = Decorated(FinSetMorph(1:2, [1]), spon)
-g₂ = Decorated(FinSetMorph(1:2, [2]), spon)
-
-cs₁ = Cospan(f₁, g₁)
-cs₂ = Cospan(f₂, g₂)
-
 compose(f::FinSetMorph, g::FinSetMorph) = FinSetMorph(g.codom, func(g).(f.fun))
 ⋅(f::FinSetMorph, g::FinSetMorph) = compose(f,g)
 
 function compose_pushout(cs₁, cs₂)
     @show right(cs₁)
-    @show right(cs₂)
+    @show left(cs₂)
     s = Span(left(cs₁), right(cs₂))
+    @show typeof(s)
+    @show typeof(undecorate(s))
     cs′ = pushout(undecorate(s))
     # the quotient operator from X+Y --> X +_B Y
     # this is backwards, I think -- jpf
     # q = (left(cs′)⊔right(cs′))
     # @show q.fun
+    @show right(cs′)
+    @show left(cs′)
     q = (right(cs′)⊔left(cs′))
     @show q.fun
     coproduct = map(x->otimes_ipm(x[1], x[2]), zip(left(s).d, right(s).d))[1]
@@ -323,7 +315,25 @@ function compose_pushout(cs₁, cs₂)
     return Cospan(f′, g′)
 end
 
+f = FinSetMorph(1:2, [2])
+g = FinSetMorph(1:2, [1])
+s = Span(g,f)
+
+cs = CategoryTheory.pushout(s)
+
+
+f₁ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₁ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+f₂ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₂ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+cs₁ = Cospan(f₁, g₁)
+cs₂ = Cospan(f₂, g₂)
+
+
 @testset "compose_pushout" begin
+@test (left(cs)⊔right(cs)).fun == [1,2,2,3]
 sponspon = compose_pushout(cs₁, cs₂)
 @test sponspon.f.f.codom == sponspon.g.f.codom
 @test sponspon.f.f.fun == [1]
@@ -374,8 +384,12 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
       df = left(f.f).d[1]
       dg = left(g.f).d[1]
       f, g = undecorate(f.f), undecorate(g.f)
-      l = left(f) ⊔ left(g)
-      r = right(f) ⊔ right(g)
+      Y₁ = codom(left(f)) ⊔ codom(left(g))
+      h₁ = vcat(left(f).fun, left(g).fun .+ length(codom(left(f))))
+      l = FinSetMorph(Y₁, h₁)
+      Y = codom(right(f)) ⊔ codom(right(g))
+      h = vcat(right(f).fun, right(g).fun .+ length(codom(right(f))))
+      r = FinSetMorph(Y,h)
       d = otimes_ipm(df, dg)
       PetriCospan(Cospan(Decorated(l, d), Decorated(r, d)))
   end
@@ -394,14 +408,14 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
   mcopy(X::FinSet) = begin
       d = NullModel(length(X))
       f = Decorated(FinSetMorph(X.n, X.n), d)
-      g = Decorated(FinSetMorph(X.n, kron(ones(Int, length(X)), X.n), d))
+      g = Decorated(FinSetMorph(X.n, kron(ones(Int, 2), X.n)), d)
       PetriCospan(Cospan(f,g))
   end
 
   mmerge(X::FinSet) = begin
       d = NullModel(length(X))
       f = Decorated(FinSetMorph(X.n, X.n), d)
-      g = Decorated(FinSetMorph(X.n, kron(ones(Int, length(X)), X.n), d))
+      g = Decorated(FinSetMorph(X.n, kron(ones(Int, 2), X.n)), d)
       PetriCospan(Cospan(g,f))
   end
 
@@ -429,10 +443,11 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
 
   spontaneous(A::FinSet, B::FinSet) = begin
       M, N = length(A), length(B)
+      S = M+N
       M == N || error("Length of A and length of B must be equal")
-      d = PetriModel(IntPetriModel(1:M+N, [([i], [M+i]) for i in 1:M]))
-      f = Decorated(id(FinSetMorph, M), d)
-      g = Decorated(id(FinSetMorph, M), d)
+      d = PetriModel(IntPetriModel(1:S, [([i], [M+i]) for i in 1:M]))
+      f = Decorated(FinSetMorph(1:S, 1:M), d)
+      g = Decorated(FinSetMorph(1:S, (M+1):S), d)
       PetriCospan(Cospan(f,g))
   end
 
@@ -460,6 +475,21 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
   end
 end
 
+@testset "Merge and Copy" begin
+    m4 = mmerge(FinSet(4))
+    @test dom(m4.f.f.f) == 1:8
+    @test codom(m4.f.f.f) == 1:4
+    @test m4.f.f.d[1].model.S == 1:4
+    @test m4.f.f.d[1].model.Δ == []
+    m4 = mcopy(FinSet(4))
+    @show m4
+    @test dom(m4.f.f.f) == 1:4
+    @test codom(m4.f.f.f) == 1:4
+    @test dom(m4.f.g.f) == 1:8
+    @test codom(m4.f.g.f) == 1:4
+    @test m4.f.f.d[1].model.S == 1:4
+    @test m4.f.f.d[1].model.Δ == []
+end
 
 # states(f::OpenModel) = f.model.S
 # transitions(f::OpenModel) = f.model.Δ
@@ -519,4 +549,51 @@ end
     @test codom(dsq.f.g.f) == 1:4
     @test dsq.f.f.f.fun == [1,2]
     @test dsq.f.g.f.fun == Int[]
+end
+
+@testset "Exposure" begin
+    exp = exposure(FinSet(1), FinSet(1), FinSet(1))
+    T = [([3, 2], [4, 2]), ([1, 2], [3, 2])]
+    @show e² = exp⋅exp
+    @test left(e².f).d[1].model.Δ == T
+    @test dom(left(e².f).f) == 1:2
+    @test codom(left(e².f).f) == 1:4
+    @test dom(right(e².f).f) == 1:2
+    @test codom(right(e².f).f) == 1:4
+end
+
+@testset "Spontaneous" begin
+    X = FinSet(1)
+    f = otimes(mcopy(X), id(X))
+    @test dom(left(f.f).f) == 1:2
+    @test codom(left(f.f).f) == 1:2
+    @test left(f.f).f.fun == 1:2
+    @test right(f.f).f.fun == [1,1,2]
+    @test dom(right(f.f).f) == 1:3
+    @test codom(right(f.f).f) == 1:2
+    g = (id(X)⊗spontaneous(X,X)⊗id(X))
+    @test dom(left(g.f).f) == 1:3
+    @test codom(left(g.f).f) == 1:4
+    @test left(g.f).f.fun == [1,2,4]
+    @test right(g.f).f.fun == [1,3,4]
+    @test dom(right(g.f).f) == 1:3
+    @test codom(right(g.f).f) == 1:4
+
+    h = (id(X)⊗mmerge(X))
+    @show h
+    @test dom(left(h.f).f) == 1:3
+    @test codom(left(h.f).f) == 1:2
+    @test left(h.f).f.fun == [1,2,2]
+    @test right(h.f).f.fun == [1,2]
+    @test dom(right(h.f).f) == 1:2
+    @test codom(right(h.f).f) == 1:2
+
+    m = g⋅h
+    @show m
+    @test dom(left(m.f).f) == 1:2
+    @test codom(left(m.f).f) == 1:2
+    @test left(m.f).f.fun == [1,2]
+    @test right(m.f).f.fun == [1,2]
+    @test dom(right(m.f).f) == 1:2
+    @test codom(right(m.f).f) == 1:2
 end
