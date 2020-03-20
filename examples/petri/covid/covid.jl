@@ -238,23 +238,6 @@ function otimes_ipm(f::PetriModel, g::PetriModel)
     return PetriModel(Petri.Model(newS, newΔ, missing, missing))
 end
 
-println("Testing CT API")
-f = FinSetMorph(1:4, [1,2,3])
-g = FinSetMorph(1:4, [4,1])
-f′ = FinSetMorph(1:3, [2,3])
-g′ = FinSetMorph(1:3, [1,2])
-Cospan(f,g), Cospan(f′, g′)
-
-pushout(Span(g,f′))
-
-
-spon = PetriModel(Petri.Model([1,2], [([1], [2])], missing, missing))
-f = Decorated(FinSetMorph(1:2, [2]), [spon])
-g = Decorated(FinSetMorph(1:2, [1]), [spon])
-s = Span(g,f)
-
-cs = pushout(undecorate(s))
-
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     g = gModel.model
     @show dom(f)
@@ -271,13 +254,6 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
      end
     out = deepcopy(g)
     PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
-end
-
-@testset "Spon Quotient" begin
-spon2 = otimes_ipm(spon, spon)
-spon2quo = (left(cs)⊔right(cs))(spon2)
-@test spon2quo.model.S == 1:3
-@test spon2quo.model.Δ == [([1], [2]),([2], [3])]
 end
 
 compose(f::FinSetMorph, g::FinSetMorph) = FinSetMorph(g.codom, func(g).(f.fun))
@@ -301,33 +277,7 @@ function compose_pushout(cs₁, cs₂)
     return Cospan(f′, g′)
 end
 
-f = FinSetMorph(1:2, [2])
-g = FinSetMorph(1:2, [1])
-s = Span(g,f)
 
-cs = CategoryTheory.pushout(s)
-
-
-f₁ = Decorated(FinSetMorph(1:2, [1]), spon)
-g₁ = Decorated(FinSetMorph(1:2, [2]), spon)
-
-f₂ = Decorated(FinSetMorph(1:2, [1]), spon)
-g₂ = Decorated(FinSetMorph(1:2, [2]), spon)
-
-cs₁ = Cospan(f₁, g₁)
-cs₂ = Cospan(f₂, g₂)
-
-
-@testset "compose_pushout" begin
-@test (left(cs)⊔right(cs)).fun == [1,2,2,3]
-sponspon = compose_pushout(cs₁, cs₂)
-@test sponspon.f.f.codom == sponspon.g.f.codom
-@test sponspon.f.f.fun == [1]
-@test sponspon.g.f.fun == [3]
-# @test sponspon.f.f == FinSetMorph(1:3, [1])
-# @test sponspon.g.f == FinSetMorph(1:3, [3])
-@test sponspon.g.d == sponspon.f.d
-end
 
 
 println("Defining Our Instance")
@@ -461,7 +411,59 @@ id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
   end
 end
 
+println("Testing CT API")
+f = FinSetMorph(1:4, [1,2,3])
+g = FinSetMorph(1:4, [4,1])
+f′ = FinSetMorph(1:3, [2,3])
+g′ = FinSetMorph(1:3, [1,2])
+Cospan(f,g), Cospan(f′, g′)
 
+pushout(Span(g,f′))
+
+
+spon = PetriModel(Petri.Model([1,2], [([1], [2])], missing, missing))
+f = Decorated(FinSetMorph(1:2, [2]), [spon])
+g = Decorated(FinSetMorph(1:2, [1]), [spon])
+s = Span(g,f)
+
+cs = pushout(undecorate(s))
+
+
+
+f = FinSetMorph(1:2, [2])
+g = FinSetMorph(1:2, [1])
+s = Span(g,f)
+
+cs = CategoryTheory.pushout(s)
+
+
+f₁ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₁ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+f₂ = Decorated(FinSetMorph(1:2, [1]), spon)
+g₂ = Decorated(FinSetMorph(1:2, [2]), spon)
+
+cs₁ = Cospan(f₁, g₁)
+cs₂ = Cospan(f₂, g₂)
+
+@testset "Spon Quotient" begin
+spon2 = otimes_ipm(spon, spon)
+spon2quo = (left(cs)⊔right(cs))(spon2)
+@test spon2quo.model.S == 1:3
+@test spon2quo.model.Δ == [([1], [2]),([2], [3])]
+end
+
+
+@testset "compose_pushout" begin
+@test (left(cs)⊔right(cs)).fun == [1,2,2,3]
+sponspon = compose_pushout(cs₁, cs₂)
+@test sponspon.f.f.codom == sponspon.g.f.codom
+@test sponspon.f.f.fun == [1]
+@test sponspon.g.f.fun == [3]
+# @test sponspon.f.f == FinSetMorph(1:3, [1])
+# @test sponspon.g.f == FinSetMorph(1:3, [3])
+@test sponspon.g.d == sponspon.f.d
+end
 @testset "Merge and Copy" begin
     m4 = mmerge(FinSet(4))
     @test dom(m4.f.f.f) == 1:8
