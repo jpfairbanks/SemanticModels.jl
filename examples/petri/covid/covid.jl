@@ -540,14 +540,14 @@ end
 @testset "Death Sq" begin
     dth = death(FinSet(1))
     dsq = otimes(dth, dth)
-    @test left(dsq.f).f.fun == [1,2]
+    @test left(dsq.f).f.fun == [1,3]
     @test dsq.f.f.d[1].model.S == 1:4
     @test dsq.f.f.d[1].model.Δ == [([1],[2]), ([3], [4])]
-    @test dom(dsq.f.f.f) == 1:2
+    @test dom(dsq.f.f.f) == [1,2]
     @test dom(dsq.f.g.f) == 1:0
     @test codom(dsq.f.f.f) == 1:4
     @test codom(dsq.f.g.f) == 1:4
-    @test dsq.f.f.f.fun == [1,2]
+    @test dsq.f.f.f.fun == [1,3]
     @test dsq.f.g.f.fun == Int[]
 end
 
