@@ -503,15 +503,15 @@ println("Making COVID Model")
 end
 
 S,E,I,R = generators(Disease)
-draw(spontaneous(E,I)⋅spontaneous(I,R)⊗(spontaneous(E,I)))
+# draw(spontaneous(E,I)⋅spontaneous(I,R)⊗(spontaneous(E,I)))
 sei = compose(exposure(S,I,E), otimes(spontaneous(E,I), id(I)), mmerge(I))
-draw(sei)
+# draw(sei)
 seir = sei⋅Δ(I)⋅(id(I)⊗spontaneous(I, R))
-draw(seir)
+# draw(seir)
 seir2 = compose(mcopy(S)⊗id(I), id(S)⊗seir)
-draw(seir2)
+# draw(seir2)
 
-draw(death(S))
+# draw(death(S))
 
 d = @program Disease (s::S, e::E, i::I) begin
     e1, i1 = exposure{S,I,E}(s,i)
@@ -523,9 +523,9 @@ d = @program Disease (s::S, e::E, i::I) begin
     s_out = spontaneous{S,S}(s)
     return s_out, e_out, spontaneous{I,I}(i1)
 end
-draw(d)
+# draw(d)
 
-draw(d⋅d)
+# draw(d⋅d)
 
 seirdef = to_hom_expr(FreeEpidemiology, d)
 try
@@ -560,21 +560,21 @@ seirdgen = generator(Disease, :seird)
 
 ncities(city,n::Int) = compose([city for i in 1:n]...)
 city³ = ncities(seirgen, 3)
-draw(city³)
+# draw(city³)
 
 dcity³ = wd(city³)
 dc3 = substitute(dcity³, box_ids(dcity³), [d,d,d])
 @show dc3 == ncities(d, 3)
-draw(dc3)
+# draw(dc3)
 
 import Base: repeat
 repeat(d::WiringDiagram, n::Int) = compose([d for i in 1:n]...)
 repeat(d::FreeEpidemiology.Hom, n::Int) = compose([d for i in 1:n]...)
 
-draw(ncities(seirdgen, 3))
-draw(repeat(seird, 3))
+# draw(ncities(seirdgen, 3))
+# draw(repeat(seird, 3))
 
-draw(seirddef)
+# draw(seirddef)
 #
 # using TikzPictures
 # using Catlab.Graphics.TikZWiringDiagrams
