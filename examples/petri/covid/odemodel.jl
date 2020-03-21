@@ -46,18 +46,30 @@ u₀(m::Petri.Model, initialS, initialI=1) = begin
     return u0
 end
 
-function makeplots(sol, dir)
-    mkpath(dir)
-    p = plot(sol,vars=[1,2,3,4], linewidth=3,title="City 1")
-    savefig(p, "$dir/city1.pdf")
-    p = plot(sol,vars=[5,6,7,8], linewidth=3,title="City 2")
-    savefig(p, "$dir/city2.pdf")
-    p = plot(sol,vars=[9,10,11,12], linewidth=3,title="City 3")
-    savefig(p, "$dir/city3.pdf")
-    p = plot(sol,vars=[2,6,10], linewidth=3,title="Infectious Population")
-    savefig(p, "$dir/infections.pdf")
-    p = plot(sol,vars=[3,7,11], linewidth=3,title="Exposed Population")
-    savefig(p, "$dir/exposures.pdf")
+function makeplots_seir(sol, prefix)
+    mkpath(dirname(prefix))
+    p1 = plot(sol,vars=[1,2,3,4], xlabel="", ylabel="people", linewidth=3,title="Cities", legend=false)
+    p2 = plot(sol,vars=[5,6,7,8], xlabel="", ylabel="people", linewidth=3, legend=false)
+    p3 = plot(sol,vars=[9,10,11,12], xlabel="time", ylabel="people", linewidth=3, legend=false)
+    p4 = plot(sol,vars=[2,6,10], xlabel="", linewidth=3, labels=["i1" "i2" "i3"], legend=true)
+    p5 = plot(sol,vars=[3,7,11], xlabel="", linewidth=3,title="Populations", labels=["e1" "e2" "e3"], legend=true)
+    p6 = plot(sol,vars=[4,8,12], xlabel="time", linewidth=3, labels=["r1" "r2" "r3"], legend=true)
+    p = plot(p1, p5, p2, p4, p3, p6, layout=(3,2), linewidth=3, link=:both)
+    savefig(p, "$(prefix)combined.pdf")
+    p
+end
+
+function makeplots_seird(sol, prefix)
+    mkpath(dirname(prefix))
+    p1 = plot(sol,vars=[1,2,3,4,5], xlabel="", ylabel="people", linewidth=3,title="Cities", legend=false)
+    p2 = plot(sol,vars=[6,7,8,9,10], xlabel="", ylabel="people", linewidth=3, legend=false)
+    p3 = plot(sol,vars=[11,12,13,14,15], xlabel="time", ylabel="people", linewidth=3, legend=false)
+    p4 = plot(sol,vars=[2,7,12], xlabel="", linewidth=3, labels=["i1" "i2" "i3"], legend=true)
+    p5 = plot(sol,vars=[3,8,13], xlabel="", linewidth=3,title="Populations", labels=["e1" "e2" "e3"], legend=true)
+    p6 = plot(sol,vars=[5,10,15], xlabel="time", linewidth=3, labels=["d1" "d2" "d3"], legend=true)
+    p = plot(p1, p5, p2, p4, p3, p6, layout=(3,2), linewidth=3, link=:both)
+    savefig(p, "$(prefix)combined.pdf")
+    p
 end
 
 T = [
@@ -112,7 +124,7 @@ sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
 
 using Plots
-makeplots(sol, "img/baseline")
+makeplots_seir(sol, "img/seir/baseline")
 
 
 βseir = [10/sum(u0), 1/2, 1/5]
@@ -121,7 +133,7 @@ makeplots(sol, "img/baseline")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "img/travel")
+makeplots_seir(sol, "img/seir/travel")
 
 βseir = [10/sum(u0), 1/2, 1/5]
 βtravel = [1/2, 1/200, 1/2]/100
@@ -129,7 +141,7 @@ makeplots(sol, "img/travel")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "img/screening")
+makeplots_seir(sol, "img/seir/screening")
 
 βseir = [10/sum(u0), 1/2, 1/5]
 βtravel = [1/200, 1/200, 1/200]/100000
@@ -137,7 +149,7 @@ makeplots(sol, "img/screening")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "img/shutdown")
+makeplots_seir(sol, "img/seir/shutdown")
 
 
 println("Exploring the SEIRD^3 example")
@@ -175,21 +187,4 @@ u0
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-
-
-function makeplots_seird(sol, dir)
-    mkpath(dir)
-    p = plot(sol,vars=[1,2,3,4,5], linewidth=3,title="City 1")
-    savefig(p, "$dir/city1.pdf")
-    p = plot(sol,vars=[6,7,8,9,10], linewidth=3,title="City 2")
-    savefig(p, "$dir/city2.pdf")
-    p = plot(sol,vars=[11,12,13,14,15], linewidth=3,title="City 3")
-    savefig(p, "$dir/city3.pdf")
-    p = plot(sol,vars=[2,7,12], linewidth=3,title="Infectious Population")
-    savefig(p, "$dir/infections.pdf")
-    p = plot(sol,vars=[4,8,13], linewidth=3,title="Exposed Population")
-    savefig(p, "$dir/exposures.pdf")
-    p = plot(sol,vars=[5,10,15], linewidth=3,title="Dead Population")
-    savefig(p, "$dir/deaths.pdf")
-end
 makeplots_seird(sol, "img/seird/baseline")
