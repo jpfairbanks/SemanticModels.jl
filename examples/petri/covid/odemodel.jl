@@ -138,3 +138,58 @@ prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
 makeplots(sol, "img/shutdown")
+
+
+println("Exploring the SEIRD^3 example")
+
+S = 1:15
+T = [([1, 2], [3, 2]),
+     ([3], [2]),
+     ([2], [4]),
+     ([2], [5]),
+     ([1], [6]),
+     ([2], [7]),
+     ([3], [8]),
+     ([6, 7], [8, 7]),
+     ([8], [7]),
+     ([7], [9]),
+     ([7], [10]),
+     ([6], [11]),
+     ([7], [12]),
+     ([8], [13]),
+     ([11, 12], [13, 12]),
+     ([13], [12]),
+     ([12], [14]),
+     ([12], [15])]
+m = Petri.Model(S, T, missing, missing)
+u0 = zeros(Float64, length(m.S))
+u0[1]  = 10000
+u0[6]  = 10000
+u0[11]  = 10000
+u0[2]  = 1
+u0
+βseir = [10/sum(u0), 1/2, 1/5, 1/10]
+βtravel = [1/2, 1/2, 1/2]/1000
+β = vcat(βseir, βtravel, βseir, βtravel, βseir)
+@show β
+prob = ODEProblem(fluxes(m), u0, tspan, β)
+sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
+@show sol.u[end]
+
+
+function makeplots_seird(sol, dir)
+    mkpath(dir)
+    p = plot(sol,vars=[1,2,3,4,5], linewidth=3,title="City 1")
+    savefig(p, "$dir/city1.pdf")
+    p = plot(sol,vars=[6,7,8,9,10], linewidth=3,title="City 2")
+    savefig(p, "$dir/city2.pdf")
+    p = plot(sol,vars=[11,12,13,14,15], linewidth=3,title="City 3")
+    savefig(p, "$dir/city3.pdf")
+    p = plot(sol,vars=[2,7,12], linewidth=3,title="Infectious Population")
+    savefig(p, "$dir/infections.pdf")
+    p = plot(sol,vars=[4,8,13], linewidth=3,title="Exposed Population")
+    savefig(p, "$dir/exposures.pdf")
+    p = plot(sol,vars=[5,10,15], linewidth=3,title="Dead Population")
+    savefig(p, "$dir/deaths.pdf")
+end
+makeplots_seird(sol, "img/seird/baseline")
