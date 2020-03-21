@@ -112,7 +112,7 @@ sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
 
 using Plots
-makeplots(sol, "baseline")
+makeplots(sol, "img/baseline")
 
 
 βseir = [10/sum(u0), 1/2, 1/5]
@@ -121,7 +121,7 @@ makeplots(sol, "baseline")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "travel")
+makeplots(sol, "img/travel")
 
 βseir = [10/sum(u0), 1/2, 1/5]
 βtravel = [1/2, 1/200, 1/2]/100
@@ -129,7 +129,7 @@ makeplots(sol, "travel")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "screening")
+makeplots(sol, "img/screening")
 
 βseir = [10/sum(u0), 1/2, 1/5]
 βtravel = [1/200, 1/200, 1/200]/100000
@@ -137,4 +137,4 @@ makeplots(sol, "screening")
 prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
-makeplots(sol, "shutdown")
+makeplots(sol, "img/shutdown")
