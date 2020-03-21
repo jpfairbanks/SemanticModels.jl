@@ -277,3 +277,4 @@ examples/*.dot
 examples/*.dot.svg
 doc/src/img/petri/*.png
 /doc/workflow.slides.html
+/examples/petri/covid/img/
