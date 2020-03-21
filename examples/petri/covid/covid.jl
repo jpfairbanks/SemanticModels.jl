@@ -52,8 +52,6 @@ println("Loading SemanticModels")
 using Petri
 using SemanticModels
 using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.OpenModels
-using SemanticModels.ModelTools.OpenPetris
 using SemanticModels.ModelTools.CategoryTheory
 import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
 pushout = CategoryTheory.pushout
@@ -136,7 +134,6 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     @show g.S
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
-    #outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
     outS = 1:length(Set(ϕ.m.fun))
     outΔ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
     for t in g.Δ
@@ -169,9 +166,6 @@ function compose_pushout(cs₁, cs₂)
     return Cospan(f′, g′)
 end
 
-
-
-
 println("Defining Our Instance")
 
 struct FinSet
@@ -179,17 +173,13 @@ struct FinSet
 end
 
 FinSet(n::Int) = FinSet(1:n)
-
-NullModel(n::Int) = PetriModel(Petri.Model(collect(1:n), Vector{Tuple{Vector{Int},Vector{Int}}}(), missing, missing))
 length(X::FinSet) = length(X.n)
 ==(X::FinSet, Y::FinSet) = X.n == Y.n
-
+NullModel(n::Int) = PetriModel(Petri.Model(collect(1:n), Vector{Tuple{Vector{Int},Vector{Int}}}(), missing, missing))
+id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
 struct PetriCospan
     f::Cospan
 end
-
-
-id(::Type{FinSetMorph}, n::Int) = FinSetMorph(1:n, 1:n)
 
 @instance Epidemiology(FinSet, PetriCospan) begin
 
@@ -590,9 +580,100 @@ F(ex) = functor((FinSet, FinSetMorph),
 Fseir = compose(exposure(X,X,X),otimes(spontaneous(X,X),id(X)),mmerge(X),mcopy(X),otimes(id(X),spontaneous(X,X)))
 # states are [S, I, E, R]
 seir_petri = left(Fseir.f).d[1]
-f = FinSetMorph(1:3, [1, 2, 3])
-g = FinSetMorph(1:3, [1, 2, 3])
+f = FinSetMorph(1:4, [1, 2, 3])
+g = FinSetMorph(1:4, [1, 2, 3])
 Fseir′ = PetriCospan(Cospan(Decorated(f,seir_petri), Decorated(g, seir_petri)))
 s = spontaneous(X,X)
-flow = otimes(s, s, s)
-@show Fseir′ ⋅ flow
+Fflow = otimes(s, s, s)
+Fcity = Fseir′ ⋅ Fflow
+Fcity³ = Fcity⋅Fcity⋅Fcity
+@test left(Fcity³.f).d[1].model.S == 1:15
+@test left(Fcity³.f).d[1].model.Δ == [([1, 2], [3, 2]),
+                                      ([3], [2]),
+                                      ([2], [4]),
+                                      #outflow 1
+                                      ([1], [5]),
+                                      ([2], [6]),
+                                      ([3], [7]),
+                                      # SEIR 2
+                                      ([5, 6], [7, 6]),
+                                      ([7], [6]),
+                                      ([6], [8]),
+                                      #outflow 2
+                                      ([5], [9]),
+                                      ([6], [10]),
+                                      ([7], [11]),
+                                      # SEIR 3
+                                      ([9, 10], [11, 10]),
+                                      ([11], [10]),
+                                      ([10], [12]),
+                                      #outflow 3
+                                      ([9], [13]),
+                                      ([10], [14]),
+                                      ([11], [15])
+                                      ]
+Fcity₀ = Fseir′ ⋅ Fflow
+Fcity₁ = Fflow ⋅ Fseir′ ⋅ Fflow
+Fcityₑ = Fflow ⋅ Fseir′
+Fcity³ = Fcity₀⋅Fcity₁⋅Fcityₑ
+
+@test left(Fcity³.f).d[1].model.S == 1:18
+@test left(Fcity³.f).d[1].model.Δ == [
+    # SEIR 1
+     ([1, 2], [3, 2]),
+     ([3], [2]),
+     ([2], [4]),
+     # outflow 1→2
+     ([1], [5]),
+     ([2], [6]),
+     ([3], [7]),
+     # inflow 1→2
+     ([5], [8]),
+     ([6], [9]),
+     ([7], [10]),
+    # SEIR 2
+     ([8, 9], [10, 9]),
+     ([10], [9]),
+     ([9], [11]),
+     # outflow 2→3
+     ([8], [12]),
+     ([9], [13]),
+     ([10], [14]),
+     # inflow 2→3
+     ([12], [15]),
+     ([13], [16]),
+     ([14], [17]),
+    # SEIR 3
+     ([15, 16], [17, 16]),
+     ([17], [16]),
+     ([16], [18])
+]
+
+Fcity₀ = Fseir′ ⋅ Fflow
+Fcity₁ = Fseir′ ⋅ Fflow
+Fcityₑ = Fseir′
+Fcity³ = Fcity₀⋅Fcity₁⋅Fcityₑ
+
+@test left(Fcity³.f).d[1].S == 1:12
+@test left(Fcity³.f).d[1].model.Δ == [
+    # City 1 SEIR
+    ([1, 2], [3, 2]),
+    ([3], [2]), # E→I
+    ([2], [4]), # I→R
+    # outflow 1→2
+    ([1], [5]), # S→S′
+    ([2], [6]), # I→I′
+    ([3], [7]), # E→E′
+    # City 2 SEIR
+    ([5, 6], [7, 6]),
+    ([7], [6]), # E→I
+    ([6], [8]), # I→R
+    # outflow 2→3
+    ([5], [9]), # S→S′
+    ([6], [10]),# I→I′
+    ([7], [11]),# E→E′
+    # City 3 SEIR
+    ([9, 10], [11, 10]),
+    ([11], [10]), # E→I
+    ([10], [12]) # I→R
+    ]
