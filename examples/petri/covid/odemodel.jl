@@ -3,6 +3,58 @@ import OrdinaryDiffEq: ODEProblem
 using Petri
 using Test
 
+#this function was removed in Julia 0.7
+"""    linreg(x,y)
+
+perform a simple linear regression for scalar case. Coefficients are returned
+as (intercept, scalar)
+"""
+linreg(x, y) = hcat(fill!(similar(x), 1), x) \ y
+
+"""    peakgap(s1, s2)
+
+identify the time delay between the peak in two time series. Time series should
+be stored as (x(t), t) for consistency with the tuples(sol) from OrdinaryDiffEq.
+"""
+function peakgap(s1, s2)
+    @show p1, i1 = findmax(first.(s1))
+    @show p2, i2 = findmax(first.(s2))
+    return s2[i2][end] - s1[i1][end]
+end
+
+"""    peakgap(sol, i::Int, j::Int)
+
+identify the time delay between the peak in two dimensions of an ODE solution structure.
+"""
+function peakgap(sol, i::Int, j::Int)
+    s1 = [(u[i],t) for (u,t) in tuples(sol)]
+    s2 = [(u[j],t) for (u,t) in tuples(sol)]
+    return peakgap(s1,s2)
+end
+
+"""    paramsweep(f::Function, m::Petri.Model, initials, tspan, params)
+
+solve an ODEProblem for each parameter setting in params and apply the function f to the solution.
+
+Usage:
+    paramsweep(m,initials,tspan,[p1,p2,p3]) do sol
+        return f(sol)
+    end
+"""
+function paramsweep(f::Function, m::Petri.Model, initials, tspan, params)
+    map(params) do p
+        prob = ODEProblem(fluxes(m), initials, tspan, p)
+        sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
+        return f(sol)
+    end
+end
+
+"""    fluxes(m::Petri.Model)
+
+a PetriNet interpreter that computes the mass action kinetics of a petri net.
+
+Usage: pass this to ODEProblem to set up an ODE for a given model.
+"""
 function fluxes(m::Petri.Model)
     S = m.S
     T = m.Δ
@@ -188,3 +240,91 @@ prob = ODEProblem(fluxes(m), u0, tspan, β)
 sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
 @show sol.u[end]
 makeplots_seird(sol, "img/seird/baseline")
+
+
+function paramsweep(f::Function, m::Petri.Model, initials, tspan, params)
+    map(params) do p
+        prob = ODEProblem(fluxes(m), initials, tspan, p)
+        sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
+        return f(sol)
+    end
+end
+
+packparams(βlocal, βflow) = vcat(βlocal, βflow, βlocal, βflow, βlocal)
+# Baseline
+βseir = [10/sum(u0), 1/2, 1/5]
+βtravel = [1/2, 1/2, 1/2]/100
+β1 = packparams(βseir, βtravel)
+
+# Travel
+βtravel = [1/2, 1/2, 1/2]/10
+β2 = packparams(βseir, βtravel)
+
+# Screening
+βtravel = [1/2, 1/20, 1/2]/100
+β3 = packparams(βseir, βtravel)
+
+# Shutdown
+βtravel = [1/2, 1/2, 1/2]/1000
+β4 = packparams(βseir, βtravel)
+
+# Total and Complete Shutdown
+βtravel = [1/2, 1/2, 1/2]/10000
+
+β5 = packparams(βseir, βtravel)
+βs = [β1, β2, β3, β4, β5]
+
+T = [
+    # City 1 SEIR
+    ([1, 2], [3, 2]),
+    ([3], [2]), # E→I
+    ([2], [4]), # I→R
+    # outflow 1→2
+    ([1], [5]), # S→S′
+    ([2], [6]), # I→I′
+    ([3], [7]), # E→E′
+    # City 2 SEIR
+    ([5, 6], [7, 6]),
+    ([7], [6]), # E→I
+    ([6], [8]), # I→R
+    # outflow 2→3
+    ([5], [9]), # S→S′
+    ([6], [10]),# I→I′
+    ([7], [11]),# E→E′
+    # City 3 SEIR
+    ([9, 10], [11, 10]),
+    ([11], [10]), # E→I
+    ([10], [12]) # I→R
+]
+
+u0 = zeros(Float64, length(m.S))
+u0[1]  = 10000
+u0[5]  = 10000
+u0[9]  = 10000
+u0[2]  = 1
+u0
+m = Petri.Model(1:12, T, missing, missing)
+gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, βs)
+
+# prob = ODEProblem(fluxes(m), u0, tspan, βs[1])
+# sol = OrdinaryDiffEq.solve(prob,Tsit5(),reltol=1e-8,abstol=1e-8)
+# makeplots_seir(sol, "img/debug_1")
+
+travelparams(k::Number) = begin
+    βseir = [10/sum(u0), 1/2, 1/5]
+    βtravel = [1/2, 1/2, 1/2]/(100k)
+    β = packparams(βseir, βtravel)
+    return β
+end
+
+travelsweep(r::AbstractVector) = begin
+    return travelparams.(2 .^ r)
+end
+
+
+βrange = 1:8
+gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, travelsweep(βrange))
+
+
+coeffs = linreg(βrange, gaps)
+@test sum(abs.((coeffs[1] .+ (coeffs[2]*(βrange))) .- gaps))/length(βrange)<= 1e-1
