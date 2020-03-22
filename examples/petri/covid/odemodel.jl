@@ -251,24 +251,36 @@ function paramsweep(f::Function, m::Petri.Model, initials, tspan, params)
 end
 
 packparams(βlocal, βflow) = vcat(βlocal, βflow, βlocal, βflow, βlocal)
-# Baseline
+
+# The βseir parameters are the mass action kinetics rates of
+# 1. S+I --> E+I
+# 2. E --> I
+# 3. I --> R
+# The βtravel parameters are the mass action kinetics rates of outflow to the next
+# city in the transit network.
+# 1. S --> S⁺
+# 2. I --> I⁺
+# 3. E --> E⁺
+
+# Baseline scenario
+
 βseir = [10/sum(u0), 1/2, 1/5]
 βtravel = [1/2, 1/2, 1/2]/100
 β1 = packparams(βseir, βtravel)
 
-# Travel
+# Travel scenario
 βtravel = [1/2, 1/2, 1/2]/10
 β2 = packparams(βseir, βtravel)
 
-# Screening
+# Screening scenario
 βtravel = [1/2, 1/20, 1/2]/100
 β3 = packparams(βseir, βtravel)
 
-# Shutdown
+# Shutdown scenario
 βtravel = [1/2, 1/2, 1/2]/1000
 β4 = packparams(βseir, βtravel)
 
-# Total and Complete Shutdown
+# Total and Complete Shutdown scenario
 βtravel = [1/2, 1/2, 1/2]/10000
 
 β5 = packparams(βseir, βtravel)
@@ -297,12 +309,16 @@ T = [
     ([10], [12]) # I→R
 ]
 
+# u0 is the initial configuration of the system
+# u0[[1,5,9]] = number of initially Susceptible people in each population
+# u0[2] = number of Infected individuals
 u0 = zeros(Float64, length(m.S))
 u0[1]  = 10000
 u0[5]  = 10000
 u0[9]  = 10000
 u0[2]  = 1
 u0
+
 m = Petri.Model(1:12, T, missing, missing)
 gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, βs)
 
