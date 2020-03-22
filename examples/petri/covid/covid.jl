@@ -677,3 +677,19 @@ Fcity³ = Fcity₀⋅Fcity₁⋅Fcityₑ
     ([11], [10]), # E→I
     ([10], [12]) # I→R
     ]
+
+Pseird = PetriModel(
+          Petri.Model(1:5,[
+            ([1,2],[3,2]), # exposure
+            ([3],[2]),     # onset
+            ([2],[4]),     # recovery
+            ([2],[5]),     # death
+            ], missing, missing))
+inputs = FinSetMorph(1:5, [1,2,3])
+outputs = FinSetMorph(1:5, [1,2,3])
+Fcityd = PetriCospan(Cospan(Decorated(inputs, Pseird),
+                            Decorated(outputs, Pseird)))
+Fcity₀ = Fcityd ⋅ Fflow
+Fcity₁ = Fcityd ⋅ Fflow
+Fcityₑ = Fcityd
+Fcity³ = Fcity₀⋅Fcity₁⋅Fcityₑ
