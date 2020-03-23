@@ -2,7 +2,7 @@ module OpenModels
 import Base: ==
 using SemanticModels.ModelTools
 import SemanticModels.ModelTools: model
-import Catlab.Graphics: Graph
+import Catlab.Graphics.Graphviz: Graph
 
 export OpenModel
 

@@ -11,6 +11,8 @@ using Plots
 tests = ["parse.jl",
          "cassette.jl",
          #"transform/ode.jl"
+         "modeltools/petricospans.jl",
+         "modeltools/epidemics.jl",
          ]
 
 for test in tests
@@ -19,7 +21,8 @@ for test in tests
   end
 end
 
-examples = ["agentbased.jl",
+examples = [
+            "agentbased.jl",
             "agentgraft.jl",
             "modelmacro.jl",
             "monomial_regression.jl",

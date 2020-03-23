@@ -8,14 +8,14 @@ import ModelingToolkit: Constant, Variable
 using MacroTools
 import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
-import Catlab.Graphics: Graph
+import Catlab.Graphics.Graphviz: Graph
 
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
+import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph, pushout
 import SemanticModels.ModelTools: model
 
-export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, pushout, dropdown, equnion, ⊔
+export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, dropdown, equnion, ⊔
 
 struct PetriModel <: AbstractModel
   model::Petri.Model
@@ -112,19 +112,33 @@ function ⊔(gModel::PetriModel, hModel::PetriModel)
                 equnion(g.Φ, newΦ)))
 end
 
-
-
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     g = gModel.model
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
-    outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
-    for i in dom(f)
-        outS[ϕ(i)] = g.S[i]
-    end
+    outS = 1:length(Set(ϕ.m.fun))
+    outΔ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
+    for t in g.Δ
+        ins = ϕ.(t[1])
+        outs = ϕ.(t[2])
+        push!(outΔ, (ins,outs))
+     end
     out = deepcopy(g)
-    PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
+    PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
 end
+
+# TODO: this version uses model toolkit variables, we want to delete it
+# function (f::FinSetMorph)(gModel::G) where G <: PetriModel
+#     g = gModel.model
+#     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
+#     ϕ = func(f)
+#     outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
+#     for i in dom(f)
+#         outS[ϕ(i)] = g.S[i]
+#     end
+#     out = deepcopy(g)
+#     PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
+# end
 
 # TODO: this looks like coproduct not pushout.
 
