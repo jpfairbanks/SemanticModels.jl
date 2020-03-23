@@ -111,6 +111,8 @@ end
 
 # TODO: integrate this method with the one above. Multiple dispatch is hard.
 function otimes_ipm(f::PetriModel, g::PetriModel)
+    M = f.model
+    N = g.model
     domcat(v, w) = vcat(v, w.+length(M.S))
     newS = domcat(M.S, N.S)
     newΔ = tcat(M.Δ, N.Δ, length(M.S))
