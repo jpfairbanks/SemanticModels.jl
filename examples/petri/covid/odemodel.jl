@@ -365,9 +365,102 @@ function estimatedelay(r::AbstractVector)
     return (results=zip(r, gaps), coeffs=coeffs)
 end
 
+function estimatedelay(m::Petri.Model, u0, tspan, parameters)
+    gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, parameters)
+    coeffs = linreg(βrange, gaps)
+    return (results=zip(parameters, gaps), coeffs=coeffs)
+end
+
 slope(gs) = gs.coeffs[end]
 
 gs = estimatedelay(βrange)
 @test slope(gs) > 1
 collect(gs.results)
 gs.coeffs
+
+
+using Catlab
+using Catlab.Doctrines
+using Catlab.Graphics
+using Catlab.WiringDiagrams
+using Catlab.Programs
+using SemanticModels.ModelTools.CategoryTheory
+import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
+using SemanticModels.ModelTools.PetriModels
+using SemanticModels.ModelTools.PetriCospans
+import SemanticModels.ModelTools: model
+
+model(c::PetriCospan) = left(c.f).d[1].model
+
+X = FinSet(1)
+Fseir = compose(exposure(X,X,X),otimes(spontaneous(X,X),id(X)),mmerge(X),mcopy(X),otimes(id(X),spontaneous(X,X)))
+# states are [S, I, E, R]
+seir_petri = left(Fseir.f).d[1]
+f = FinSetMorph(1:4, [1, 2, 3])
+g = FinSetMorph(1:4, [1, 2, 3])
+Fseir′ = PetriCospan(Cospan(Decorated(f,seir_petri), Decorated(g, seir_petri)))
+s = spontaneous(X,X)
+Fflow = otimes(s, s, s)
+@test length(model(Fseir′).S) == 4
+@test length(model(Fseir′).Δ) == 3
+
+m = model(Fseir′ ⋅ Fflow ⋅ Fseir′ ⋅ Fflow ⋅ Fseir′)
+
+u0 = zeros(Float64, length(m.S))
+u0[1]  = 10000
+u0[5]  = 10000
+u0[9]  = 10000
+u0[2]  = 1
+res = estimatedelay(m::Petri.Model, u0, tspan, travelsweep(1:8))
+seirgaps = collect(map(last, res.results))
+
+@test 1.35 <= slope(res) <= 1.45
+
+
+Pseird = PetriModel(
+          Petri.Model(1:5,[
+            ([1,2],[3,2]), # exposure
+            ([3],[2]),     # onset
+            ([2],[4]),     # recovery
+            ([2],[5]),     # death
+            ], missing, missing))
+inputs = FinSetMorph(1:5, [1,2,3])
+outputs = FinSetMorph(1:5, [1,2,3])
+Fcityd = PetriCospan(Cospan(Decorated(inputs, Pseird),
+                            Decorated(outputs, Pseird)))
+s = spontaneous(X,X)
+Fflow = otimes(s, s, s)
+Fcity₀ = Fcityd ⋅ Fflow
+Fcity₁ = Fcityd ⋅ Fflow
+Fcityₑ = Fcityd
+Fcity³ = Fcity₀⋅Fcity₁⋅Fcityₑ
+
+m = model(Fcity³)
+
+u0 = zeros(Float64, length(m.S))
+u0[1]  = 10000
+u0[6]  = 10000
+u0[11] = 10000
+u0[2]  = 1
+seirdparams(k) = begin
+    βseird = [10/sum(u0), 1/2, 1/5, 1/16]
+    βtravel = [1/2, 1/2, 1/2]/(100k)
+    β = vcat(βseird, βtravel)
+    return vcat(β, β, β)
+end
+
+gaps = paramsweep(sol->peakgap(sol, 2, 12), m,
+                  u0, tspan, seirdparams.(2 .^ (1:8)))
+
+prob = ODEProblem(fluxes(model(Fcity³)), u0, tspan, seirdparams(2))
+sol = OrdinaryDiffEq.solve(prob, alg=Tsit5())
+
+seirdgaps = gaps
+
+@test model(Fcity³).S == 1:15
+@test length(model(Fcity³).Δ) == 18
+
+makeplots_seird(sol, "tmp")
+
+gp = plot([seirgaps seirdgaps], marker=:square, labels=[:seir :seird], xlabel="2^x fold reduction in travel", ylabel="Gap between first and last epidemic", legend=:bottomright, title="Effect of model assumptions on travel restrictions")
+savefig(gp, "gapplot.pdf")
