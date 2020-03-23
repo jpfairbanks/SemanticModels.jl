@@ -344,3 +344,30 @@ gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, travelsweep(βrange))
 
 coeffs = linreg(βrange, gaps)
 @test sum(abs.((coeffs[1] .+ (coeffs[2]*(βrange))) .- gaps))/length(βrange)<= 1e-1
+
+# struct GapResult{P,G}
+#     param::P
+#     gap::G
+# end
+#
+# GapResult(t::Tuple) = GapResult(t...)
+#
+# struct GapStudy
+#     result::Vector
+#     coeffs::Vector
+# end
+#
+# slope(gs::GapStudy) = gs.coeffs[end]
+
+function estimatedelay(r::AbstractVector)
+    gaps = paramsweep(sol->peakgap(sol, 2, 10), m, u0, tspan, travelsweep(r))
+    coeffs = linreg(βrange, gaps)
+    return (results=zip(r, gaps), coeffs=coeffs)
+end
+
+slope(gs) = gs.coeffs[end]
+
+gs = estimatedelay(βrange)
+@test slope(gs) > 1
+collect(gs.results)
+gs.coeffs
