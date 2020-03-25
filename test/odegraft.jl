@@ -6,7 +6,7 @@
 #
 # This notebook is an example based on the SEIR model and the ScalingModel examples in the epirecipes cookbook.
 
-using DifferentialEquations
+using OrdinaryDiffEq
 using SemanticModels.Parsers
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.ExpODEModels

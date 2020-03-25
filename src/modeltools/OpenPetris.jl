@@ -14,25 +14,25 @@ MAX_STATES = 20
 X = @variables(X[1:MAX_STATES])[1]
 STATELOOKUP = Dict(s.op.name=>i for (i,s) in enumerate(X))
 
-const OpenPetri{V} = OpenModel{V, Petri.Model}
+const OpenPetri{V} = OpenModel{V, PetriModel}
 
 ⊕(v::Vector, w::Vector) = vcat(v,w)
 # ⊕(v::Vector{Int}, w::Vector{Int}) = vcat(v,w.+length(v))
 
-function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
-    f.model.S
-    g.model.S
-    # TODO: need to renumber the states of g
-    M = Petri.Model(f.model.S ⊕ g.model.S, f.model.Δ ⊕ g.model.Δ)
-    return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
-end
+# function otimes(f::OpenPetri{T}, g::OpenPetri{T}) where {T<: Vector}
+#     f.model.S
+#     g.model.S
+#     # TODO: need to renumber the states of g
+#     M = model(PetriModel, Petri.Model(f.model.S ⊕ g.model.S, f.model.Δ ⊕ g.model.Δ))
+#     return OpenModel(f.dom ⊕ g.dom, M, f.codom ⊕ g.codom)
+# end
 
-function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int}, Md<:Petri.Model}
-    f.model.S
-    g.model.S
-    nf = length(f.model.S)
-    ng = length(g.model.S)
-    newstates = Dict(X[s]=>X[s+nf] for (i, s) in enumerate(g.model.S))
+function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int}, Md<:PetriModel}
+    # M = f.model.model
+    # N = g.model.model
+    nf = length(f.model.model.S)
+    ng = length(g.model.model.S)
+    newstates = Dict(X[s]=>X[s+nf] for (i, s) in enumerate(g.model.model.S))
     replace(t::Tuple{Operation, Operation}) = (replace(t[1]), replace(t[2]))
     replace(c::Constant) = c
     replace(op::Operation) = begin
@@ -47,15 +47,15 @@ function otimes(f::OpenModel{T, Md}, g::OpenModel{T,Md}) where {T<: Vector{Int},
         end
         return op
     end
-    newtransitions = f.model.Δ
-    if length(g.model.Δ) > 0
-        newtransitions = newtransitions ⊕ map(g.model.Δ) do t
+    newtransitions = f.model.model.Δ
+    if length(g.model.model.Δ) > 0
+        newtransitions = newtransitions ⊕ map(g.model.model.Δ) do t
             replace(t)
         end
     end
 
     newstatespace = collect(1:(nf+ng))
-    M = Petri.Model(newstatespace, newtransitions)
+    M = PetriModel(Petri.Model(newstatespace, newtransitions))
     return OpenModel(f.dom ⊕ (g.dom .+ nf), M, f.codom ⊕ (g.codom .+ nf))
 end
 
@@ -71,13 +71,13 @@ end
 
 ∈(x::Operation, S::Vector{Operation}) = any(isequal.(x,S))
 
-function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md<:Petri.Model}
+function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md<:PetriModel}
     Y = f.codom
     Y′ = g.dom
     @assert length(Y) == length(Y′)
     Z = g.codom
-    M = f.model
-    N = g.model
+    M = f.model.model
+    N = g.model.model
 
     states = vcat(M.S, ( 1:length(filter(s->!(s ∈ Y′), N.S)) ) .+ length(M.S))
     newstates = Dict(X[Y′[i]]=>X[Y[i]] for i in 1:length(Y))
@@ -109,22 +109,22 @@ function compose(f::OpenModel{T, Md}, g::OpenModel{T, Md}) where {T<: Vector, Md
         end
         return op
     end
-    newtransitions = f.model.Δ
-    if length(g.model.Δ) > 0
-        newtransitions = newtransitions ⊕ map(g.model.Δ) do t
+    newtransitions = M.Δ
+    if length(N.Δ) > 0
+        newtransitions = newtransitions ⊕ map(N.Δ) do t
             replace(t)
         end
     end
     Δ = newtransitions
     Λ = vcat(M.Λ, N.Λ)
     Φ = vcat(M.Φ, N.Φ)
-    Mp_yN = Petri.Model(states, Δ, Λ, Φ)
+    Mp_yN = PetriModel(Petri.Model(states, Δ, Λ, Φ))
     Z′ = map(Z) do z
         findfirst(x->isequal(x, newstates[X[z]]), X)
     end
     return OpenModel(f.dom, Mp_yN, Z′)
 end
 
-eye(n::Int) = foldr(otimes, [OpenModel([1], NullPetri(1), [1]) for i in 1:n])
+eye(n::Int) = foldr(otimes, [OpenModel([1], PetriModel(NullPetri(1)), [1]) for i in 1:n])
 
 end

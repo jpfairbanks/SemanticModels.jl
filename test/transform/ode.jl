@@ -1,5 +1,5 @@
 module ODEXform
-using DifferentialEquations
+using OrdinaryDiffEq
 using Cassette
 using SemanticModels.Dubstep
 
@@ -39,7 +39,7 @@ end #module
 using LinearAlgebra
 using Test
 using Cassette
-using DifferentialEquations
+using OrdinaryDiffEq
 using SemanticModels.Dubstep
 
 """   sir_ode(du,u,p,t)

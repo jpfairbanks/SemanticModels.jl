@@ -45,7 +45,7 @@ Petri.Graph(devar(sir_petri))
     S::Ob
     I::Ob
     R::Ob
-    
+
     infects::Hom(I, S)
     recovers_to::Hom(I, R)
 end
@@ -68,7 +68,7 @@ Petri.Graph(devar(sii_petri))
     S::Ob
     I::Ob
     I_p::Ob
-    
+
     infects::Hom(I, S)
     infects_p::Hom(I_p, S)
 end

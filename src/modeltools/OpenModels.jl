@@ -2,9 +2,7 @@ module OpenModels
 import Base: ==
 using SemanticModels.ModelTools
 import SemanticModels.ModelTools: model
-using Catlab.Graphics.Graphviz
-import Catlab.Graphics.Graphviz: Graph, Edge
-
+import Catlab.Graphics.Graphviz: Graph
 
 export OpenModel
 
@@ -19,14 +17,16 @@ end
 convert an OpenModel into a GraphViz Graph. This calls Graph(::Model) and then adds vertices (and edges) for the domain and codomain of the open model.
 """
 function Graph(f::OpenModel)
-    g = Graph(f.model)
-    A, M, B = f.dom, f.model, f.codom
+    g = Graph(f.model.model)
+    A, M, B = f.dom, f.model.model, f.codom
     stmts_dom = map(enumerate(A)) do (i,a)
-        m = M.S[a]
+        @show i, a
+        m = M.S[i]
         Edge(["I$i", "$m"], Attributes(:style=>"dashed"))
     end
     stmts_codom = map(enumerate(B)) do (i,a)
-        m = M.S[a]
+        @show i, a
+        m = M.S[i]
         Edge(["$m", "O$i"], Attributes(:style=>"dashed"))
     end
     append!(g.stmts, append!(stmts_dom, stmts_codom))

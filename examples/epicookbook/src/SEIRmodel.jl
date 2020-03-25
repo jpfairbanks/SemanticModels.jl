@@ -14,7 +14,7 @@
 # ---
 
 module SEIRmodel
-using DifferentialEquations
+using OrdinaryDiffEq
 
 #Susceptible-exposed-infected-recovered model function
 function seir_ode(dY,Y,p,t)
@@ -50,7 +50,7 @@ function main()
 
     seir_prob = ODEProblem(seir_ode,init,tspan,pram)
 
-    sol=solve(seir_prob);
+    sol=solve(seir_prob, alg=Tsit5());
     return sol
 end
 

@@ -8,13 +8,14 @@ import ModelingToolkit: Constant, Variable
 using MacroTools
 import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
+import Catlab.Graphics.Graphviz: Graph
 
 using SemanticModels.ModelTools
 using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
+import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph, pushout
 import SemanticModels.ModelTools: model
 
-export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, pushout, dropdown, equnion, ⊔
+export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, dropdown, equnion, ⊔
 
 struct PetriModel <: AbstractModel
   model::Petri.Model
@@ -105,26 +106,41 @@ function ⊔(gModel::PetriModel, hModel::PetriModel)
     newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.Δ]
     newΛ = [dictReplace(n, dict) for n in h.Λ]
     newΦ = [dictReplace(n, dict) for n in h.Φ]
-    PetriModel(Petri.Model(union(g.S, newS), 
-                equnion(g.Δ, newΔ), 
+    PetriModel(Petri.Model(union(g.S, newS),
+                equnion(g.Δ, newΔ),
                 equnion(g.Λ, newΛ),
                 equnion(g.Φ, newΦ)))
 end
-
-
 
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
     g = gModel.model
     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
     ϕ = func(f)
-    outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
-    for i in dom(f)
-        outS[ϕ(i)] = g.S[i]
-    end
+    outS = 1:length(Set(ϕ.m.fun))
+    outΔ = Vector{Tuple{Vector{Int}, Vector{Int}}}()
+    for t in g.Δ
+        ins = ϕ.(t[1])
+        outs = ϕ.(t[2])
+        push!(outΔ, (ins,outs))
+     end
     out = deepcopy(g)
-    PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
+    PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
 end
 
+# TODO: this version uses model toolkit variables, we want to delete it
+# function (f::FinSetMorph)(gModel::G) where G <: PetriModel
+#     g = gModel.model
+#     length(dom(f)) == length(g.S) || throw(DomainError(g.S))
+#     ϕ = func(f)
+#     outS = Array{Operation}(undef, length(Set(ϕ.m.fun)))
+#     for i in dom(f)
+#         outS[ϕ(i)] = g.S[i]
+#     end
+#     out = deepcopy(g)
+#     PetriModel(Petri.Model(outS, out.Δ, out.Λ, out.Φ))
+# end
+
+# TODO: this looks like coproduct not pushout.
 
 """    pushout(m1::Model, m2::Model)
 
@@ -137,7 +153,7 @@ function pushout(pModel::PetriModel, pModel2::PetriModel)
     Δ = equnion(pm.Δ, pm2.Δ)
     Λ = equnion(pm.Λ, pm2.Λ)
     Φ = equnion(pm.Φ, pm2.Φ)
-    return PetriModel(states, Δ, Λ, Φ)
+    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
 end
 
 
@@ -156,7 +172,7 @@ function dropdown(pL::PetriModel, pC::PetriModel, pL′::PetriModel)
     Δ = union(setdiff(pl′.Δ, pl.Δ), pc.Δ)
     Λ = union(setdiff(pl′.Λ, pl.Λ), pc.Λ)
     Φ = union(setdiff(pl′.Φ, pl.Φ), pc.Φ)
-    return PetriModel(states, Δ, Λ, Φ)
+    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
 end
 
 end

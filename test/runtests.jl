@@ -3,7 +3,6 @@ using Test
 using SemanticModels
 using SemanticModels.Unitful
 import SemanticModels.Unitful: DimensionError, uconvert, NoUnits, s
-using DifferentialEquations
 using Distributions: Uniform
 using GLM
 using DataFrames
@@ -11,7 +10,10 @@ using Plots
 
 tests = ["parse.jl",
          "cassette.jl",
-         "transform/ode.jl"]
+         #"transform/ode.jl"
+         "modeltools/petricospans.jl",
+         "modeltools/epidemics.jl",
+         ]
 
 for test in tests
   @testset "Running $test" begin
@@ -19,13 +21,14 @@ for test in tests
   end
 end
 
-examples = ["agentbased.jl",
+examples = [
+            "agentbased.jl",
             "agentgraft.jl",
             "modelmacro.jl",
             "monomial_regression.jl",
             "multivariate_regression.jl",
             "polynomial_regression.jl",
-            "workflow.jl",
+            # "workflow.jl",
             "pseudo_polynomial_regression.jl",
             "odegraft.jl",
             ]
