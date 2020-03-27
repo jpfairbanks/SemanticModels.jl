@@ -104,13 +104,13 @@ sol = OrdinaryDiffEq.solve(prob, alg=Tsit5())
 savedata(sol, "S,I,R", "sirdata.csv")
 
 Psird = PetriModel(
-          Petri.Model(1:3,[
+          Petri.Model(1:4,[
             ([1,2],[2,2]), # exposure
             ([2],[3]),     # recovery
             ([2],[4]),     # death
             ], missing, missing))
 
-m = Psir.model
+m = Psird.model
 
 u0 = zeros(Float64, length(m.S))
 u0[1]  = 10000
