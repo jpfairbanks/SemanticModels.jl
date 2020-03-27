@@ -7,10 +7,10 @@ using Catlab.WiringDiagrams
 using Catlab.Doctrines
 import Catlab.Doctrines.⊗
 
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
-import SemanticModels.ModelTools: model
+using SemanticModels
+import SemanticModels: model
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: ⊔, FinSetMorph
 
 export RelOlogModel, model, ⊔
 
@@ -18,7 +18,7 @@ export RelOlogModel, model, ⊔
 struct RelOlogModel <: AbstractModel
   model::Presentation
 end
-  
+
 function model(::Type{RelOlogModel}, r::Presentation)
     return RelOlogModel(r)
 end

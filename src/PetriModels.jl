@@ -10,10 +10,10 @@ import MacroTools: prewalk, postwalk
 using Catlab.WiringDiagrams
 import Catlab.Graphics.Graphviz: Graph
 
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph, pushout
-import SemanticModels.ModelTools: model
+using SemanticModels
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: ⊔, FinSetMorph, pushout
+import SemanticModels: model
 
 export PetriModel, model, rewrite!, PetriSpan, DPOProblem, solve, dropdown, equnion, ⊔
 
@@ -29,7 +29,7 @@ end
 
 function model(::Type{PetriModel}, d::WiringDiagram)::PetriModel
     # TODO design Multiple Dispatch Lens API
-    vars = ModelTools.WiringDiagrams.wirenames(d)
+    vars = SemanticModels.WiringDiagrams.wirenames(d)
     symvars = OpVar.(vars)
     byvar = Dict{Symbol, Operation}()
     homnames = Vector{Symbol}()

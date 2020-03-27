@@ -1,16 +1,16 @@
 module GraphModels
 using LightGraphs
 
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph, dom, codom, func
-import SemanticModels.ModelTools: model
+using SemanticModels
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: ⊔, FinSetMorph, dom, codom, func
+import SemanticModels: model
 export GraphModel, model, ⊔, GraphMorph, dom, codom, func, verify
 
 struct GraphModel <: AbstractModel
   model::AbstractGraph
 end
-  
+
 function model(::Type{GraphModel}, g::AbstractGraph)
     return GraphModel(g)
 end

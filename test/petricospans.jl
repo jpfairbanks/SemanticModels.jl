@@ -8,11 +8,11 @@ import Base.Multimedia: display
 import Base: (==), length, show
 using Test
 using Petri
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
-using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.PetriCospans
-import SemanticModels.ModelTools.PetriCospans: otimes_ipm, compose_pushout
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: undecorate, ⊔
+using SemanticModels.PetriModels
+using SemanticModels.PetriCospans
+import SemanticModels.PetriCospans: otimes_ipm, compose_pushout
 
 import Catlab.Doctrines:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,

@@ -2,7 +2,6 @@
 module CategoryTheory
 
 using SemanticModels
-using SemanticModels.ModelTools
 import Catlab.Doctrines: dom, codom
 using MacroTools: prewalk, postwalk
 using ModelingToolkit

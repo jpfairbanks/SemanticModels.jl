@@ -1,8 +1,8 @@
 module OpenPetris
 import Base: ∈
 using Petri
-import SemanticModels.ModelTools.PetriModels: PetriModel
-import SemanticModels.ModelTools.OpenModels: OpenModel
+import SemanticModels.PetriModels: PetriModel
+import SemanticModels.OpenModels: OpenModel
 using ModelingToolkit
 import ModelingToolkit: Constant
 using Catlab.Doctrines
