@@ -34,4 +34,6 @@ include("OpenPetris.jl")
 include("PetriCospans.jl")
 include("WiringDiagrams.jl")
 
+include("exprmodels/ExprModels.jl")
+
 end
