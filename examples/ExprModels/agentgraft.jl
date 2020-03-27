@@ -16,10 +16,8 @@
 # In this case we are automating the implementation of model changes to free the scientist to think about *what augmentations to the model should I make?* instead of *how do I implement these augmentations?*
 
 using SemanticModels
-
-using SemanticModels.Parsers
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.ExpStateModels
+using SemanticModels.ExprModels.Parsers
+using SemanticModels.ExprModels.ExpStateModels
 import Base: push!
 
 samples = 7
@@ -33,7 +31,7 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 
 # ## Baseline SIRS model
 #
-# Here is the baseline model, which is read in from a text file. You could instead of using `parsefile` use a `quote/end` block to code up the baseline model in this script. 
+# Here is the baseline model, which is read in from a text file. You could instead of using `parsefile` use a `quote/end` block to code up the baseline model in this script.
 #
 # <img src="https://docs.google.com/drawings/d/e/2PACX-1vSeA7mAQ-795lLVxCWXzbkFQaFOHMpwtB121psFV_2cSUyXPyKMtvDjssia82JvQRXS08p6FAMr1hj1/pub?w=1031&amp;h=309">
 #
@@ -41,7 +39,6 @@ println("demo parameters:\n\tsamples=$samples\n\tnsteps=$nsteps")
 
 expr = parsefile("agentbased.jl")
 m = model(ExpStateModel, expr)
-#ModelTools.funclines(m.expr, :main)
 
 
 println("\nRunning basic model")

@@ -4,6 +4,7 @@ module MonomialRegressionModels
 import Base: show
 
 using SemanticModels
+using SemanticModels.ExprModels
 using SemanticModels.ExprModels.Parsers
 using SemanticModels.ExprModels.Transformations
 import SemanticModels: model

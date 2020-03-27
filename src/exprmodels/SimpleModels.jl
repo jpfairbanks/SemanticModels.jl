@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # + {}
 module SimpleModels
+
 import Base: show
 using SemanticModels
+using SemanticModels.ExprModels
 import SemanticModels: model
 
 export SimpleModel, model, entrypoint, entryname, body

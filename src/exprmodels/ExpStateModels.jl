@@ -4,6 +4,7 @@ module ExpStateModels
 import Base: show, getindex, setindex!, put!, replace!
 
 using SemanticModels
+using SemanticModels.ExprModels
 using SemanticModels.ExprModels.Parsers
 import SemanticModels: model
 

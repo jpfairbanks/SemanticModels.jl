@@ -7,9 +7,9 @@
 # He we will represent a model class *monomial regression* with a data structure `MonomialRegression` and define a set group of transformations that can act on models from this class.
 
 using SemanticModels
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.MonomialRegressionModels
-using SemanticModels.ModelTools.Transformations
+using SemanticModels.ExprModels
+using SemanticModels.ExprModels.Transformations
+using SemanticModels.ExprModels.MonomialRegressionModels
 
 # ## Monomial Regression
 #
@@ -69,11 +69,11 @@ expr = quote
     end
 end;
 
-# ## Transforming the model 
+# ## Transforming the model
 #
 # Valid transformations for this model include increasing and decreasing the power of the monomial by 1. And you can apply those transformations repeatedly.
 #
-# Mathematically we can go from $f(a,x) = ax^p$ to $f(a,x) = ax^{p+1}$ or $f(a,x) = ax^{p-1}$. If we allow repeated application of these two generator transformations as a free monoid, we find that the set of transformations we get is isomorphic to the *group* $(Z, +, 0)$ which is the integers with addition. In Julia, we have decided to represent elements from this transformation group with a struct `Pow{Int} <: Transformation`. The composition operation for these transformations can be found in the source file `groups.jl`. 
+# Mathematically we can go from $f(a,x) = ax^p$ to $f(a,x) = ax^{p+1}$ or $f(a,x) = ax^{p-1}$. If we allow repeated application of these two generator transformations as a free monoid, we find that the set of transformations we get is isomorphic to the *group* $(Z, +, 0)$ which is the integers with addition. In Julia, we have decided to represent elements from this transformation group with a struct `Pow{Int} <: Transformation`. The composition operation for these transformations can be found in the source file `groups.jl`.
 #
 # Composition of `Pow{Int}` maps naturally to addition of the power to transform with. You can see how transformations are applied below.
 
@@ -123,9 +123,7 @@ println("Model order $(best[1]) is the best with a=$(best[2]) and loss $(best[en
 
 # ## Conclusions
 #
-# We can see that this sweep of monomial degree, recovers the right model order of $2$. We can actually some fundamental algebra at work here. When we apply the `Pow(-1)` element repeatedly, the optimal value of $a$ alternates between positive and negative. Here the even and odd elements of $Z$ are causing positive and negative values for the coefficient in the `MonomialRegression` model. 
+# We can see that this sweep of monomial degree, recovers the right model order of $2$. We can actually some fundamental algebra at work here. When we apply the `Pow(-1)` element repeatedly, the optimal value of $a$ alternates between positive and negative. Here the even and odd elements of $Z$ are causing positive and negative values for the coefficient in the `MonomialRegression` model.
 #
 #
 # This example shows that you can represent the transformations on a model as a group and the action of the group on a model is the way to represent transformations on models. Insights from the algebraic structures homormorphic/isomorphic to the algebra of transformations provide insights on the class of models.
-
-

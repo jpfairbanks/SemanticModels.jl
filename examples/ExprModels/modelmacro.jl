@@ -14,10 +14,10 @@
 # ---
 
 using SemanticModels
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.SimpleModels
+using SemanticModels.ExprModels
+using SemanticModels.ExprModels.SimpleModels
 
-import SemanticModels.ModelTools.SimpleModels: entrypoint, entryname, body
+import SemanticModels.ExprModels.SimpleModels: entrypoint, entryname, body
 expr = quote
     module StatsMod
     using Statistics
@@ -47,7 +47,7 @@ macro model(class, args...)
     if expr.head == :block
         expr = expr.args[end]
     end
-    
+
     ex = Expr(:nothing)
     expr = quote $expr end
     if length(args) > 1
@@ -86,5 +86,3 @@ m′.entry
 
 Mod = eval(m′.expr)
 getfield(Mod, entryname(m′))(10)
-
-
