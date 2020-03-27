@@ -7,9 +7,6 @@ provides the AbstractModel type and constructors for building hierarchical model
 """
 module SemanticModels
 
-export Parsers
-
-include("parse.jl")
 include("modeltools/ModelTools.jl")
 
 end
