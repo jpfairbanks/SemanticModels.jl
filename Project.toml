@@ -4,12 +4,8 @@ authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>", "Micah Halter <m
 version = "0.3.0"
 
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
-LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
@@ -18,13 +14,7 @@ Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
 julia = "1.0"
 
 [extras]
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["LinearAlgebra", "OrdinaryDiffEq", "Polynomials", "Printf", "Random", "Statistics", "Test"]
+test = ["Test"]
