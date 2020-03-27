@@ -1,19 +1,9 @@
-julia 1.0.0
 CSV
-Cassette
-Distributions
-Documenter
-LightGraphs
-MetaGraphs
-DataFrames
-DataFramesMeta
-GraphDataFrameBridge
-GLM
-JSON
-Latexify
-Unitful
-Plots
-MacroTools
 Catlab
+Documenter
+Latexify
+LightGraphs
+LsqFit
+MacroTools
 ModelingToolkit
 Petri

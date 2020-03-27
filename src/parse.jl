@@ -126,5 +126,3 @@ function recurse(mc::AbstractCollector)
 end
 
 end
-
-
