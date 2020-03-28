@@ -7,14 +7,14 @@
 # This notebook is an example based on the SEIR model and the ScalingModel examples in the epirecipes cookbook.
 
 using DifferentialEquations
-using SemanticModels.Parsers
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.ExpODEModels
+using SemanticModels.ExprModels
+using SemanticModels.ExprModels.Parsers
+using SemanticModels.ExprModels.ExpODEModels
 
 # ## Loading the original model
-# We use parsefile to load the model into an expression. The original model is an SEIR model which has 4 states suceptible, exposed, infected, and recovered. It has parameters $\beta, \gamma, \mu, \sigma$. 
+# We use parsefile to load the model into an expression. The original model is an SEIR model which has 4 states suceptible, exposed, infected, and recovered. It has parameters $\beta, \gamma, \mu, \sigma$.
 
-expr1 = parsefile("../examples/epicookbook/src/SEIRmodel.jl")
+expr1 = parsefile("../epicookbook/src/SEIRmodel.jl")
 model1 = model(ExpODEModel, expr1)
 
 module1 = eval(model1.expr)
@@ -67,18 +67,18 @@ argslist(model1.funcs[1])[1] = g
 #
 # When we add the population growth term to the SEIR model, we introduce a new parameter $r$
 # that needs to be supplied to the model. One problem with approaches that require scientists
-# to modify source code is the fact that adding the new features necessitates changes to the 
+# to modify source code is the fact that adding the new features necessitates changes to the
 # APIs provided by the original author. SemanticModels.ModelTools provides a higher level API
 # for making these changes that assist in propagating the necessary changes to the API.
 #
-# For example, in this code we need to add an argument to the entrypoint function `main` and 
+# For example, in this code we need to add an argument to the entrypoint function `main` and
 # provide an anonymous function that conforms to the API that `DifferentialEquations` expects
 # from its inputs.
 
 mainx = findfunc(model1.expr, :main)[end]
 pusharg!(mainx, :λ)
 
-# An `ODEProblem` expects the user to provide a function $f(du, u, p, t)$ which takes the current fluxes, current system state, parameters, and current time as its arguments and updates the value of `du`. Since our new function `g` does not satisfy this interface, we need to introduce a wrapper function that does. 
+# An `ODEProblem` expects the user to provide a function $f(du, u, p, t)$ which takes the current fluxes, current system state, parameters, and current time as its arguments and updates the value of `du`. Since our new function `g` does not satisfy this interface, we need to introduce a wrapper function that does.
 #
 # Here is an instance where having a smart compiler helps julia. In many dynamic languages where this kind of metaprogramming would be easy, the runtime is not smart enough to inline these anonymous functions, which means that there is additional runtime performance overhead to metaporgramming like this. Julia's compiler (and LLVM) can inline these functions which drastically reduces that overhead.
 
@@ -119,5 +119,3 @@ end
 # This simulation allows an epidemiologist to examine the effects of population growth on an SEIR disease outbreak. A brief analysis of this simulation shows that as you increase the population growth rate, you increase the final population of infected people. More sophisticated analysis could be employed to show something more interesting about this model.
 #
 # We have shown how you can use SemanticModels.jl to combine features of various ODE systems and solve them with a state of the art solver to increase the capabilities of a code that implements a scientific model. We call this combination process grafting and believe that it supports a frequent use case of scientific programming.
-
-

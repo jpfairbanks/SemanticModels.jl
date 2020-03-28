@@ -1,25 +1,25 @@
 using SemanticModels
-using SemanticModels.ModelTools
+using SemanticModels.ExprModels
 
 
 expr =quote
     function f(a::Int64, b::Int64)
-    c = a + b
-    d = g(float(c))
-    
-    return d
-end
-function g(res::Float64)
-    res = abs(res)
-    res -= 1
-    
-    while res > 0
-        res = g(res)
-    end
+        c = a + b
+        d = g(float(c))
 
-    return res
-end
-@show f(1,2)
+        return d
+    end
+    function g(res::Float64)
+        res = abs(res)
+        res -= 1
+
+        while res > 0
+            res = g(res)
+        end
+
+        return res
+    end
+    @show f(1,2)
 end
 
 # +

@@ -48,7 +48,8 @@ function ols(df, num_flu_patients_from_sim, year_to_predict)
     return predicted_num_vaccines
 end
 
-using SemanticModels.ModelTools
+using SemanticModels
+using SemanticModels.ExprModels
 
 struct RegressionProblem{F,T,U,Y} <: AbstractModel
     formula::F
@@ -64,5 +65,3 @@ end
 function solve(m::RegressionProblem{F, Missing, U,V}) where {F,U,V}
     return lm(m.formula, m.X)
 end
-
-

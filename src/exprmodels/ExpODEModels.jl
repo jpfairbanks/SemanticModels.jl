@@ -4,6 +4,7 @@ module ExpODEModels
 import Base: show
 
 using SemanticModels
+using SemanticModels.ExprModels
 using SemanticModels.ExprModels.Parsers
 import SemanticModels: model
 

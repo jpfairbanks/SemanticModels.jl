@@ -1,7 +1,0 @@
-﻿src_vid,src_name,dst_vid,dst_name,IsCalledBy,CoOccursWith,IsComponentOf,IsMeasuredIn,Implements,IsSubClassOf,Verb,VerbToken,,,,
-1,create_sir,2,m,0,1,0,0,0,0,0,0,,,,
-1,create_sir,3,solns,0,1,0,0,0,0,0,0,,,,
-2,m,3,solns,0,1,0,0,0,0,0,0,,,,
-4,initialS,6,n_person(s),0,0,0,1,0,0,0,0,,,,
-5,initialI,6,n_person(s),0,0,0,1,0,0,0,0,,,,
-,,,,,,,,,,,,,,,

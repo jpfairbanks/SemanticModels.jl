@@ -8,9 +8,9 @@
 
 using Polynomials
 using SemanticModels
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.Transformations
-using SemanticModels.ModelTools.MonomialRegressionModels
+using SemanticModels.ExprModels
+using SemanticModels.ExprModels.Transformations
+using SemanticModels.ExprModels.MonomialRegressionModels
 
 # ## Monomial Regression
 #
@@ -71,11 +71,11 @@ expr = quote
     end
 end;
 
-# ## Transforming the model 
+# ## Transforming the model
 #
 # Valid transformations for this model include increasing and decreasing the power of the monomial by 1. And you can apply those transformations repeatedly.
 #
-# Mathematically we can go from $f(a,x) = ax^p$ to $f(a,x) = ax^{p+1}$ or $f(a,x) = ax^{p-1}$. If we allow repeated application of these two generator transformations as a free monoid, we find that the set of transformations we get is isomorphic to the *group* $(Z, +, 0)$ which is the integers with addition. In Julia, we have decided to represent elements from this transformation group with a struct `Pow{Int} <: Transformation`. The composition operation for these transformations can be found in the source file `groups.jl`. 
+# Mathematically we can go from $f(a,x) = ax^p$ to $f(a,x) = ax^{p+1}$ or $f(a,x) = ax^{p-1}$. If we allow repeated application of these two generator transformations as a free monoid, we find that the set of transformations we get is isomorphic to the *group* $(Z, +, 0)$ which is the integers with addition. In Julia, we have decided to represent elements from this transformation group with a struct `Pow{Int} <: Transformation`. The composition operation for these transformations can be found in the source file `groups.jl`.
 #
 # Composition of `Pow{Int}` maps naturally to addition of the power to transform with. You can see how transformations are applied below.
 
@@ -121,7 +121,7 @@ for i in 0:1
             ahat = @show sol.ahat[1]
             lhat = @show sol.loss(sol.ahat[1])
             push!(results, (i, ahat, lhat, p))
-        end   
+        end
     end
 end
 

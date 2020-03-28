@@ -4,7 +4,7 @@
 # This example demonstrates how to use a product group to manipulate a multivariate regression model in an algebraically precise way. It builds on the example `monomial_regression.jl`.
 #
 
-# Let `m` be a model like 
+# Let `m` be a model like
 # ```julia
 # f(x,y,z) = a*x + b*y
 # x,y = rand(Normal(0,1), (n,2))
@@ -112,11 +112,10 @@ end;
 # The following code is the implementation details for representing the models as an `AbstractProblem` and representing the transformations as `Product{Tuple{Pow{Int}, Pow{Int}}}` and applying the transformations onto the models.
 
 using SemanticModels
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.Transformations
-
-import SemanticModels.ModelTools: model, AbstractModel
-import SemanticModels.Parsers: findfunc, findassign
+using SemanticModels.ExprModels
+using SemanticModels.ExprModels.Transformations
+import SemanticModels.ExprModels: model, AbstractModel
+import SemanticModels.ExprModels.Parsers: findfunc, findassign
 import Base: show
 
 # +
@@ -267,4 +266,4 @@ sort(results, by=x->x.r)
 
 # ## Conclusions
 #
-# We have seen how abstract algebra can be applied to the category of models to build a systematic treatment of model augmentation. This proves that the model transformations can be arranged into a simple algebraic structure that can act on a model to build new models. The structure of the transformations are easier to analyze than the changes to the models themselves. 
+# We have seen how abstract algebra can be applied to the category of models to build a systematic treatment of model augmentation. This proves that the model transformations can be arranged into a simple algebraic structure that can act on a model to build new models. The structure of the transformations are easier to analyze than the changes to the models themselves.
