@@ -2,7 +2,7 @@
 using ModelingToolkit
 using MacroTools
 using SemanticModels
-using SemanticModels.ModelTools.PetriModels
+using SemanticModels.PetriModels
 import MacroTools: postwalk
 using Test
 using Petri

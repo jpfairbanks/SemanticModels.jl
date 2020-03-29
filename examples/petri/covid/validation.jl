@@ -7,11 +7,11 @@ using Catlab.Doctrines
 using Catlab.Graphics
 using Catlab.WiringDiagrams
 using Catlab.Programs
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: undecorate, ⊔
-using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.PetriCospans
-import SemanticModels.ModelTools: model
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: undecorate, ⊔
+using SemanticModels.PetriModels
+using SemanticModels.PetriCospans
+import SemanticModels: model
 
 
 """    fluxes(m::Petri.Model)

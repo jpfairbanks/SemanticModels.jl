@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # + {}
 using SemanticModels
-using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.RelOlogModels
-using SemanticModels.ModelTools.CategoryTheory
+using SemanticModels.CategoryTheory
+using SemanticModels.PetriModels
+using SemanticModels.RelOlogModels
 using ModelingToolkit
 using Petri
 using Catlab

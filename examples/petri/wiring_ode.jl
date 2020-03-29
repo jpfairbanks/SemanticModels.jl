@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 using Catlab
-using SemanticModels.ModelTools.WiringDiagrams
+using SemanticModels.WiringDiagrams
 
 using Catlab.WiringDiagrams
 using Catlab.Doctrines

@@ -1,8 +1,8 @@
 using ModelingToolkit
-using SemanticModels.ModelTools
-using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.OpenPetris
-using SemanticModels.ModelTools.OpenModels
+using SemanticModels
+using SemanticModels.PetriModels
+using SemanticModels.OpenPetris
+using SemanticModels.OpenModels
 using Petri
 MAX_STATES = 100
 X = @variables(X[1:MAX_STATES])[1]

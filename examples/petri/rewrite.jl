@@ -3,7 +3,7 @@ using ModelingToolkit
 using MacroTools
 import MacroTools: postwalk
 using Petri
-using SemanticModels.ModelTools.PetriModels
+using SemanticModels.PetriModels
 using Test
 
 # SIR  <- IR  -> SEIR

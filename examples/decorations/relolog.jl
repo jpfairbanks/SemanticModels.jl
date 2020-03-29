@@ -3,9 +3,9 @@ using Catlab
 using Catlab.Doctrines
 import TikzPictures
 import Catlab.Graphics: to_tikz
-import SemanticModels.ModelTools.RelOlogModels: RelOlogModel, model, ⊗
-using SemanticModels.ModelTools.CategoryTheory
-import SemanticModels.ModelTools.CategoryTheory: ⊔, FinSetMorph
+using SemanticModels.CategoryTheory
+import SemanticModels.CategoryTheory: ⊔, FinSetMorph
+import SemanticModels.RelOlogModels: RelOlogModel, model, ⊗
 
 # ### Defining a Relational Olog For SEIR
 

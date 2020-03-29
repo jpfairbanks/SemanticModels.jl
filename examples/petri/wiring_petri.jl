@@ -6,7 +6,7 @@ using ModelingToolkit
 import ModelingToolkit: Constant
 using Test
 using Petri
-using SemanticModels.ModelTools.PetriModels
+using SemanticModels.PetriModels
 
 using Catlab.WiringDiagrams
 using Catlab.Doctrines

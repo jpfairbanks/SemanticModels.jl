@@ -10,7 +10,7 @@ using Catlab.Doctrines
 import Catlab.Doctrines: ⊗, compose, otimes
 using Catlab.WiringDiagrams
 using Catlab.Graphics
-using SemanticModels.ModelTools.WiringDiagrams
+using SemanticModels.WiringDiagrams
 using Catlab.Graphics.Graphviz
 import Catlab.Graphics.Graphviz: Graph
 import Base: ^
