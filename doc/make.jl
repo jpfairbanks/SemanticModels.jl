@@ -67,11 +67,11 @@ pages       = Any[
 ]
 )
 
-#= deploydocs( =#
-#= target      = "build", =#
-#= deps        = nothing, =#
-#= make        = nothing, =#
-#= repo        = "github.com/jpfairbanks/SemanticModels.jl.git", =#
-#= # julia       = "stable", =#
-#= # osname      = "linux" =#
-#= ) =#
+deploydocs(
+target      = "build",
+deps        = nothing,
+make        = nothing,
+repo        = "github.com/jpfairbanks/SemanticModels.jl.git",
+# julia       = "stable",
+# osname      = "linux"
+)
