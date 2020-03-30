@@ -15,14 +15,8 @@ RUN julia -e 'ENV["JUPYTER"]="jupyter"; using Pkg; Pkg.add("IJulia")'
 RUN julia --project -e 'using Pkg; Pkg.develop("SemanticModels");'
 
 RUN julia --project -e 'using Pkg; \
-          Pkg.add(["DifferentialEquations", "LsqFit", "Polynomials", "Printf", "Statistics", "Test"]); \
+          Pkg.add(["Test"]); \
           pkg"precompile";'
-
-## Install nlp example pip packages
-RUN pip3 install -r /root/.julia/dev/SemanticModels/examples/semanticClustering/requirements.txt
-
-RUN python3 -m spacy download en_core_web_sm
-RUN python3 -m spacy download en_core_web_md
 
 ## Expose port 8888
 EXPOSE 8888
