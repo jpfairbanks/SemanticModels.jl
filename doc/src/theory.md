@@ -4,7 +4,7 @@
 
 The goal of science is to build models of natural phenomena that explain the world.
 Scientists build these models by conducting data gathering phenomena and using math to represent these experiments.
-This sets up a balancing act between the two traits that make for a good scientific model, 
+This sets up a balancing act between the two traits that make for a good scientific model,
 it must first match the data collected and also be able to explain the phenomena.
 
 We can think of fitting the data as a regression problem:
@@ -16,10 +16,10 @@ power is some combination of generalization, parsimony, and consistency with the
 
 This formulation is notional in the current state of the art, because models are not a well parameterized space.
 The goal of this project is to identify subspaces that can be parameterized using algebraic structures and represent
-those subspace symbolically so that computers can represent them and perform optimization over model structure in 
+those subspace symbolically so that computers can represent them and perform optimization over model structure in
 addition to model parameters.
 
-The philosophy of science 
+The philosophy of science
 [Kuhn 1962](https://en.wikipedia.org/wiki/The_Structure_of_Scientific_Revolutions)
 tells us that scientists don't make models in a vacuum, they are usually working
 within a scientific paradigm. These paradigms are often given names like
@@ -327,10 +327,10 @@ want to push that to expanding.
 ### Ologs
 
 Ontology logs are a diagrammatic approach to formalizing scientific methodologies. They can be used
-to precisely specify what a scientist is talking about (see [Spivak, Kent 2012](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0024274) "Ologs: A Categorical Framework for Knowledge Representation."). 
+to precisely specify what a scientist is talking about (see [Spivak, Kent 2012](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0024274) "Ologs: A Categorical Framework for Knowledge Representation.").
 
 An olog is composed of types (the boxes) and aspects (the edges). The labels on the edges is the
-name of the aspect. An aspect is valid if it is a function (1-many relation). 
+name of the aspect. An aspect is valid if it is a function (1-many relation).
 
 ![Birthday olog](img/olog_birthday.png)
 
@@ -358,7 +358,7 @@ represented as a category, where the objects are the types and the morphisms are
 type of a function as the domain and the output type as the codomain of the function. Multi-argument functions are
 represented with tuple types representing their argument. For example `+(a::Int,b::Int)::Int` is a function $+:
 Int\times Int -> Int$. These type categories are well studied in the field of Functional Programming. We apply these
-categories to the study of mathematical models. 
+categories to the study of mathematical models.
 
 One can use a combination of static and dynamic analysis to extract this category representation from a program and use
 it to represent the model implemented by the code.
@@ -376,7 +376,7 @@ different. For example in an SIR model there are 3 initial conditions, $S,I,R$ a
 \gamma$. These vectors are incompatible, you cannot perform arithmetic or comparisons on them directly. Most
 computational systems employed by scientists will use a runtime check on dimensions to prevent a program from crashing
 on malformed linear algebra. Scientists rely on this limited from of semantic integrity checking provided by the
-language. 
+language.
 
 Our goal is to extract and encode the maximum amount of information from scientific codes into the type system. The type
 system is analyzable as a category. Thus we can look at the category of types and analyze the integrety of the programs.
@@ -403,7 +403,7 @@ disease. In the first implementation, the agents have states represented by the 
 `Susceptible, Infected, Recovered` with values, `Susceptible(), Infected(), Recovered()`. The model is the same, but the
 type system contains more information about the execution of the model. For example the julia type system knows what the
 possible state transitions are based in the second implementation, while the first model has a black box of `:Symbol`s
-that are not distinguishable in program analysis. 
+that are not distinguishable in program analysis.
 
 The original type graph $g$ shows how the model works.
 ![Using Symbol values to represent states](img/exampletypegraph.dot.svg)
@@ -507,7 +507,7 @@ systems for Open Systems like Petri Nets.
 *Double pushout rewriting* is a process of making analogies between systems for
 specifying transformations on those systems. Originally developed for
 transforming graphs according to rules, DPO rewriting has been extended to
-arbitrary *topoi[^1]*. Figure 3 shows an example of graph rewriting that says
+arbitrary *topoi*. Figure 3 shows an example of graph rewriting that says
 *delete a loop* and then applies that rule to another graph.
 
 ![Double pushout rewriting allows modelers to reason by analogy to change model structure](img/theory/rewrite_loop.png)
@@ -616,7 +616,7 @@ The work of Evan Patterson on building semantic representations of data science
 programs is particularly relevant to these modeling questions
 [SRDSP](https://www.epatters.org/assets/papers/2018-semantic-enrichment-ijcai-demo.pdf "Semantic Representations of Data Science Programs").
 [Patterson 2018](https://www.epatters.org/assets/papers/2018-semantic-enrichment-kdd.pdf "Teaching machines to understand data science code by
-semantic enrichment of dataflow graphs") 
+semantic enrichment of dataflow graphs")
 
 ## Model Augmentation
 
@@ -668,10 +668,10 @@ make metaprogramming for science much easier.
 One goal of the program is to get to the point where we can automatically infer how to combine models based on what they
 compute. The idea of model circuits based on signal flow graphs (see #137) is that you can statically connect models
 with a wiring diagram and then evaluate the diagram to compute the combined model. General DAGs are hard to compose and
-are typically written with either a declarative DAG language or an imperative DAG building library. The complexity of 
+are typically written with either a declarative DAG language or an imperative DAG building library. The complexity of
 using DAG driven workflows reveals how the existing implementations lack compositionality, (how can you compose two makefiles?).
-By redesigning scientific workflow tools around categories of PROPS, we can achieve higher compositionality and thus more scalable 
-scientific workflow tools. 
+By redesigning scientific workflow tools around categories of PROPS, we can achieve higher compositionality and thus more scalable
+scientific workflow tools.
 
 [Fong and Spivak 2018](http://math.mit.edu/~dspivak/teaching/sp18/7Sketches.pdf) shows how to express signal processing
 and controls problems in a graphical language based on categories of products and permutations category or _props_.
@@ -683,16 +683,16 @@ classical controls problem. These diagrams are shown to have the same functorial
 We think that the category theory approach of props is the right approach. This approach leads to diagrams with precise
 semantics for representing general purpose computation networks. These networks will be specified with code that
 combines the sum and product operation in a hierarchical expression just like regular code. Thus the code that makes the
-diagrams is a model that we can augment with our current ModelTools techniques.
+diagrams is a model that we can augment with our current Model Augmentation techniques.
 
 These "model circuits" can thus be built out of code resulting from transformations on code that builds a base circuit.
 Which establishes tools for creating high level transformations on circuits. We can then define the input and output
 wires as the modeling concepts we know and want to know and then build algorithms for solving for the circuit that gets
 from the inputs to the outputs. We suspect a dynamic programming approach to recursively bring the inputs and outputs
-closer together will solve this problem. 
+closer together will solve this problem.
 
 Algorithms that do model synthesis will need to account for the conceptual knowledge that is captured in the text and
-documentation of scientific software. 
+documentation of scientific software.
 
 Once we have a mathematically sound way to represent combinations of models, we must address the practical aspects of
 model synthesis. We are endeavoring to augment and automate scientific workflows by meaningfully pruning the set of

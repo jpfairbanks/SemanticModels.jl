@@ -16,14 +16,14 @@ digraph G {
 		color=lightgrey;
     label="Standard Paradigm"
   }
-	
-	
+
+
 	subgraph cluster_2 {
 		node [style=filled, color=white];
 		c0 -> c2 [label=programmer]
 		c2 -> c1 [label="Model(Expr)\n\n\n\n\n"]
 		c1 -> c2 [label="\n\n\n\neval(Model)"]
-		c1:left->c1:left[label="transform"]
+		c1:w->c1:w[label="transform"]
 		c2 -> c3 [label="compiler"]
 		{rank = same  c2, c1};
 		c0[label="Chalk",color="#59a27a"]
@@ -33,11 +33,11 @@ digraph G {
 		label = "";
 		style=filled;
 		color=white;
-		
-	}
-  
 
-  label = "SemanticModels.jl"	
+	}
+
+
+  label = "SemanticModels.jl"
 }
 
 }

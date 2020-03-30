@@ -47,23 +47,16 @@ pages       = Any[
     "SemanticModels.jl" => "index.md",
     "Intended Use Cases" => "usecases.md",
     "News" => "news.md",
-    "ModelTools" =>"modeltools.md",
+    "Workflow" =>"workflow.md",
     "Example" => "example.md",
     "Malaria" => "malaria.md",
     "Theory" =>"theory.md",
-    "Knowledge Graphs" => "graph.md",
     "Knowledge Extraction" => "extraction.md",
     "Validation" => "validation.md",
     "Library Reference" => "library.md",
     "Approaches" => "approach.md",
     "Slides" => "slides.md",
-    # "Model Types"                   => "types.md",
-    # # "Reading / Writing Models"    => "persistence.md",
-    # # "Plotting"                    => "plotting.md",
-    # # "Parallel Algorithms"         => "parallel.md",
-    "Contributing"                  => "contributing.md"
-    # "License Information"           => "license.md",
-    # "Citing SemanticModels"         => "citing.md"
+    "Contributing" => "contributing.md"
 ]
 )
 
