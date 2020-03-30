@@ -30,5 +30,6 @@ jobs:
         - travis_wait 30 julia --project -e 'using Pkg; Pkg.build(); Pkg.test("SemanticModels")'
     - stage: "Documentation"
       script:
-        - julia --project=doc/ -e 'using Pkg; Pkg.instantiate();'
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                               Pkg.instantiate()'
         - julia --project=doc/ doc/make.jl
