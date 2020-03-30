@@ -76,7 +76,7 @@ rec = wd(Hom(:recovery,I, R))
 # If you try to compose these diagrams you will get a domain error because we have $S \otimes I \rightarrow I\otimes I \circledcirc I\rightarrow R$ which doesn't satisfy the consistency requirement of function composition that is $A\rightarrow B \circledcirc B \rightarrow C = A\rightarrow C$.
 #
 
-SIR = inf ⊚ rec
+@test_throws ErrorException SIR = inf ⊚ rec
 
 # We can introduce another diagram to our set of generators to fix it.
 
@@ -128,7 +128,7 @@ dom(seir), codom(seir)
 
 # If you compose diagrams in the wrong order, the software tells you about the mistake. These checking rules are easy to understand and easy to implement. Which makes them great for representing models.
 
-seir ⊚ wan
+@test_throws ErrorException seir ⊚ wan
 
 # the types didn't match, we need to do something with that infected wire
 seirs = seir ⊚ (rec⊗wan)

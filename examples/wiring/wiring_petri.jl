@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 using Catlab
-using MacroTools
-import MacroTools: postwalk, striplines
 using ModelingToolkit
 import ModelingToolkit: Constant
 using Test
@@ -19,56 +17,20 @@ import Base: ∘
 ⊚(a,b) = b ∘ a
 
 # Generators
-S, E, I, R, D, G= Ob(FreeSymmetricMonoidalCategory, :S, :E, :I, :R, :D, :G)
+S, E, I, R, D = Ob(FreeSymmetricMonoidalCategory, :S, :E, :I, :R, :D)
 
 # +
 infecting = Hom(:infection, S ⊗ I, I⊗I)
 
-ss = mcopy(Ports([S]), 2)
-
-function build(dict, y)
-    push!(dict, codom(y)=>compose(typeof(dom(y)) == FreeSymmetricMonoidalCategory.Ob{:generator} ? dict[dom(y)] : otimes(map(x->dict[x], dom(y).args)), y))
-end
-
-dict = Dict()
-push!(dict, I=>id(I))
-
-rain = Hom(Symbol("rain"), I, R)
-sprinkler = Hom(Symbol("sprinkler"), R, S)
-grasswet = Hom(Symbol("grasswet"), S⊗R, G)
-whatever = Hom(Symbol("whatever"), G⊗S, D)
-set = [rain, sprinkler, grasswet, whatever]
-
-map((x)->build(dict, x), set)
-
-to_graphviz(dict[D], labels=true)
-
-#to_graphviz(WiringDiagram()⊚(ss⊗WiringDiagram(Hom(:id, I, I))), labels=true)
-#=
-s1 = WiringDiagram(Hom(:id, S, S))
-
-s_split = s1 ⊚ ss
-
-to_graphviz(s_split, labels=true)
-=#
-
+# -
 # +
 inf  = to_wiring_diagram(infecting)
 expo = to_wiring_diagram(Hom(:exposure, S⊗I, E⊗I))
 rec  = to_wiring_diagram(Hom(:recovery, I,   R))
 wan  = to_wiring_diagram(Hom(:waning,   R,   S))
 
-
-
-rain = Hom(:rain, I, R)
-sprinkler = Hom(:sprinkler, R, S)
-grasswet = Hom(Symbol("grasswet"), S⊗R, G)
-
-set = [rain, sprinkler, grasswet]
-
-foldl((x, y)->println(y), set)
 # -
-
+# +
 si    = to_wiring_diagram(Hom(:infection,   S⊗I, I⊗I))
 se    = to_wiring_diagram(Hom(:exposure,    S⊗I, E⊗I))
 prog  = to_wiring_diagram(Hom(:progression, E,   I))

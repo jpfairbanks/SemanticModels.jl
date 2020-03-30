@@ -1,0 +1,6 @@
+[deps]
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
+SemanticModels = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"

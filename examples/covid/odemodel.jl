@@ -460,7 +460,7 @@ seirdgaps = gaps
 @test model(Fcity³).S == 1:15
 @test length(model(Fcity³).Δ) == 18
 
-makeplots_seird(sol, "tmp")
+makeplots_seird(sol, "img/tmp")
 
 gp = plot([seirgaps seirdgaps], marker=:square, labels=[:seir :seird], xlabel="2^x fold reduction in travel", ylabel="Gap between first and last epidemic", legend=:bottomright, title="Effect of model assumptions on travel restrictions")
-savefig(gp, "gapplot.pdf")
+savefig(gp, "img/gapplot.pdf")

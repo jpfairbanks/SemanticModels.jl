@@ -14,7 +14,6 @@ import SemanticModels.CategoryTheory: undecorate, ⊔
 using SemanticModels.PetriModels
 using SemanticModels.PetriCospans
 import SemanticModels.PetriCospans: otimes_ipm, compose_pushout
-
 println("Done Importing SemanticModels")
 
 import Catlab.Doctrines:
