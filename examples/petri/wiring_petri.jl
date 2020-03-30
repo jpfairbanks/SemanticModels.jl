@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import Pkg
+Pkg.add("SemanticModels")
 using Catlab
 using MacroTools
 import MacroTools: postwalk, striplines
