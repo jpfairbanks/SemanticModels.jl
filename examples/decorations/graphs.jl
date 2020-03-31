@@ -11,7 +11,7 @@ using Petri
 
 n = 3
 a = smallgraph(:house)
-b = StarGraph(n)
+b = star_graph(n)
 
 f = FinSetMorph([5,3,4])
 @assert FinSetMorph([5,4,3,2,1])(model(GraphModel, a)).model |>
