@@ -1,0 +1,8 @@
+[deps]
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
+SemanticModels = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"
+TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"

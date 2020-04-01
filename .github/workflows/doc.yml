@@ -1,0 +1,23 @@
+name: Documentation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@latest
+        with:
+          version: '1.4'
+      - name: "Install system dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install graphviz ttf-dejavu
+      - name: "Install Julia dependencies"
+        run: julia --project=doc -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
+      - name: "Build and deploy docs"
+        env:
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=doc doc/make.jl

@@ -43,7 +43,7 @@ We focus on Susceptible Infected Recovered model of epidemiology.
 
 ## Example Input Packages
 
-1. EMOD, Epimodels, NetLogo, and FRED are established packages, given their maturity and availability of published papers citing these packages. 
+1. EMOD, Epimodels, NetLogo, and FRED are established packages, given their maturity and availability of published papers citing these packages.
 2. Pathogen and NDLib are newer packages, we expect easier to work with and more future adoption.
 3. Textbooks [@voit_first_2012] and lecture notes[^1] will be a resource for these simple models that are well characterized.
 
@@ -80,21 +80,6 @@ A preliminary design for types of knowledge in our knowledge graph.
   - Equations
 - Concepts
 - Values
-
-
-## Flu Metamodel Pipeline
-
-Here is the DAG for our running example.
-![A pipeline for modeling flu vaccination requirements](img/flu_pipeline.dot.svg)
-
-See [FluModel](@ref) for worked out example.
-
-## Knowledge Graph Reasoning
-
-1. Define Model representations / KG schema
-1. Extract KG from artifacts
-1. **Reason over KG to build metamodel**
-1. CodeGen/Execution of Metamodel
 
 ## How do we get from Weather to Cost?
 ![How do we get from Weather to Cost?](img/knowledge_reasoning.dot.svg){ width=80% }
@@ -136,11 +121,11 @@ Minimum ST flow!
 - Metamodel quality
 
 ### Error and Residual
-- Analogize the metamodel construction error and the model quality to the error and residual in numerical solvers. 
+- Analogize the metamodel construction error and the model quality to the error and residual in numerical solvers.
 Given $f(x)=0$ solve for $x$
 
 - Measure both the error and the residual.
-- Error $\mid x-x^\star\mid$, the difference from the correct solution 
+- Error $\mid x-x^\star\mid$, the difference from the correct solution
 - Residual $\mid f(x) - f(x^\star)\mid$ or the difference from quality of optimal solution
 
 

@@ -1,0 +1,5 @@
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
+SemanticModels = "f5ac2a72-33c7-5caf-b863-f02fefdcf428"

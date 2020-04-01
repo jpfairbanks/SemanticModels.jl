@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 using LightGraphs
 using SemanticModels
-using SemanticModels.ModelTools.CategoryTheory
-using SemanticModels.ModelTools.PetriModels
-using SemanticModels.ModelTools.GraphModels
+using SemanticModels.CategoryTheory
+using SemanticModels.PetriModels
+using SemanticModels.GraphModels
 using ModelingToolkit
 using Petri
 
@@ -11,7 +11,7 @@ using Petri
 
 n = 3
 a = smallgraph(:house)
-b = StarGraph(n)
+b = star_graph(n)
 
 f = FinSetMorph([5,3,4])
 @assert FinSetMorph([5,4,3,2,1])(model(GraphModel, a)).model |>
@@ -67,5 +67,3 @@ H = CategoryTheory.pushout(s)
 
 map(petri->println(petri.model.S, "\n", petri.model.Δ), decorations(H, PetriModel))
 # -
-
-

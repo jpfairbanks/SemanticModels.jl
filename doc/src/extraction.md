@@ -1,4 +1,4 @@
-# Knowledge Extraction 
+# Knowledge Extraction
 
 ## Documents
 
@@ -33,14 +33,14 @@ Ongoing work involves building extractors for:
 4. Match modeling text concepts with code variables using lexical-tokens.
 5. Run [Automates](https://github.com/ml4ai/automates) rule-based extraction on the text associated with each code concept.
 6. Create knowledge elements (e.g., vertices and edges) from the tuples associated with rule matches.
- 
+
 SemanticModels has created rules to extract phenomena such as definitions of parameters. These same parameters can then
 be recognized within source code, beginning with lexical matching for mapping human language definitions to specific
 source code instantiations.
 
 We are currently in the process of collecting and annotating ground truth data to
 use in constructing machine learning models to do information extractions based on
-information elements of interest that we identify in use case planning for 
+information elements of interest that we identify in use case planning for
 meta-modeling related functionalities users will be able to work with.
 
 ## Code
@@ -51,7 +51,7 @@ the source code. We use the same Julia code parser as the `julia` program.
 This parser takes text representations of Julia code and returns an abstract syntax tree (AST).
 We then walk this AST looking for Julia program expressions that create information. For example, function definitions,
 variable assignments and module imports. We recurse into the function definitions to find the local variable definitions
-(and closures) used in implementing the functions. 
+(and closures) used in implementing the functions.
 
 This form of static program analysis provides a more direct way to access user defined functions. However it cannot
 access the type information and run time values. For this we use `Cassette.jl`, which is a library for context-dependent
@@ -70,7 +70,7 @@ using DifferentialEquations
 
 # # Model Specifications
 # - SH num of high risk susceptible
-# - IH num of high risk infected 
+# - IH num of high risk infected
 # - SL num of low risk susceptible
 # - IL num of low risk infected
 # # Parameters
@@ -180,11 +180,10 @@ and run it through the code syntactic extractor, which will produce the followin
 ("Modeling.sis_ode(du, u, p, t)", :input, :(+((betaLH * IH + betaLL * IL)) * SL), Symbol[Symbol("gamma * IL")])
 ```
 
-This extractor provides edges to the [Knowledge Graphs](@ref). Once the extraction is
-complete, the knowledge graph can be stored and transmitted to scientists across many
-disciplines. These knowledge graphs are a compact representation of the code and text.
-As new papers and codes are written, they can be ingested into an online graph database
-providing access to many scholars.
+Once the extraction is complete, the knowledge graph can be stored and
+transmitted to scientists across many disciplines. These knowledge graphs are a
+compact representation of the code and text. As new papers and codes are written,
+they can be ingested into an online graph database providing access to many scholars.
 
 ## Reconciliation and Disambiguation
 
@@ -301,7 +300,7 @@ it's worth noting that the goal of this project is to augment scientists and the
 workflows. As such, we envision a human-in-the-loop, semi-automated approach, in which the
 scientist is in control and has the ability to instruct the machine by providing
 information about what the scientist already knows, and what they wish to do with that
-knowledge (e.g., modify, combine, validate) existing models and scripts. 
+knowledge (e.g., modify, combine, validate) existing models and scripts.
 
 Any API that supports augmenting scientists will require some human intervention in the
 reasoning and generation stages as the system must get input from the user as to the
@@ -314,7 +313,7 @@ upon user guidance for reasoning and generation tasks.
 ## API reference
 
 ```@autodocs
-Modules = [SemanticModels.Parsers]
+Modules = [SemanticModels.ExprModels.Parsers]
 ```
 
 [^1]: <https://arxiv.org/abs/1803.09473>

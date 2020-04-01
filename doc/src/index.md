@@ -31,7 +31,7 @@ of scientific understanding (concepts, terms, relations). This knowledge graph s
 models, construct metamodels, and verify models.
 
 The most mature aspects of the library at this point are [Knowledge Extraction](@ref) and
-modification ([Dubstep](@ref)).
+modification ([Workflow](@ref)).
 
 ## Table of Contents
 ```@contents
@@ -39,11 +39,10 @@ Pages = [
      "index.md",
      "usecases.md",
      "news.md",
-     "modeltools.md",
+     "workflow.md",
      "example.md",
      "malaria.md",
      "theory.md",
-     "graph.md",
      "extraction.md",
      "validation.md",
      "library.md",
