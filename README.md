@@ -6,6 +6,7 @@ A julia package for representing and manipulating models at the semantic level.
 
 [![Documentation](https://github.com/jpfairbanks/SemanticModels.jl/workflows/Documentation/badge.svg)](https://aske.gtri.gatech.edu/docs/latest/)
 [![Tests](https://github.com/jpfairbanks/SemanticModels.jl/workflows/Tests/badge.svg)](https://github.com/jpfairbanks/SemanticModels.jl/actions)
+[![DOI](https://zenodo.org/badge/155782638.svg)](https://zenodo.org/badge/latestdoi/155782638)
 
 Traditional scientific computing happens by translating conceptual models of natural phenomena into mathematical models
 on a chalkboard and then implementing those models in code that is then compiled into executable instructions and run on
