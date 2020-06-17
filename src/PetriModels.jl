@@ -58,7 +58,7 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
         push!(outΔ, (ins,outs))
      end
     out = deepcopy(g)
-    PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
+    PetriModel(Petri.Model(outS, outΔ))
 end
 
 # TODO: this version uses model toolkit variables, we want to delete it
@@ -85,9 +85,7 @@ function pushout(pModel::PetriModel, pModel2::PetriModel)
     pm2 = pModel2.model
     states = equnion(pm.S, pm2.S)
     Δ = equnion(pm.Δ, pm2.Δ)
-    Λ = equnion(pm.Λ, pm2.Λ)
-    Φ = equnion(pm.Φ, pm2.Φ)
-    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
+    return model(PetriModel, Petri.Model(states, Δ))
 end
 
 
@@ -104,9 +102,7 @@ function dropdown(pL::PetriModel, pC::PetriModel, pL′::PetriModel)
     pl′ = pL′.model
     states = union(pl′.S, pc.S)
     Δ = union(setdiff(pl′.Δ, pl.Δ), pc.Δ)
-    Λ = union(setdiff(pl′.Λ, pl.Λ), pc.Λ)
-    Φ = union(setdiff(pl′.Φ, pl.Φ), pc.Φ)
-    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
+    return model(PetriModel, Petri.Model(states, Δ))
 end
 
 end
