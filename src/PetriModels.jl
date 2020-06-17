@@ -3,10 +3,8 @@
 module PetriModels
 import Base: show
 using Petri
-using ModelingToolkit
-import ModelingToolkit: Constant, Variable
 using MacroTools
-import MacroTools: prewalk, postwalk
+import MacroTools: prewalk
 using Catlab.WiringDiagrams
 import Catlab.Graphics.Graphviz: Graph
 
@@ -21,69 +19,9 @@ struct PetriModel <: AbstractModel
   model::Petri.Model
 end
 
-OpVar(s::Symbol) = Operation(Variable(s), [])
-
 function model(::Type{PetriModel}, m::Petri.Model)
     return PetriModel(m)
 end
-
-function model(::Type{PetriModel}, d::WiringDiagram)::PetriModel
-    # TODO design Multiple Dispatch Lens API
-    vars = SemanticModels.WiringDiagrams.wirenames(d)
-    symvars = OpVar.(vars)
-    byvar = Dict{Symbol, Operation}()
-    homnames = Vector{Symbol}()
-    transitions = map(enumerate(boxes(d))) do (i, box)
-        invars = input_ports(box)
-        outvars = output_ports(box)
-        homname = box.value
-        push!(homnames, homname)
-        δ_in  =  length(invars)  > 1 ? +(OpVar.( invars)...) : OpVar.(invars[1])
-        δ_out =  length(outvars) > 1 ? +(OpVar.(outvars)...) : OpVar.(outvars[1])
-        return (δ_in, δ_out)
-    end
-    return PetriModel(Petri.Model(symvars, unique(transitions)))
-end
-
-function rewrite!(pm::PetriModel, pm2::PetriModel)
-    rewrite!(pm, pm2, Dict())
-end
-
-function rewrite!(pModel::PetriModel, pModel2::PetriModel, f::Dict)
-    pm = pModel.model
-    pm2 = pModel2.model
-    vars = map(pm.S) do s
-        s.op
-    end
-    @show
-    for i in 1:length(pm2.S)
-        s = pm2.S[i]
-        found = findfirst(vars .== (haskey(f, s) ? f[s].op : s.op))
-        if typeof(found) == Nothing
-            push!(pm.S, s)
-            push!(pm.Δ, pm2.Δ[i])
-            push!(pm.Λ, pm2.Λ[i])
-            push!(pm.Φ, pm2.Φ[i])
-        else
-            pm.Δ[found] = pm2.Δ[i] == Nothing ? m.Δ[found] : m2.Δ[i]
-            pm.Λ[found] = pm2.Λ[i] == Nothing ? m.Λ[found] : m2.Λ[i]
-            pm.Φ[found] = pm2.Φ[i] == Nothing ? m.Φ[found] : m2.Φ[i]
-        end
-    end
-end
-
-struct PetriSpan{L,C,R}
-    l::L
-    c::C
-    r::R
-end
-
-struct DPOProblem
-    rule::PetriSpan
-    c′::PetriModel
-end
-
-solve(p::DPOProblem) = pushout(p.rule.r, p.c′)
 
 function equnion(a::Vector, b::Vector)
     x = copy(a)
@@ -101,15 +39,11 @@ dictReplace(item, dict) = prewalk(i -> i in keys(dict) ? dict[i] : i, item)
 function ⊔(gModel::PetriModel, hModel::PetriModel)
     g = gModel.model
     h = hModel.model
-    dict = Dict(i => any(isequal.(i, g.S)) ? i : Operation(i.op, Expression[ModelingToolkit.Constant(2)]) for i in h.S)
+    dict = Dict(i => any(isequal.(i, g.S)) ? i : Symbol(i, "′") for i in h.S)
     newS = [dictReplace(n, dict) for n in h.S]
-    newΔ = [(dictReplace(n[1], dict), dictReplace(n[2], dict)) for n in h.Δ]
-    newΛ = [dictReplace(n, dict) for n in h.Λ]
-    newΦ = [dictReplace(n, dict) for n in h.Φ]
+    newΔ = [(dictReplace(first(n), dict), dictReplace(last(n), dict)) for n in h.Δ]
     PetriModel(Petri.Model(union(g.S, newS),
-                equnion(g.Δ, newΔ),
-                equnion(g.Λ, newΛ),
-                equnion(g.Φ, newΦ)))
+                           equnion(g.Δ, newΔ)))
 end
 
 function (f::FinSetMorph)(gModel::G) where G <: PetriModel
@@ -124,7 +58,7 @@ function (f::FinSetMorph)(gModel::G) where G <: PetriModel
         push!(outΔ, (ins,outs))
      end
     out = deepcopy(g)
-    PetriModel(Petri.Model(outS, outΔ, out.Λ, out.Φ))
+    PetriModel(Petri.Model(outS, outΔ))
 end
 
 # TODO: this version uses model toolkit variables, we want to delete it
@@ -151,9 +85,7 @@ function pushout(pModel::PetriModel, pModel2::PetriModel)
     pm2 = pModel2.model
     states = equnion(pm.S, pm2.S)
     Δ = equnion(pm.Δ, pm2.Δ)
-    Λ = equnion(pm.Λ, pm2.Λ)
-    Φ = equnion(pm.Φ, pm2.Φ)
-    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
+    return model(PetriModel, Petri.Model(states, Δ))
 end
 
 
@@ -170,9 +102,7 @@ function dropdown(pL::PetriModel, pC::PetriModel, pL′::PetriModel)
     pl′ = pL′.model
     states = union(pl′.S, pc.S)
     Δ = union(setdiff(pl′.Δ, pl.Δ), pc.Δ)
-    Λ = union(setdiff(pl′.Λ, pl.Λ), pc.Λ)
-    Φ = union(setdiff(pl′.Φ, pl.Φ), pc.Φ)
-    return model(PetriModel, Petri.Model(states, Δ, Λ, Φ))
+    return model(PetriModel, Petri.Model(states, Δ))
 end
 
 end

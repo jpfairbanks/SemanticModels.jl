@@ -7,7 +7,6 @@ version = "0.3.0"
 Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Petri = "4259d249-1051-49fa-8328-3f8ab9391c33"
 
 [compat]

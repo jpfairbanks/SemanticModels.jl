@@ -3,15 +3,9 @@ module CategoryTheory
 
 using SemanticModels
 import Catlab.Doctrines: dom, codom
-using MacroTools: prewalk, postwalk
-using ModelingToolkit
 import Base: append!, push!, deleteat!, delete!
 
-
 export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, Decorated, decorations, undecorate, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
-
-import MacroTools.walk
-walk(x::Operation, inner, outer) = outer(Operation(x.op, map(inner, x.args)))
 
 
 ⊔(a::UnitRange, b::UnitRange) = 1:(length(a)+length(b))

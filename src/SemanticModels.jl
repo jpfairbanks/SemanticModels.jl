@@ -30,7 +30,7 @@ include("PetriModels.jl")
 include("RelOlogModels.jl")
 include("GraphModels.jl")
 include("OpenModels.jl")
-include("OpenPetris.jl")
+#include("OpenPetris.jl")
 include("PetriCospans.jl")
 include("WiringDiagrams.jl")
 
