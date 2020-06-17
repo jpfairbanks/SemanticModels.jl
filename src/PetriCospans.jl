@@ -95,9 +95,9 @@ end
 
 # TODO: The Model Toolkit interface was dumb, let's just do everything with integer variable numbers
 # SEIR is Petri.Mode([1,2,3], [([1], [2]), ([1,2], [3]), ([3],[2])])
-IntPetriModel(S, Δ) = Petri.Model(S, Δ, missing, missing)
+IntPetriModel(S, Δ) = Petri.Model(S, Δ)
 IntPetriModel(S, Δ, λ, ϕ) = Petri.Model(S, Δ, λ, ϕ)
-NullModel(n::Int) = PetriModel(IntPetriModel(collect(1:n), Vector{Tuple{Vector{Int}, Vector{Int}}}(), missing, missing))
+NullModel(n::Int) = PetriModel(IntPetriModel(collect(1:n), Vector{Tuple{Vector{Int}, Vector{Int}}}()))
 
 function tcat(v::Vector{Tuple{Vector{Int},Vector{Int}}},
      w::Vector{Tuple{Vector{Int},Vector{Int}}}, shift::Int)
@@ -116,7 +116,7 @@ function otimes_ipm(f::PetriModel, g::PetriModel)
     domcat(v, w) = vcat(v, w.+length(M.S))
     newS = domcat(M.S, N.S)
     newΔ = tcat(M.Δ, N.Δ, length(M.S))
-    return PetriModel(Petri.Model(newS, newΔ, missing, missing))
+    return PetriModel(Petri.Model(newS, newΔ))
 end
 
 compose(f::FinSetMorph, g::FinSetMorph) = FinSetMorph(g.codom, func(g).(f.fun))
