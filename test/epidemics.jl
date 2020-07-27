@@ -1,6 +1,6 @@
 module TestEpidemics
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Graphics
 using Catlab.WiringDiagrams
 using Catlab.Programs
@@ -18,7 +18,7 @@ import SemanticModels.PetriCospans: otimes_ipm, compose_pushout
 
 println("Done Importing SemanticModels")
 
-import Catlab.Doctrines:
+import Catlab.Theories:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,
   dagger, dunit, dcounit, mcopy, Δ, delete, ◊, mmerge, ∇, create, □,
   plus, zero, coplus, cozero, meet, top, join, bottom
@@ -199,7 +199,7 @@ Pseird = PetriModel(
             ([3],[2]),     # onset
             ([2],[4]),     # recovery
             ([2],[5]),     # death
-            ], missing, missing))
+          ]))
 inputs = FinSetMorph(1:5, [1,2,3])
 outputs = FinSetMorph(1:5, [1,2,3])
 Fcityd = PetriCospan(Cospan(Decorated(inputs, Pseird),

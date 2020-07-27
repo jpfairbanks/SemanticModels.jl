@@ -4,8 +4,8 @@ module RelOlogModels
 using Catlab
 using Catlab.Syntax
 using Catlab.WiringDiagrams
-using Catlab.Doctrines
-import Catlab.Doctrines.⊗
+using Catlab.Theories
+import Catlab.Theories.⊗
 
 using SemanticModels
 import SemanticModels: model

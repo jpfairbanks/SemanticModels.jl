@@ -1,7 +1,7 @@
 module PetriCospans
 
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.WiringDiagrams
 # using Catlab.Programs
 import Base: (==), length, show
@@ -10,7 +10,7 @@ using ..PetriModels
 using ..CategoryTheory
 import ..CategoryTheory: undecorate, ⊔
 
-import Catlab.Doctrines:
+import Catlab.Theories:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,
   dagger, dunit, dcounit, mcopy, Δ, delete, ◊, mmerge, ∇, create, □,
   plus, zero, coplus, cozero, meet, top, join, bottom
@@ -25,11 +25,11 @@ export Epidemiology, FreeEpidemiology, spontaneous, exposure, death,
     death(A)::Hom(A, munit()) ⊣ A::Ob
 end
 
-spontaneous(A::Ports, B::Ports) = singleton_diagram(Epidemiology.Hom, Box(:→, A, B))
-exposure(A::Ports, B::Ports, C::Ports) = singleton_diagram(Epidemiology.Hom, Box(:exposure, A⊗B, C⊗B))
-death(A::Ports) = singleton_diagram(Epidemiology.Hom, Box(:𝗫, A, Ports([])))
-mcopy(A::Ports{Epidemiology.Hom}, Symbol) = implicit_mcopy(A, 2)
-mmerge(A::Ports{Epidemiology.Hom}, Symbol) = implicit_mmerge(A, 2)
+spontaneous(A::Ports, B::Ports) = singleton_diagram(Box(:→, A, B))
+exposure(A::Ports, B::Ports, C::Ports) = singleton_diagram(Box(:exposure, A⊗B, C⊗B))
+death(A::Ports) = singleton_diagram(Box(:𝗫, A, Ports([])))
+mcopy(A::Ports{Epidemiology}, Symbol) = implicit_mcopy(A, 2)
+mmerge(A::Ports{Epidemiology}, Symbol) = implicit_mmerge(A, 2)
 
 
 @syntax FreeEpidemiology(ObExpr, HomExpr) Epidemiology begin
@@ -41,8 +41,8 @@ mmerge(A::Ports{Epidemiology.Hom}, Symbol) = implicit_mmerge(A, 2)
     copair(f::Hom, g::Hom) = (f ⊗ g) → ∇(codom(f))
     proj1(A::Ob, B::Ob) = id(A) ⊗ ◊(B)
     proj2(A::Ob, B::Ob) = ◊(A) ⊗ id(B)
-    incl1(A::Ob, B::Ob) = id(A) ⊗ □(B)
-    incl2(A::Ob, B::Ob) = □(A) ⊗ id(B)
+    coproj1(A::Ob, B::Ob) = id(A) ⊗ □(B)
+    coproj2(A::Ob, B::Ob) = □(A) ⊗ id(B)
     otimes(A::Ob, B::Ob) = associate_unit(new(A,B), munit)
     otimes(f::Hom, g::Hom) = associate(new(f,g))
 end
@@ -221,8 +221,8 @@ end
   proj1(A::FinSet,B::FinSet) = otimes(id(A), delete(B))
   proj2(A::FinSet,B::FinSet) = otimes(delete(A), id(B))
 
-  incl1(A::FinSet,B::FinSet) = otimes(id(A), create(B))
-  incl2(A::FinSet,B::FinSet) = otimes(create(A), id(B))
+  coproj1(A::FinSet,B::FinSet) = otimes(id(A), create(B))
+  coproj2(A::FinSet,B::FinSet) = otimes(create(A), id(B))
 
   spontaneous(A::FinSet, B::FinSet) = begin
       M, N = length(A), length(B)

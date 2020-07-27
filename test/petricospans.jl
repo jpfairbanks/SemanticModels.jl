@@ -1,7 +1,7 @@
 module TestPetriCospans
 
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.WiringDiagrams
 using Catlab.Programs
 import Base.Multimedia: display
@@ -14,7 +14,7 @@ using SemanticModels.PetriModels
 using SemanticModels.PetriCospans
 import SemanticModels.PetriCospans: otimes_ipm, compose_pushout
 
-import Catlab.Doctrines:
+import Catlab.Theories:
   Ob, Hom, dom, codom, compose, ⋅, ∘, id, oplus, otimes, ⊗, ⊕, munit, mzero, braid,
   dagger, dunit, dcounit, mcopy, Δ, delete, ◊, mmerge, ∇, create, □,
   plus, zero, coplus, cozero, meet, top, join, bottom
@@ -28,7 +28,7 @@ Cospan(f,g), Cospan(f′, g′)
 pushout(Span(g,f′))
 
 
-spon = PetriModel(Petri.Model([1,2], [([1], [2])], missing, missing))
+spon = PetriModel(Petri.Model([1,2], [([1], [2])]))
 f = Decorated(FinSetMorph(1:2, [2]), [spon])
 g = Decorated(FinSetMorph(1:2, [1]), [spon])
 s = Span(g,f)

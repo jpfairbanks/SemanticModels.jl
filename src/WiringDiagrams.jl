@@ -3,7 +3,7 @@
 module WiringDiagrams
 
 using Catlab.WiringDiagrams
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Graphics
 using Catlab.Graphics.Graphviz
 using MacroTools
