@@ -1,0 +1,28 @@
+digraph G {
+
+  i [label="I", position="1,0"]
+  m [label="M", position="2,0"]
+  p [label="P"]
+  t [label="T"]
+  c [label="C"]
+  n [label="N"]
+  rp [label="R+"]
+  r [label="R"]
+  m->c [label="f"]
+  m->t [label="g"]
+  m->p [label="h"]
+  m->i [label="n"]
+  i->n [label="s"]
+  i->n [label="i   "]
+  i->n [label="r "]
+  t->rp[label="t₁  "]
+  t->rp[label="t₂ "]
+  p -> r[label="𝛽   "]
+  p -> r[label="𝛾   "]
+}
+// 𝛼	𝛽	𝛾	𝛿
+// 𝜀	𝜁	𝜂	𝜃	𝜄	𝜅	𝜆	𝜇	𝜈	𝜉	𝜊	𝜋	𝜌	𝜍	𝜎	𝜏
+// 𝜐	𝜑	𝜒	𝜓	𝜔	𝜕	𝜖	𝜗	𝜘	𝜙	𝜚	𝜛	
+
+// U+207x	⁰	ⁱ			⁴	⁵	⁶	⁷	⁸	⁹	⁺	⁻	⁼	⁽	⁾	ⁿ
+// U+208x	₀	₁	₂	₃	₄	₅	₆	₇	₈	₉	₊	₋	₌	₍	₎

@@ -1,0 +1,17 @@
+digraph G {
+1 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Susceptible)",style="filled",];
+2 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Recovered)",style="filled",];
+3 [ fillcolor="#FFE7E1",label="(StateModel, Int64, Infected)",style="filled",];
+4 [ fillcolor="#DFF1FC",label="Infected",style="filled",];
+5 [ fillcolor="#DFF1FC",label="Susceptible",style="filled",];
+6 [ fillcolor="#DFF1FC",label="Recovered",style="filled",];
+1 -> 4 [ label="transition", ]
+1 -> 5 [ label="transition", ]
+2 -> 5 [ label="transition", ]
+2 -> 6 [ label="transition", ]
+3 -> 4 [ label="transition", ]
+3 -> 6 [ label="transition", ]
+4 -> 3 [ label=π3, style="dashed", dir=back]
+5 -> 1 [ label=π3, style="dashed", dir=back]
+6 -> 2 [ label=π3, style="dashed", dir=back]
+}
