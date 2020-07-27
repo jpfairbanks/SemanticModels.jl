@@ -31,24 +31,24 @@ The examples are best viewed in the following order.
 ## Model Augmentation
 
 These examples illustrate model augmentation with ModelTools
-1. [agentbased.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agentbased.jl)
-1. [agentgraft.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/agentgraft.jl)
-1. [odegraft.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/odegraft.jl)
+1. [agentbased.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/agentbased.jl)
+1. [agentgraft.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/agentgraft.jl)
+1. [odegraft.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/odegraft.jl)
 
 ## Algebraic Model Transformation
 These examples illustrate how model transformations can be algebraic structures
 and how to exploit that to develop new models
-1. [monomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/monomial_regression.jl)
-1. [multivariate_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/multivariate_regression.jl)
-1. [pseudo_polynomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/pseudo_polynomial_regression.jl)
-1. [polynomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/polynomial_regression.jl)
+1. [monomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/monomial_regression.jl)
+1. [multivariate_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/multivariate_regression.jl)
+1. [pseudo_polynomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/pseudo_polynomial_regression.jl)
+1. [polynomial_regression.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/polynomial_regression.jl)
 
 ## Model Synthesis
 The workflow example combines `agentgraft.jl` and `polynomial_regression.jl` to
 build a modeling pipeline. This is the most important example for understanding
 the power of SemanticModels for model augmentation and synthesis.
 
-[workflow.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/workflow.jl)
+[workflow.jl](github.com/jpfairbanks/SemanticModels.jl/blob/master/examples/ExprModels/workflow.jl)
 
 ## Programming the type system
 These examples show how the Julia type systems is a strong ally in bringing
