@@ -5,8 +5,8 @@ import SemanticModels.PetriModels: PetriModel
 import SemanticModels.OpenModels: OpenModel
 using ModelingToolkit
 import ModelingToolkit: Constant
-using Catlab.Doctrines
-import Catlab.Doctrines: ⊗, compose, otimes
+using Catlab.Theories
+import Catlab.Theories: ⊗, compose, otimes
 
 export OpenPetri, eye, ⊕
 

@@ -2,7 +2,7 @@
 module CategoryTheory
 
 using SemanticModels
-import Catlab.Doctrines: dom, codom
+import Catlab.Theories: dom, codom
 import Base: append!, push!, deleteat!, delete!
 
 export ⊔, AbstractMorph, FinSetMorph, dom, codom, verify, func, Decorated, decorations, undecorate, AbstractSpan, leftob, rightob, apexob, Span, left, right, DoublePushout, AbstractCospan, Cospan, pushout
